@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+using EPiServer.Authorization;
 using EPiServer.Shell.Navigation;
 
 namespace Stott.Optimizely.RobotsHandler.Presentation
@@ -12,7 +13,8 @@ namespace Stott.Optimizely.RobotsHandler.Presentation
             var listMenuItem = new UrlMenuItem("Robots", "/global/cms/admin/stott.optimizely.robots", "/Robots/List")
             {
                 IsAvailable = context => true,
-                SortIndex = 900
+                SortIndex = SortIndex.Last + 1,
+                AuthorizationPolicy = CmsPolicyNames.CmsAdmin
             };
 
             return new List<MenuItem> { listMenuItem };
