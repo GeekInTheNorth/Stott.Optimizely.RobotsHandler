@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="modules\**" />
+    <EmbeddedResource Remove="modules\**" />
+    <None Remove="modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="$(UserProfile)\.nuget\packages\episerver.find.cms\14.0.2\contentFiles\any\any\modules\_protected\Find\Find.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="9.0.0" />
+  </ItemGroup>
+
+</Project>
