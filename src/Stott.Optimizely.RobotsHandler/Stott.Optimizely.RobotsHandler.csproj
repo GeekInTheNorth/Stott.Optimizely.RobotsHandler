@@ -12,9 +12,9 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <NeutralLanguage>en-GB</NeutralLanguage>
     <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.0.2</Version>
     <PackageReleaseNotes>Cosmetic changes for the admin menu and UI.</PackageReleaseNotes>
   </PropertyGroup>
 
