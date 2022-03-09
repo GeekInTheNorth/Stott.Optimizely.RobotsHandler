@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Text.Json;
 
 using EPiServer.Logging;
 
@@ -74,8 +75,12 @@ namespace Stott.Optimizely.RobotsHandler.Presentation
             }
 
             var model = _editViewModelBuilder.WithSiteId(siteIdGuid).Build();
+            var serializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
 
-            return Json(model);
+            return Json(model, serializationOptions);
         }
 
         [HttpPost]
