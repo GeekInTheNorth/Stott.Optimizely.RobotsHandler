@@ -75,12 +75,8 @@ namespace Stott.Optimizely.RobotsHandler.Presentation
             }
 
             var model = _editViewModelBuilder.WithSiteId(siteIdGuid).Build();
-            var serializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
 
-            return Json(model, serializationOptions);
+            return CreateSafeJsonResult(model);
         }
 
         [HttpPost]
@@ -104,6 +100,23 @@ namespace Stott.Optimizely.RobotsHandler.Presentation
                     ContentType = "text/plain"
                 };
             }
+        }
+
+        private static IActionResult CreateSafeJsonResult<T>(T objectToSerialize)
+        {
+            var serializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+            var content = JsonSerializer.Serialize(objectToSerialize, serializationOptions);
+
+            return new ContentResult
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                ContentType = "application/json",
+                Content = content
+            };
         }
     }
 }
