@@ -14,7 +14,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-The call to ```services.AddRazorPages()``` is a standard .NET 5.0 call to ensure razor pages are included in your solution.
+The call to ```services.AddRazorPages()``` is a standard .NET call to ensure razor pages are included in your solution.
 
 The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by microsoft.
 
