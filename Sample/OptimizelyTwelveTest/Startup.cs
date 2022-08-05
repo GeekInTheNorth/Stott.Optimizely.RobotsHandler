@@ -1,6 +1,5 @@
 ﻿namespace OptimizelyTwelveTest
 {
-
     using EPiServer.Cms.UI.AspNetIdentity;
     using EPiServer.Scheduler;
     using EPiServer.Web.Routing;
@@ -47,11 +46,11 @@
                 config.JsonSerializerOptions.PropertyNamingPolicy = new UpperCaseNamingPolicy();
             });
 
-            services.AddCms();
-            services.AddFind();
-            services.AddMediatR(typeof(GroupNames).Assembly);
-            services.AddCustomDependencies();
-            services.AddRobotsHandler();
+            services.AddCms()
+                    .AddFind()
+                    .AddMediatR(typeof(GroupNames).Assembly)
+                    .AddRobotsHandler()
+                    .AddCustomDependencies();
 
             services.ConfigureApplicationCookie(options =>
             {

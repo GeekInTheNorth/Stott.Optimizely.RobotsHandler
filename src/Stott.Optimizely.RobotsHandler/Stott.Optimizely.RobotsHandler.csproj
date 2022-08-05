@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Authors>Mark Stott</Authors>
     <PackageProjectUrl>https://github.com/GeekInTheNorth/Stott.Optimizely.RobotsHandler</PackageProjectUrl>
@@ -29,12 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="$(UserProfile)\.nuget\packages\episerver.cms.tinymce\3.0.1\contentFiles\any\any\modules\_protected\EPiServer.Cms.TinyMce\EPiServer.Cms.TinyMce.zip" />
-    <None Remove="$(UserProfile)\.nuget\packages\episerver.cms.ui.admin\12.0.2\contentFiles\any\any\modules\_protected\EPiServer.Cms.UI.Admin\EPiServer.Cms.UI.Admin.zip" />
-    <None Remove="$(UserProfile)\.nuget\packages\episerver.cms.ui.settings\12.0.2\contentFiles\any\any\modules\_protected\EPiServer.Cms.UI.Settings\EPiServer.Cms.UI.Settings.zip" />
-    <None Remove="$(UserProfile)\.nuget\packages\episerver.cms.ui.visitorgroups\12.0.2\contentFiles\any\any\modules\_protected\EPiServer.Cms.UI.VisitorGroups\EPiServer.Cms.UI.VisitorGroups.zip" />
-    <None Remove="$(UserProfile)\.nuget\packages\episerver.cms.ui\12.0.2\contentFiles\any\any\modules\_protected\CMS\CMS.zip" />
-    <None Remove="$(UserProfile)\.nuget\packages\episerver.cms.ui\12.0.2\contentFiles\any\any\modules\_protected\Shell\Shell.zip" />
+    <None Remove="$(UserProfile)\.nuget\packages\**\*.zip" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,9 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS" Version="12.0.2" />
-    <PackageReference Include="EPiServer.CMS.AspNetCore.Mvc" Version="12.0.3" />
-    <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.0.2" />
+    <PackageReference Include="EPiServer.CMS" Version="12.9.0" />
+    <PackageReference Include="EPiServer.CMS.AspNetCore.Mvc" Version="12.8.0" />
+    <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.9.0" />
   </ItemGroup>
 
 </Project>
