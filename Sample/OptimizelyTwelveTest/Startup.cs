@@ -15,6 +15,7 @@
 
     using ServiceExtensions;
 
+    using Stott.Optimizely.RobotsHandler.Common;
     using Stott.Optimizely.RobotsHandler.Configuration;
 
     public class Startup
@@ -49,9 +50,17 @@
             services.AddCms()
                     .AddFind()
                     .AddMediatR(typeof(GroupNames).Assembly)
-                    .AddRobotsHandler()
                     .AddCustomDependencies()
                     .AddSwaggerGen();
+
+            services.AddRobotsHandler();
+            //// services.AddRobotsHandler(authorizationOptions =>
+            //// {
+            ////     authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
+            ////     {
+            ////         policy.RequireRole("RobotAdmins");
+            ////     });
+            //// });
 
             services.ConfigureApplicationCookie(options =>
             {

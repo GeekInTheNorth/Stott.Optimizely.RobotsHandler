@@ -1,5 +1,8 @@
 # Stott.Optimizely.RobotsHandler
 
+[![Platform](https://img.shields.io/badge/Platform-.NET%206-blue.svg?style=flat)](https://docs.microsoft.com/en-us/dotnet/)
+[![Platform](https://img.shields.io/badge/Optimizely-%2012-blue.svg?style=flat)](http://world.episerver.com/cms/)
+
 This is a new admin extension for Optimizely CMS 12+ for managing robots.txt on a per site basis.  The Stott.Optimizely.RobotsHandler project is a Razor Class Library which contains Razor Files, static JS files and relevent business logic specific to this functionality.
 
 ## Configuration
@@ -19,6 +22,27 @@ The call to ```services.AddRazorPages()``` is a standard .NET call to ensure raz
 The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by microsoft.
 
 This solution also includes an implementation of ```IMenuProvider``` which ensures that the Robots Handler administration pages are included in the CMS Admin menu under the title of "Robots".  You do not have to do anything to make this work as Optimizely CMS will scan and action all implementations of ```IMenuProvider```.
+
+### Authorisation Configuration
+
+The configuration of the module has some scope for modification by providing configuration in the service extension methods.  The provision of ```authorizationOptions``` is optional in the following example.
+
+Example:
+```C#
+services.AddRobotsHandler(authorizationOptions => 
+{
+    authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
+    {
+        policy.RequireRole("WebAdmins");
+    });
+});
+```
+
+If the ```authorizationOptions``` is not provided, then any of the following roles will be required be default:
+
+- CmsAdmins
+- Administrator
+- WebAdmins
 
 ## Contributing
 

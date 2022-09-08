@@ -9,10 +9,12 @@ using EPiServer.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 using Stott.Optimizely.RobotsHandler.Services;
 
 [ApiExplorerSettings(IgnoreApi = true)]
+[Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
 public class RobotsController : Controller
 {
     private readonly IRobotsContentService _service;
