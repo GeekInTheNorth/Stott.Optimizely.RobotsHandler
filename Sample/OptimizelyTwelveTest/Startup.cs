@@ -50,7 +50,8 @@
                     .AddFind()
                     .AddMediatR(typeof(GroupNames).Assembly)
                     .AddRobotsHandler()
-                    .AddCustomDependencies();
+                    .AddCustomDependencies()
+                    .AddSwaggerGen();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -70,6 +71,9 @@
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseEndpoints(endpoints =>
             {

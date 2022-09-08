@@ -10,7 +10,7 @@
 
     public static class ServiceExtensions
     {
-        public static void AddCustomDependencies(this IServiceCollection serviceCollection)
+        public static IServiceCollection AddCustomDependencies(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddScoped<ISiteSettings>(provider =>
             {
@@ -23,6 +23,8 @@
 
                 return null;
             });
+
+            return serviceCollection;
         }
     }
 }
