@@ -3,6 +3,8 @@
 using EPiServer.Authorization;
 using EPiServer.Shell.Navigation;
 
+using Stott.Optimizely.RobotsHandler.Common;
+
 namespace Stott.Optimizely.RobotsHandler.Presentation
 {
     [MenuProvider]
@@ -14,7 +16,7 @@ namespace Stott.Optimizely.RobotsHandler.Presentation
             {
                 IsAvailable = context => true,
                 SortIndex = SortIndex.Last + 1,
-                AuthorizationPolicy = CmsPolicyNames.CmsAdmin
+                AuthorizationPolicy = RobotsConstants.AuthorizationPolicy
             };
 
             return new List<MenuItem> { listMenuItem };
