@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <Authors>Mark Stott</Authors>
     <PackageProjectUrl>https://github.com/GeekInTheNorth/Stott.Optimizely.RobotsHandler</PackageProjectUrl>
@@ -12,10 +13,10 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <NeutralLanguage>en-GB</NeutralLanguage>
     <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
-    <Version>2.0.0</Version>
-    <PackageReleaseNotes>Update to use .NET 6.0 and to allow chaining of service extensions.</PackageReleaseNotes>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
+    <Version>2.1.0</Version>
+    <PackageReleaseNotes>Update to use .NET 6.0 and to allow chaining of service extensions. Added additional bug fixes and hidden APIs from swagger.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
