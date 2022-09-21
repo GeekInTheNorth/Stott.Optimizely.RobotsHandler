@@ -1,20 +1,43 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿namespace Stott.Optimizely.RobotsHandler.Configuration;
 
+using System;
+using System.Collections.Generic;
+
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection;
+
+using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Presentation;
 using Stott.Optimizely.RobotsHandler.Services;
 
-namespace Stott.Optimizely.RobotsHandler.Configuration
+public static class ServiceExtensions
 {
-    public static class ServiceExtensions
+    public static IServiceCollection AddRobotsHandler(
+        this IServiceCollection serviceCollection,
+        Action<AuthorizationOptions> authorizationOptions = null)
     {
-        public static IServiceCollection AddRobotsHandler(this IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddTransient<IRobotsContentService, RobotsContentService>();
-            serviceCollection.AddTransient<IRobotsContentRepository, RobotsContentRepository>();
-            serviceCollection.AddTransient<IRobotsEditViewModelBuilder, RobotsEditViewModelBuilder>();
-            serviceCollection.AddTransient<IRobotsListViewModelBuilder, RobotsListViewModelBuilder>();
+        serviceCollection.AddTransient<IRobotsContentService, RobotsContentService>();
+        serviceCollection.AddTransient<IRobotsContentRepository, RobotsContentRepository>();
+        serviceCollection.AddTransient<IRobotsEditViewModelBuilder, RobotsEditViewModelBuilder>();
+        serviceCollection.AddTransient<IRobotsListViewModelBuilder, RobotsListViewModelBuilder>();
 
-            return serviceCollection;
+        // Authorization
+        if (authorizationOptions != null)
+        {
+            serviceCollection.AddAuthorization(authorizationOptions);
         }
+        else
+        {
+            var allowedRoles = new List<string> { "CmsAdmins", "Administrator", "WebAdmins" };
+            serviceCollection.AddAuthorization(authorizationOptions =>
+            {
+                authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
+                {
+                    policy.RequireRole(allowedRoles);
+                });
+            });
+        }
+
+        return serviceCollection;
     }
 }
