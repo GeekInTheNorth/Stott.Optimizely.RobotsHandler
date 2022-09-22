@@ -7,7 +7,9 @@ This is a new admin extension for Optimizely CMS 12+ for managing robots.txt on 
 
 ## Configuration
 
-After pulling in a reference to the Stott.Optimizely.RobotsHandler project, you only need to ensure the following lines are added to the startup class of your solution:
+### Startup.cs
+
+After pulling in a reference to the Stott.Optimizely.RobotsHandler project, you need to ensure the following lines are added to the startup class of your solution:
 
 ```
 public void ConfigureServices(IServiceCollection services)
@@ -20,6 +22,24 @@ public void ConfigureServices(IServiceCollection services)
 The call to ```services.AddRazorPages()``` is a standard .NET call to ensure razor pages are included in your solution.
 
 The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by microsoft.
+
+### Program.cs
+
+As this package includes static files such as JS and CSS files within the Razor Class Library, your solution must be configured to use Static Web Assets.  This is done by adding `webBuilder.UseStaticWebAssets();` to your `Program.cs` as follows:
+
+```
+Host.CreateDefaultBuilder(args)
+    .ConfigureCmsDefaults()
+    .ConfigureWebHostDefaults(webBuilder =>
+    {
+        webBuilder.UseStartup<Startup>();
+        webBuilder.UseStaticWebAssets();
+    });
+```
+
+You can read more about shared assets in Razor Class Libraries here: [Create reusable UI using the Razor class library project in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/razor-pages/ui-class?view=aspnetcore-6.0&tabs=visual-studio)
+
+### Adding Robots Admin to the menus.
 
 This solution also includes an implementation of ```IMenuProvider``` which ensures that the Robots Handler administration pages are included in the CMS Admin menu under the title of "Robots".  You do not have to do anything to make this work as Optimizely CMS will scan and action all implementations of ```IMenuProvider```.
 
@@ -57,43 +77,4 @@ I am open to contributions to the code base.  The following rules should be foll
 
 ### RobotsAdmin.js returns a 404 error response.
 
-The RobotsHandler is built as a Razor Class Library, this produces a manifest that tells the application about the static assets that are included within the Razor Class Library.  The `StaticWebAssetsFileProvider` will then handle the serving of these files from the Razor Class Library.  However, the `StaticWebAssetsFileProvider` is only automatically added when the `ASPNETCORE_ENVIRONMENT` is set to `Development`.  You can read more about this here: [How to deal with the "HTTP 404 '_content/Foo/Bar.css' not found"](https://dev.to/j_sakamoto/how-to-deal-with-the-http-404-content-foo-bar-css-not-found-when-using-razor-component-package-on-asp-net-core-blazor-app-aai)
-
-This can manually be re-introduced by updating the `Program.cs` and re-introducing the `StaticWebAssetsFileProvider` for non-development environments.  The key component in this example being `StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration)`:
-
-```
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        var isDevelopment = environment == Environments.Development;
-
-        if (isDevelopment)
-        {
-            //Development configuration
-        }
-
-        CreateHostBuilder(args, isDevelopment).Build().Run();
-    }
-
-    public static IHostBuilder CreateHostBuilder(string[] args, bool isDevelopment)
-    {
-        return Host.CreateDefaultBuilder(args)
-            .ConfigureCmsDefaults()
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-                if (!isDevelopment)
-                {
-                    webBuilder.ConfigureAppConfiguration((ctx, cb) =>
-                    {
-                        StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
-                    });
-                }
-            });
-    }
-}
-```
-
-            
+The RobotsHandler is built as a Razor Class Library, this produces a manifest that tells the application about the static assets that are included within the Razor Class Library.  This is solved by adding `webBuilder.UseStaticWebAssets();` to the `ConfigureWebHostDefaults` method in `Program.cs`.  Please see the configuration section above.
