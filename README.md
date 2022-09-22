@@ -52,3 +52,48 @@ I am open to contributions to the code base.  The following rules should be foll
 2. All commits should have a meaningful messages.
 3. All commits should have a reference to your GitHub user.
 4. Ideally all new changes should include appropriate unit test coverage.
+
+## Common Issues
+
+### RobotsAdmin.js returns a 404 error response.
+
+The RobotsHandler is built as a Razor Class Library, this produces a manifest that tells the application about the static assets that are included within the Razor Class Library.  The `StaticWebAssetsFileProvider` will then handle the serving of these files from the Razor Class Library.  However, the `StaticWebAssetsFileProvider` is only automatically added when the `ASPNETCORE_ENVIRONMENT` is set to `Development`.  You can read more about this here: [How to deal with the "HTTP 404 '_content/Foo/Bar.css' not found"](https://dev.to/j_sakamoto/how-to-deal-with-the-http-404-content-foo-bar-css-not-found-when-using-razor-component-package-on-asp-net-core-blazor-app-aai)
+
+This can manually be re-introduced by updating the `Program.cs` and re-introducing the `StaticWebAssetsFileProvider` for non-development environments.  The key component in this example being `StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration)`:
+
+```
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var isDevelopment = environment == Environments.Development;
+
+        if (isDevelopment)
+        {
+            //Development configuration
+        }
+
+        CreateHostBuilder(args, isDevelopment).Build().Run();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args, bool isDevelopment)
+    {
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureCmsDefaults()
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+                if (!isDevelopment)
+                {
+                    webBuilder.ConfigureAppConfiguration((ctx, cb) =>
+                    {
+                        StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
+                    });
+                }
+            });
+    }
+}
+```
+
+            
