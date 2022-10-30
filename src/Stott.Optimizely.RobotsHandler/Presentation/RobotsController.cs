@@ -37,6 +37,7 @@ public class RobotsController : Controller
 
     [HttpGet]
     [Route("robots.txt")]
+    [AllowAnonymous]
     public IActionResult Index()
     {
         try
@@ -58,7 +59,6 @@ public class RobotsController : Controller
     }
 
     [HttpGet]
-    [Authorize(Roles = "CmsAdmin,WebAdmins,Administrators")]
     [Route("[controller]/[action]")]
     public IActionResult List()
     {
@@ -68,7 +68,6 @@ public class RobotsController : Controller
     }
 
     [HttpGet]
-    [Authorize(Roles = "CmsAdmin,WebAdmins,Administrators")]
     [Route("[controller]/[action]")]
     public IActionResult Details(string siteId)
     {
@@ -83,7 +82,6 @@ public class RobotsController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = "CmsAdmin,WebAdmins,Administrators")]
     [Route("[controller]/[action]")]
     public IActionResult Save(RobotsEditViewModel formSubmitModel)
     {
