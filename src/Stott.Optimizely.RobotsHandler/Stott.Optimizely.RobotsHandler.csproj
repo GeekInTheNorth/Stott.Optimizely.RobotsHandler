@@ -13,10 +13,10 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <NeutralLanguage>en-GB</NeutralLanguage>
     <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-    <AssemblyVersion>2.1.0.0</AssemblyVersion>
-    <FileVersion>2.1.0.0</FileVersion>
-    <Version>2.1.0</Version>
-    <PackageReleaseNotes>Update to use .NET 6.0 and to allow chaining of service extensions. Added additional bug fixes and hidden APIs from swagger.</PackageReleaseNotes>
+    <AssemblyVersion>2.2.0.0</AssemblyVersion>
+    <FileVersion>2.2.0.0</FileVersion>
+    <Version>2.2.0</Version>
+    <PackageReleaseNotes>Allow users to reach robots.txt without needing to log into the CMS. Move robots into the main menu to allow security for robots.txt to be configured without requiring CMS Admin access.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
