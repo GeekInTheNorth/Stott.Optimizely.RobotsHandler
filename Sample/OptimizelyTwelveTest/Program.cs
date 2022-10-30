@@ -1,46 +1,23 @@
-﻿namespace OptimizelyTwelveTest
+﻿namespace OptimizelyTwelveTest;
+
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+
+public class Program
 {
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Hosting;
-
-    using System;
-
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var isDevelopment = environment == Environments.Development;
+        CreateHostBuilder(args).Build().Run();
+    }
 
-            if (isDevelopment)
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureCmsDefaults()
+            .ConfigureWebHostDefaults(webBuilder =>
             {
-                //Development configuration
-            }
-
-            CreateHostBuilder(args, isDevelopment).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args, bool isDevelopment)
-        {
-            if (isDevelopment)
-            {
-                //Development configuration can be addded here, like local logging.
-                return Host.CreateDefaultBuilder(args)
-                    .ConfigureCmsDefaults()
-                    .ConfigureWebHostDefaults(webBuilder =>
-                    {
-                        webBuilder.UseStartup<Startup>();
-                    });
-            }
-            else
-            {
-                return Host.CreateDefaultBuilder(args)
-                    .ConfigureCmsDefaults()
-                    .ConfigureWebHostDefaults(webBuilder =>
-                    {
-                        webBuilder.UseStartup<Startup>();
-                    });
-            }
-        }
+                webBuilder.UseStartup<Startup>();
+                webBuilder.UseStaticWebAssets();
+            });
     }
 }
