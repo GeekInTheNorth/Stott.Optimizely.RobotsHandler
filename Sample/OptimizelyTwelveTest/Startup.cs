@@ -55,14 +55,14 @@
                     .AddSwaggerGen()
                     .AddCspManager();
 
-            services.AddRobotsHandler();
-            //// services.AddRobotsHandler(authorizationOptions =>
-            //// {
-            ////     authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
-            ////     {
-            ////         policy.RequireRole("RobotAdmins");
-            ////     });
-            //// });
+            //// services.AddRobotsHandler();
+            services.AddRobotsHandler(authorizationOptions =>
+            {
+                authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
+                {
+                    policy.RequireRole("RobotAdmins");
+                });
+            });
 
             services.ConfigureApplicationCookie(options =>
             {

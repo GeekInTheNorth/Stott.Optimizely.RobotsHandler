@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using EPiServer.Authorization;
 using EPiServer.Shell.Navigation;
 
 using Stott.Optimizely.RobotsHandler.Common;
