@@ -12,7 +12,7 @@ namespace Stott.Optimizely.RobotsHandler.Presentation
     {
         public IEnumerable<MenuItem> GetMenuItems()
         {
-            var listMenuItem = new UrlMenuItem("Robots", "/global/cms/admin/stott.optimizely.robots", "/Robots/List")
+            var listMenuItem = new UrlMenuItem("Robots", "/global/cms/stott.optimizely.robots", "/Robots/List")
             {
                 IsAvailable = context => true,
                 SortIndex = SortIndex.Last + 1,
