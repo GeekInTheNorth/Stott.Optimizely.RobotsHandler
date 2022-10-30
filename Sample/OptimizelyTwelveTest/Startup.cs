@@ -17,6 +17,7 @@
 
     using Stott.Optimizely.RobotsHandler.Common;
     using Stott.Optimizely.RobotsHandler.Configuration;
+    using Stott.Security.Optimizely.Features.Configuration;
 
     public class Startup
     {
@@ -51,16 +52,17 @@
                     .AddFind()
                     .AddMediatR(typeof(GroupNames).Assembly)
                     .AddCustomDependencies()
-                    .AddSwaggerGen();
+                    .AddSwaggerGen()
+                    .AddCspManager();
 
-            services.AddRobotsHandler();
-            //// services.AddRobotsHandler(authorizationOptions =>
-            //// {
-            ////     authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
-            ////     {
-            ////         policy.RequireRole("RobotAdmins");
-            ////     });
-            //// });
+            //// services.AddRobotsHandler();
+            services.AddRobotsHandler(authorizationOptions =>
+            {
+                authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
+                {
+                    policy.RequireRole("RobotAdmins");
+                });
+            });
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -80,6 +82,7 @@
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCspManager();
 
             app.UseSwagger();
             app.UseSwaggerUI();
