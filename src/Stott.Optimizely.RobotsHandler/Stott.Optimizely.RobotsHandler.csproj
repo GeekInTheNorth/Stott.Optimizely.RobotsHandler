@@ -13,18 +13,15 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <NeutralLanguage>en-GB</NeutralLanguage>
     <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-    <AssemblyVersion>2.2.0.0</AssemblyVersion>
-    <FileVersion>2.2.0.0</FileVersion>
-    <Version>2.2.0</Version>
+    <AssemblyVersion>2.3.0.0</AssemblyVersion>
+    <FileVersion>2.3.0.0</FileVersion>
+    <Version>2.3.0</Version>
     <PackageReleaseNotes>Allow users to reach robots.txt without needing to log into the CMS. Move robots into the main menu to allow security for robots.txt to be configured without requiring CMS Admin access.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="modules\**" />
-    <EmbeddedResource Remove="modules\**" />
-    <None Remove="modules\**" />
     <None Include="..\..\LICENSE.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -36,16 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="$(UserProfile)\.nuget\packages\**\*.zip" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS" Version="12.9.0" />
-    <PackageReference Include="EPiServer.CMS.AspNetCore.Mvc" Version="12.8.0" />
     <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.9.0" />
   </ItemGroup>
 
