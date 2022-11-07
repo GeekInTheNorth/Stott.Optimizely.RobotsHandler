@@ -22,9 +22,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="modules\**" />
-    <EmbeddedResource Remove="modules\**" />
-    <None Remove="modules\**" />
     <None Include="..\..\LICENSE.txt">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -36,16 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="$(UserProfile)\.nuget\packages\**\*.zip" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS" Version="12.9.0" />
-    <PackageReference Include="EPiServer.CMS.AspNetCore.Mvc" Version="12.8.0" />
     <PackageReference Include="EPiServer.CMS.UI.Core" Version="12.9.0" />
   </ItemGroup>
 
