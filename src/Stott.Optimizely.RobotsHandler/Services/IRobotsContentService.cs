@@ -6,8 +6,6 @@ namespace Stott.Optimizely.RobotsHandler.Services
     {
         string GetRobotsContent(Guid siteId);
 
-        string GetRobotsContent(string requestPath);
-
         string GetDefaultRobotsContent();
 
         void SaveRobotsContent(Guid siteId, string robotsContent);

@@ -7,8 +7,6 @@ using EPiServer.Web;
 using Moq;
 
 using NUnit.Framework;
-
-using Stott.Optimizely.RobotsHandler.Exceptions;
 using Stott.Optimizely.RobotsHandler.Models;
 using Stott.Optimizely.RobotsHandler.Services;
 
@@ -27,15 +25,10 @@ namespace Stott.Optimizely.RobotsHandler.Test.Services
 
         private RobotsContentService _robotsContentService;
 
-        private const string ValidDomain = "www.testdomain.com";
-
-        private const string InValidDomain = "www.invalidhost.com";
-
         [SetUp]
         public void SetUp()
         {
             _mockHostDefinition = new Mock<HostDefinition>();
-            _mockHostDefinition.Setup(x => x.Name).Returns(ValidDomain);
 
             _mockSiteDefinition = new Mock<SiteDefinition>();
             _mockSiteDefinition.Setup(x => x.Hosts).Returns(new List<HostDefinition> { _mockHostDefinition.Object });
@@ -46,51 +39,6 @@ namespace Stott.Optimizely.RobotsHandler.Test.Services
             _mockRobotsContentRepository = new Mock<IRobotsContentRepository>();
 
             _robotsContentService = new RobotsContentService(_mockSiteDefinitionRepository.Object, _mockRobotsContentRepository.Object);
-        }
-
-        [Test]
-        public void GetRobotsContent_host_ThrowRobotsInvalidSiteExceptionWhenNoSitesAreConfigured()
-        {
-            // Assert
-            Assert.Throws<RobotsInvalidSiteException>(() => _robotsContentService.GetRobotsContent(InValidDomain));
-        }
-
-        [Test]
-        public void GetRobotsContent_host_ThrowRobotsInvalidSiteExceptionWhenASiteDoesNotMatchTheProvidedHostString()
-        {
-            // Arrange
-            _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(new List<SiteDefinition>(0));
-
-            // Assert
-            Assert.Throws<RobotsInvalidSiteException>(() => _robotsContentService.GetRobotsContent(ValidDomain));
-        }
-
-        [Test]
-        public void GetRobotsContent_host_ReturnsDefaultRobotsForAValidSiteWhenRobotsContentDoesNotExist()
-        {
-            // Arrange
-            _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((RobotsEntity)null);
-
-            // Act
-            var robotsContent = _robotsContentService.GetRobotsContent(ValidDomain);
-
-            // Assert
-            Assert.That(robotsContent, Is.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
-        }
-
-        [Test]
-        public void GetRobotsContent_host_ReturnsSavedRobotsForAValidSiteWhenRobotsContentDoesExist()
-        {
-            // Arrange
-            var robotsEntity = new RobotsEntity { RobotsContent = GetSavedRobots() };
-            _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(robotsEntity);
-
-            // Act
-            var robotsContent = _robotsContentService.GetRobotsContent(ValidDomain);
-
-            // Assert
-            Assert.That(robotsContent, Is.Not.Null);
-            Assert.That(robotsContent, Is.Not.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
         }
 
         [Test]
