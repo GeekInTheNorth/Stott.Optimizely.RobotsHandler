@@ -76,6 +76,17 @@ I am open to contributions to the code base.  The following rules should be foll
 3. All commits should have a reference to your GitHub user.
 4. Ideally all new changes should include appropriate unit test coverage.
 
+### Contributors
+
+Thank you, to the following contributors:
+
+| Contributor | Bug Reports | Pull Requests |
+|-------------|-------------|---------------|
+| [Ellinge](https://github.com/ellinge) | 1 | 1 |
+| [Anish Peethambaran](https://github.com/Anish-Peethambaran) | 1 | - |
+| [Mahdi Shahbazi](https://github.com/mahdishahbazi) | 1 | - |
+| [Praveen Soni](https://world.optimizely.com/System/Users-and-profiles/Community-Profile-Card/?userId=fd64fb7a-ba91-e911-a968-000d3a441525) | 1 | - |
+
 ## Common Issues
 
 ### RobotsAdmin.js returns a 404 error response.
