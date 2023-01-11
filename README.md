@@ -86,25 +86,3 @@ Thank you, to the following contributors:
 | [Anish Peethambaran](https://github.com/Anish-Peethambaran) | 1 | - |
 | [Mahdi Shahbazi](https://github.com/mahdishahbazi) | 1 | - |
 | [Praveen Soni](https://world.optimizely.com/System/Users-and-profiles/Community-Profile-Card/?userId=fd64fb7a-ba91-e911-a968-000d3a441525) | 1 | - |
-
-## Common Issues
-
-### RobotsAdmin.js returns a 404 error response.
-
-The RobotsHandler is built as a Razor Class Library, this produces a manifest that tells the application about the static assets that are included within the Razor Class Library.  This is solved by adding `webBuilder.UseStaticWebAssets();` to the `ConfigureWebHostDefaults` method in `Program.cs`.  Please see the configuration section above.
-
-### Projects that do not use Razor MVC lead to missing assets
-
-Stott.Optimizely.RobotsHandler has been built as a Razor Class Library, this is predicated on a build being compatible with Razor MVC.  If your build does not use Razor MVC and the build pipeline does not inclue the output of such, then this can cause the admin interface not to work.  In this scenario this will require you to update your build pipeline to include these assets.
-
-The following is a YAML example cloned from a screenshot where this problem was resolved:
-```
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(projectName)/obj/$(BuildConfiguration)/net6.0/PubTmp/Out/wwwrooot'
-    Contents: '**'
-    CleanTargetFolder: false
-    TargetFolder: '$(Agent.TempDirectory)/$(today)/wwwroot/wwwroot/'
-```
-
-A big thank you goes to [Praveen Soni](https://world.optimizely.com/System/Users-and-profiles/Community-Profile-Card/?userId=fd64fb7a-ba91-e911-a968-000d3a441525) who helped identify this as an issue.
