@@ -3,7 +3,7 @@
 [![Platform](https://img.shields.io/badge/Platform-.NET%206-blue.svg?style=flat)](https://docs.microsoft.com/en-us/dotnet/)
 [![Platform](https://img.shields.io/badge/Optimizely-%2012-blue.svg?style=flat)](http://world.episerver.com/cms/)
 [![GitHub](https://img.shields.io/github/license/GeekInTheNorth/Stott.Optimizely.RobotsHandler)](https://github.com/GeekInTheNorth/Stott.Optimizely.RobotsHandler/blob/main/LICENSE.txt)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/GeekInTheNorth/Stott.Optimizely.RobotsHandler/.NET)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/GeekInTheNorth/Stott.Optimizely.RobotsHandler/dotnet.yml?branch=develop)
 ![Nuget](https://img.shields.io/nuget/v/Stott.Optimizely.RobotsHandler)
 
 This is a new admin extension for Optimizely CMS 12+ for managing robots.txt on a per site basis.  The Stott.Optimizely.RobotsHandler project is a Razor Class Library which contains Razor Files, static JS files and relevent business logic specific to this functionality.
@@ -76,24 +76,13 @@ I am open to contributions to the code base.  The following rules should be foll
 3. All commits should have a reference to your GitHub user.
 4. Ideally all new changes should include appropriate unit test coverage.
 
-## Common Issues
+### Contributors
 
-### RobotsAdmin.js returns a 404 error response.
+Thank you, to the following contributors:
 
-The RobotsHandler is built as a Razor Class Library, this produces a manifest that tells the application about the static assets that are included within the Razor Class Library.  This is solved by adding `webBuilder.UseStaticWebAssets();` to the `ConfigureWebHostDefaults` method in `Program.cs`.  Please see the configuration section above.
-
-### Projects that do not use Razor MVC lead to missing assets
-
-Stott.Optimizely.RobotsHandler has been built as a Razor Class Library, this is predicated on a build being compatible with Razor MVC.  If your build does not use Razor MVC and the build pipeline does not inclue the output of such, then this can cause the admin interface not to work.  In this scenario this will require you to update your build pipeline to include these assets.
-
-The following is a YAML example cloned from a screenshot where this problem was resolved:
-```
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(projectName)/obj/$(BuildConfiguration)/net6.0/PubTmp/Out/wwwrooot'
-    Contents: '**'
-    CleanTargetFolder: false
-    TargetFolder: '$(Agent.TempDirectory)/$(today)/wwwroot/wwwroot/'
-```
-
-A big thank you goes to [Praveen Soni](https://world.optimizely.com/System/Users-and-profiles/Community-Profile-Card/?userId=fd64fb7a-ba91-e911-a968-000d3a441525) who helped identify this as an issue.
+| Contributor | Bug Reports | Pull Requests |
+|-------------|-------------|---------------|
+| [Ellinge](https://github.com/ellinge) | 1 | 1 |
+| [Anish Peethambaran](https://github.com/Anish-Peethambaran) | 1 | - |
+| [Mahdi Shahbazi](https://github.com/mahdishahbazi) | 1 | - |
+| [Praveen Soni](https://world.optimizely.com/System/Users-and-profiles/Community-Profile-Card/?userId=fd64fb7a-ba91-e911-a968-000d3a441525) | 1 | - |

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 
 using EPiServer.Web;
-
-using Stott.Optimizely.RobotsHandler.Exceptions;
 
 namespace Stott.Optimizely.RobotsHandler.Services
 {
@@ -32,17 +29,6 @@ namespace Stott.Optimizely.RobotsHandler.Services
             return stringBuilder.ToString();
         }
 
-        public string GetRobotsContent(string requestHost)
-        {
-            var site = GetCurrentSite(requestHost);
-            if (site == null)
-            {
-                throw new RobotsInvalidSiteException($"Cannot resolve CMS site from the request host: {requestHost}");
-            }
-
-            return GetRobotsContent(site.Id);
-        }
-
         public string GetRobotsContent(Guid siteId)
         {
             var robots = robotsContentRepository.Get(siteId);
@@ -68,13 +54,6 @@ namespace Stott.Optimizely.RobotsHandler.Services
             }
 
             robotsContentRepository.Save(existingSite.Id, robotsContent);
-        }
-
-        private SiteDefinition GetCurrentSite(string requestHost)
-        {
-            var sites = siteDefinitionRepository.List();
-
-            return sites.FirstOrDefault(s => s.Hosts.Any(h => h.Name.Contains(requestHost, StringComparison.OrdinalIgnoreCase)));
         }
     }
 }

@@ -3,9 +3,8 @@
 using System;
 using System.Net;
 using System.Text.Json;
-
 using EPiServer.Logging;
-
+using EPiServer.Web;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,7 +41,7 @@ public class RobotsController : Controller
     {
         try
         {
-            var robotsContent = _service.GetRobotsContent(Request.Host.Value);
+            var robotsContent = _service.GetRobotsContent(SiteDefinition.Current.Id);
 
             return new ContentResult
             {
