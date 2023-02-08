@@ -24,7 +24,7 @@ public void ConfigureServices(IServiceCollection services)
 
 The call to ```services.AddRazorPages()``` is a standard .NET call to ensure razor pages are included in your solution.
 
-The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by microsoft.
+The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by Microsoft.
 
 ### Program.cs
 
@@ -61,7 +61,7 @@ services.AddRobotsHandler(authorizationOptions =>
 });
 ```
 
-If the ```authorizationOptions``` is not provided, then any of the following roles will be required be default:
+If the ```authorizationOptions``` is not provided, then any of the following roles will be required by default:
 
 - CmsAdmins
 - Administrator
@@ -72,9 +72,9 @@ If the ```authorizationOptions``` is not provided, then any of the following rol
 I am open to contributions to the code base.  The following rules should be followed:
 
 1. Contributions should be made by Pull Requests.
-2. All commits should have a meaningful messages.
+2. All commits should have a meaningful message.
 3. All commits should have a reference to your GitHub user.
-4. Ideally all new changes should include appropriate unit test coverage.
+4. Ideally, all new changes should include appropriate unit test coverage.
 
 ### Contributors
 
