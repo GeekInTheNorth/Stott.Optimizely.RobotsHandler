@@ -24,7 +24,7 @@ public void ConfigureServices(IServiceCollection services)
 
 The call to ```services.AddRazorPages()``` is a standard .NET call to ensure razor pages are included in your solution.
 
-The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by microsoft.
+The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by Microsoft.
 
 ### Program.cs
 
@@ -61,7 +61,7 @@ services.AddRobotsHandler(authorizationOptions =>
 });
 ```
 
-If the ```authorizationOptions``` is not provided, then any of the following roles will be required be default:
+If the ```authorizationOptions``` is not provided, then any of the following roles will be required by default:
 
 - CmsAdmins
 - Administrator
@@ -72,17 +72,18 @@ If the ```authorizationOptions``` is not provided, then any of the following rol
 I am open to contributions to the code base.  The following rules should be followed:
 
 1. Contributions should be made by Pull Requests.
-2. All commits should have a meaningful messages.
+2. All commits should have a meaningful message.
 3. All commits should have a reference to your GitHub user.
-4. Ideally all new changes should include appropriate unit test coverage.
+4. Ideally, all new changes should include appropriate unit test coverage.
 
 ### Contributors
 
-Thank you, to the following contributors:
+Thank you for your feedback and contributions go to the following members of the community:
 
 | Contributor | Bug Reports | Pull Requests |
 |-------------|-------------|---------------|
-| [Ellinge](https://github.com/ellinge) | 1 | 1 |
 | [Anish Peethambaran](https://github.com/Anish-Peethambaran) | 1 | - |
+| [Ellinge](https://github.com/ellinge) | 1 | 1 |
 | [Mahdi Shahbazi](https://github.com/mahdishahbazi) | 1 | - |
 | [Praveen Soni](https://world.optimizely.com/System/Users-and-profiles/Community-Profile-Card/?userId=fd64fb7a-ba91-e911-a968-000d3a441525) | 1 | - |
+| [Tomas Hensrud Gulla](https://github.com/tomahg) | - | 1 |
