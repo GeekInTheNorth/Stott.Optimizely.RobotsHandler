@@ -3,8 +3,10 @@
 using System;
 using System.Net;
 using System.Text.Json;
+
 using EPiServer.Logging;
 using EPiServer.Web;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +44,9 @@ public class RobotsController : Controller
         try
         {
             var robotsContent = _service.GetRobotsContent(SiteDefinition.Current.Id);
+
+            // Set a low cache duration, but not zero to ensure the CDN protects against DDOS attacks
+            Response.Headers.CacheControl = "public, max-age=300";
 
             return new ContentResult
             {
