@@ -1,19 +1,12 @@
-﻿using System;
+﻿namespace Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+
 using System.Collections.Generic;
 
-namespace Stott.Optimizely.RobotsHandler.Presentation.ViewModels
+public class RobotsListViewModel
 {
-    public class RobotsListViewModel
-    {
-        public List<RobotsListItemViewModel> List { get; set; }
-    }
+    public string ApplicationName { get; internal set; }
 
-    public class RobotsListItemViewModel
-    {
-        public Guid Id { get; set; }
+    public string ApplicationVersion { get; internal set; }
 
-        public string Name { get; set; }
-
-        public string Url { get; set; }
-    }
+    public List<RobotsListItemViewModel> List { get; set; }
 }

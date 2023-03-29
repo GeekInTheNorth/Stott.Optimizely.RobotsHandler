@@ -63,7 +63,7 @@ public class RobotsController : Controller
     }
 
     [HttpGet]
-    [Route("[controller]/[action]")]
+    [Route("/stott.robotshandler/administration/")]
     public IActionResult List()
     {
         var model = _listingViewModelBuilder.Build();
@@ -72,7 +72,7 @@ public class RobotsController : Controller
     }
 
     [HttpGet]
-    [Route("[controller]/[action]")]
+    [Route("/stott.robotshandler/[action]")]
     public IActionResult Details(string siteId)
     {
         if (!Guid.TryParse(siteId, out var siteIdGuid) || Guid.Empty.Equals(siteIdGuid))
@@ -86,7 +86,7 @@ public class RobotsController : Controller
     }
 
     [HttpPost]
-    [Route("[controller]/[action]")]
+    [Route("/stott.robotshandler/[action]")]
     public IActionResult Save(RobotsEditViewModel formSubmitModel)
     {
         try

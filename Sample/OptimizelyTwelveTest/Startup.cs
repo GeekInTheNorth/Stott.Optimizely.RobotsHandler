@@ -4,8 +4,6 @@
     using EPiServer.Scheduler;
     using EPiServer.Web.Routing;
 
-    using MediatR;
-
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +15,7 @@
 
     using Stott.Optimizely.RobotsHandler.Common;
     using Stott.Optimizely.RobotsHandler.Configuration;
+    using Stott.Optimizely.RobotsHandler.Presentation;
     using Stott.Security.Optimizely.Features.Configuration;
 
     public class Startup
@@ -50,7 +49,10 @@
 
             services.AddCms()
                     .AddFind()
-                    .AddMediatR(typeof(GroupNames).Assembly)
+                    .AddMediatR(config =>
+                    {
+                        config.RegisterServicesFromAssemblyContaining<RobotsController>();
+                    })
                     .AddCustomDependencies()
                     .AddSwaggerGen()
                     .AddCspManager();

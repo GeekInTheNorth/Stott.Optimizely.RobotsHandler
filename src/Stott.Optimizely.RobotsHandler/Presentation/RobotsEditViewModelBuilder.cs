@@ -1,4 +1,6 @@
-﻿using System;
+﻿namespace Stott.Optimizely.RobotsHandler.Presentation;
+
+using System;
 
 using EPiServer.Web;
 
@@ -6,53 +8,50 @@ using Stott.Optimizely.RobotsHandler.Exceptions;
 using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 using Stott.Optimizely.RobotsHandler.Services;
 
-namespace Stott.Optimizely.RobotsHandler.Presentation
+public class RobotsEditViewModelBuilder : IRobotsEditViewModelBuilder
 {
-    public class RobotsEditViewModelBuilder : IRobotsEditViewModelBuilder
+    private readonly ISiteDefinitionRepository _siteDefinitionRepository;
+
+    private readonly IRobotsContentService _robotsContentService;
+
+    private Guid _siteId;
+
+    public RobotsEditViewModelBuilder(
+        ISiteDefinitionRepository siteDefinitionRepository,
+        IRobotsContentService robotsContentService)
     {
-        private readonly ISiteDefinitionRepository _siteDefinitionRepository;
+        _siteDefinitionRepository = siteDefinitionRepository;
+        _robotsContentService = robotsContentService;
+        _siteId = Guid.Empty;
+    }
 
-        private readonly IRobotsContentService _robotsContentService;
-
-        private Guid _siteId;
-
-        public RobotsEditViewModelBuilder(
-            ISiteDefinitionRepository siteDefinitionRepository,
-            IRobotsContentService robotsContentService)
+    public RobotsEditViewModel Build()
+    {
+        if (_siteId == Guid.Empty)
         {
-            _siteDefinitionRepository = siteDefinitionRepository;
-            _robotsContentService = robotsContentService;
-            _siteId = Guid.Empty;
+            throw new RobotsInvalidSiteIdException(_siteId);
         }
 
-        public RobotsEditViewModel Build()
+        var selectedSite = _siteDefinitionRepository.Get(_siteId);
+        if (selectedSite == null)
         {
-            if (_siteId == Guid.Empty)
-            {
-                throw new RobotsInvalidSiteIdException(_siteId);
-            }
-
-            var selectedSite = _siteDefinitionRepository.Get(_siteId);
-            if (selectedSite == null)
-            {
-                throw new RobotsInvalidSiteException($"'{_siteId}' does not refer to a valid site.");
-            }
-
-            var robotsContent = _robotsContentService.GetRobotsContent(_siteId);
-
-            return new RobotsEditViewModel
-            {
-                SiteId = selectedSite.Id,
-                SiteName = selectedSite.Name,
-                RobotsContent = robotsContent
-            };
+            throw new RobotsInvalidSiteException($"'{_siteId}' does not refer to a valid site.");
         }
 
-        public IRobotsEditViewModelBuilder WithSiteId(Guid siteId)
-        {
-            _siteId = siteId;
+        var robotsContent = _robotsContentService.GetRobotsContent(_siteId);
 
-            return this;
-        }
+        return new RobotsEditViewModel
+        {
+            SiteId = selectedSite.Id,
+            SiteName = selectedSite.Name,
+            RobotsContent = robotsContent
+        };
+    }
+
+    public IRobotsEditViewModelBuilder WithSiteId(Guid siteId)
+    {
+        _siteId = siteId;
+
+        return this;
     }
 }
