@@ -1,36 +1,46 @@
-﻿using System.Linq;
+﻿namespace Stott.Optimizely.RobotsHandler.Presentation;
+
+using System.Linq;
+using System.Reflection;
 
 using EPiServer.Web;
 
 using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 
-namespace Stott.Optimizely.RobotsHandler.Presentation
+public class RobotsListViewModelBuilder : IRobotsListViewModelBuilder
 {
-    public class RobotsListViewModelBuilder : IRobotsListViewModelBuilder
+    private readonly ISiteDefinitionRepository _siteDefinitionRepository;
+
+    public RobotsListViewModelBuilder(ISiteDefinitionRepository siteDefinitionRepository)
     {
-        private readonly ISiteDefinitionRepository _siteDefinitionRepository;
+        _siteDefinitionRepository = siteDefinitionRepository;
+    }
 
-        public RobotsListViewModelBuilder(ISiteDefinitionRepository siteDefinitionRepository)
+    public RobotsListViewModel Build()
+    {
+        return new RobotsListViewModel
         {
-            _siteDefinitionRepository = siteDefinitionRepository;
-        }
+            ApplicationName = "Stott Robots Handler",
+            ApplicationVersion = GetApplicationVersion(),
+            List = _siteDefinitionRepository.List().Select(ToViewModel).ToList()
+        };
+    }
 
-        public RobotsListViewModel Build()
+    private RobotsListItemViewModel ToViewModel(SiteDefinition siteDefinition)
+    {
+        return new RobotsListItemViewModel
         {
-            return new RobotsListViewModel
-            {
-                List = _siteDefinitionRepository.List().Select(ToViewModel).ToList()
-            };
-        }
+            Id = siteDefinition.Id,
+            Name = siteDefinition.Name,
+            Url = siteDefinition.SiteUrl.ToString()
+        };
+    }
 
-        private RobotsListItemViewModel ToViewModel(SiteDefinition siteDefinition)
-        {
-            return new RobotsListItemViewModel
-            {
-                Id = siteDefinition.Id,
-                Name = siteDefinition.Name,
-                Url = siteDefinition.SiteUrl.ToString()
-            };
-        }
+    private static string GetApplicationVersion()
+    {
+        var assembly = Assembly.GetAssembly(typeof(RobotsEditViewModelBuilder));
+        var assemblyName = assembly?.GetName();
+
+        return $"v{assemblyName?.Version}";
     }
 }
