@@ -14,12 +14,12 @@
 <body>
     @Html.CreatePlatformNavigationMenu()
     <div @Html.ApplyPlatformNavigation()>
-        <div class="container-fluid p-2 bg-dark text-light">
+        <div class="container-fluid p-2 bg-dark text-light js-header">
             <p class="my-0">
                 <span class="h5">@Model.ApplicationName</span><span class="mx-3">@Model.ApplicationVersion</span>
             </p>
         </div>
-        <div class="container-xxl py-3" style="border-top: 1px solid #d6d6d6;">
+        <div class="container-xxl my-3" style="border-top: 1px solid #d6d6d6;">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -92,7 +92,7 @@
                         myModal.toggle();
                     })
                     .fail(function () {
-                        let loadError = '<div class="alert alert-danger alert-dismissible fade show" role="alert">'
+                        let loadError = '<div class="alert alert-danger alert-dismissible fade show m-3" role="alert">'
                             + '<strong>Failure!</strong> An error was encountered when trying to retrieve your robots.txt content.'
                             + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
                             + '</div>';
@@ -107,7 +107,7 @@
 
                 $.post('/stott.robotshandler/save', { siteId: siteId, siteName: siteName, robotsContent: robotsContent })
                     .done(function () {
-                        let saveSuccess = '<div class="alert alert-success alert-dismissible fade show" role="alert">'
+                        let saveSuccess = '<div class="alert alert-success alert-dismissible fade show m-3" role="alert">'
                             + '<strong>Success!</strong> Your robots.txt content changes were successfully applied.'
                             + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
                             + '</div>';
