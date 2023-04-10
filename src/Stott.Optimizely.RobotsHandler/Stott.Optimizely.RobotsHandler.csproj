@@ -13,10 +13,10 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <NeutralLanguage>en-GB</NeutralLanguage>
     <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-    <AssemblyVersion>2.5.0.0</AssemblyVersion>
-    <FileVersion>2.5.0.0</FileVersion>
-    <Version>2.5.0</Version>
-    <PackageReleaseNotes>Add cache control headers to the robots.txt endpoint.</PackageReleaseNotes>
+    <AssemblyVersion>2.6.0.0</AssemblyVersion>
+    <FileVersion>2.6.0.0</FileVersion>
+    <Version>2.6.0</Version>
+    <PackageReleaseNotes>Fix layout of the robots handler UI following version 12.17.x of Optimizely CMS.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
