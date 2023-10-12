@@ -114,7 +114,7 @@
                         $(saveSuccess).insertAfter('.js-header');
                         myModal.toggle();
                     })
-                    .fail(function (response) {
+                    .fail(function () {
                         let saveError = '<div class="alert alert-danger alert-dismissible fade show" role="alert">'
                             + '<strong>Failure!</strong> An error was encountered when trying to save your robots.txt content.'
                             + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
