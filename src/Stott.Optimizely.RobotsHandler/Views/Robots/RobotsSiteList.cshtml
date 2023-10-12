@@ -35,7 +35,7 @@
                             <td>@site.Name</td>
                             <td>@site.Url</td>
                             <td>
-                                <button class="btn btn-primary js-edit-button" data-siteid="@site.Id">Edit</button>
+                                <button class="btn btn-primary text-nowrap js-edit-button" data-siteid="@site.Id">Edit</button>
                             </td>
                         </tr>
                     }
@@ -64,8 +64,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary js-save-button">Save changes</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary text-nowrap js-save-button">Save changes</button>
+                    <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -105,7 +105,7 @@
                 let siteId = $('.js-modal-siteid').text();
                 let robotsContent = $('.js-modal-robots-content').val();
 
-                $.post('/stott.robotshandler/save', { siteId: siteId, siteName: siteName, robotsContent: robotsContent })
+                $.post('/stott.robotshandler/save/', { siteId: siteId, siteName: siteName, robotsContent: robotsContent })
                     .done(function () {
                         let saveSuccess = '<div class="alert alert-success alert-dismissible fade show m-3" role="alert">'
                             + '<strong>Success!</strong> Your robots.txt content changes were successfully applied.'

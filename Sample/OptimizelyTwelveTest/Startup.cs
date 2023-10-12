@@ -10,12 +10,14 @@
     using Microsoft.Extensions.Hosting;
 
     using OptimizelyTwelveTest.Features.Common;
+    using Microsoft.AspNetCore.Rewrite;
 
     using ServiceExtensions;
 
     using Stott.Optimizely.RobotsHandler.Common;
     using Stott.Optimizely.RobotsHandler.Configuration;
     using Stott.Optimizely.RobotsHandler.Presentation;
+    using Stott.Security.Optimizely.Common;
     using Stott.Security.Optimizely.Features.Configuration;
 
     public class Startup
@@ -54,8 +56,7 @@
                         config.RegisterServicesFromAssemblyContaining<RobotsController>();
                     })
                     .AddCustomDependencies()
-                    .AddSwaggerGen()
-                    .AddCspManager();
+                    .AddSwaggerGen();
 
             //// services.AddRobotsHandler();
             services.AddRobotsHandler(authorizationOptions =>
@@ -63,6 +64,18 @@
                 authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
                 {
                     policy.RequireRole("RobotAdmins");
+                });
+            });
+
+            services.AddCspManager(cspSetupOptions =>
+            {
+                cspSetupOptions.ConnectionStringName = "EPiServerDB";
+            },
+            authorizationOptions =>
+            {
+                authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
+                {
+                    policy.RequireRole("WebAdmins");
                 });
             });
 
@@ -80,8 +93,11 @@
                 app.UseDeveloperExceptionPage();
             }
 
+            app.AddRedirects();
             app.UseStaticFiles();
             app.UseRouting();
+            
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCspManager();
