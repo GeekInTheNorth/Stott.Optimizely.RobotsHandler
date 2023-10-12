@@ -13,10 +13,10 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <NeutralLanguage>en-GB</NeutralLanguage>
     <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-    <AssemblyVersion>2.6.1.0</AssemblyVersion>
-    <FileVersion>2.6.1.0</FileVersion>
-    <Version>2.6.1</Version>
-    <PackageReleaseNotes>Fix layout of the robots handler UI following version 12.17.x of Optimizely CMS.</PackageReleaseNotes>
+    <AssemblyVersion>2.6.2.0</AssemblyVersion>
+    <FileVersion>2.6.2.0</FileVersion>
+    <Version>2.6.2</Version>
+    <PackageReleaseNotes>Prevent redirect to include trailing slash from preventing saving of the robots.txt.</PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
