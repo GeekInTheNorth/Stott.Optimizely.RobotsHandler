@@ -71,6 +71,21 @@ If the ```authorizationOptions``` is not provided, then any of the following rol
 - Administrator
 - WebAdmins
 
+### Authentication With Optimizely Opti ID
+
+If you are using the new Optimizely Opti ID package for authentication into Optimizely CMS and the rest of the Optimizely One suite, then you will need to define the `authorizationOptions` for this module as part of your application start up. This should be a simple case of adding `policy.AddAuthenticationSchemes(OptimizelyIdentityDefaults.SchemeName);` to the `authorizationOptions` as per the example below.
+
+```C#
+services.AddRobotsHandler(authorizationOptions =>
+{
+    authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
+    {
+        policy.AddAuthenticationSchemes(OptimizelyIdentityDefaults.SchemeName);
+        policy.RequireRole("WebAdmins");
+    });
+});
+```
+
 ## Contributing
 
 I am open to contributions to the code base.  The following rules should be followed:
