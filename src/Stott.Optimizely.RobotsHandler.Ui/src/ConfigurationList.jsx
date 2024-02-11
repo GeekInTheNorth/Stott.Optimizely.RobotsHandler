@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios';
 import { Container } from 'react-bootstrap'
+import EditSiteRobots from './EditSiteRobots';
 
 function ConfigurationList()
 {
@@ -12,7 +13,6 @@ function ConfigurationList()
     }, [])
 
     const getSiteCollection = async () => {
-        console.log(import.meta.env.VITE_APP_ROBOTS_LIST);
         await axios.get(import.meta.env.VITE_APP_ROBOTS_LIST)
             .then((response) => {
                 if (response.data && response.data.list && Array.isArray(response.data.list)){
@@ -34,7 +34,9 @@ function ConfigurationList()
                 <tr key={id}>
                     <td>{name}</td>
                     <td>{url}</td>
-                    <td></td>
+                    <td>
+                        <EditSiteRobots siteId={id}></EditSiteRobots>
+                    </td>
                 </tr>
             )
         })

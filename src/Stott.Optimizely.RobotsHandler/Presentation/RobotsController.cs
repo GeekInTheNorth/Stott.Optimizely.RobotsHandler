@@ -81,6 +81,7 @@ public class RobotsController : Controller
     }
 
     [HttpGet]
+    [Route("/stott.robotshandler/api/[action]")]
     [Route("/stott.robotshandler/[action]")]
     public IActionResult Details(string siteId)
     {
@@ -95,6 +96,7 @@ public class RobotsController : Controller
     }
 
     [HttpPost]
+    [Route("/stott.robotshandler/api/[action]")]
     [Route("/stott.robotshandler/[action]")]
     public IActionResult Save(RobotsEditViewModel formSubmitModel)
     {
