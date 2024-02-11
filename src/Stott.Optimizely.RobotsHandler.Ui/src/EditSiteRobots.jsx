@@ -13,6 +13,9 @@ function EditSiteRobots(props) {
         setSiteRobotsContent(event.target.value);
     }
 
+    const handleShowSuccessToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(true, title, description);
+    const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description);
+
     const handleShowEditModal = async () => {
         await axios.get(import.meta.env.VITE_APP_ROBOTS_EDIT, { params: { siteId: siteId } })
             .then((response) => {
@@ -22,11 +25,11 @@ function EditSiteRobots(props) {
                     setShowModal(true);
                 }
                 else{
-                    // handleShowFailureToast("Get CSP Sources", "Failed to retrieve Content Security Policy Sources.");
+                    handleShowFailureToast('Failure', 'An error was encountered when trying to retrieve your robots.txt content.');
                 }
             },
             () => {
-                // handleShowFailureToast("Error", "Failed to retrieve the Content Security Policy Sources.");
+                handleShowFailureToast('Failure', 'An error was encountered when trying to retrieve your robots.txt content.');
             });
     }
 
@@ -38,9 +41,11 @@ function EditSiteRobots(props) {
 
         await axios.post(import.meta.env.VITE_APP_ROBOTS_SAVE, params)
             .then(() => {
+                handleShowSuccessToast('Success', 'Your robots.txt content changes for \'' + siteName + '\' were successfully applied.');
                 setShowModal(false);
             },
             () => {
+                handleShowFailureToast('Failure', 'An error was encountered when trying to save your robots.txt content for \'' + siteName + '\'.');
                 setShowModal(false);
             });
     }
@@ -59,9 +64,7 @@ function EditSiteRobots(props) {
                 <Modal.Body>
                     <div className='mb-3'>
                         <label>Robots.txt Content</label>
-                        <textarea className='form-control' name='RobotsContent' cols='60' rows='10' onChange={handleSiteRobotsContentChange}>
-                            {siteRobotsContent}
-                        </textarea>
+                        <textarea className='form-control' name='RobotsContent' cols='60' rows='10' onChange={handleSiteRobotsContentChange} value={siteRobotsContent}></textarea>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
@@ -74,77 +77,3 @@ function EditSiteRobots(props) {
 }
 
 export default EditSiteRobots
-
-/*
-
-$('.js-save-button').click(function () {
-    let siteName = $('.js-modal-title').text();
-    let siteId = $('.js-modal-siteid').text();
-    let robotsContent = $('.js-modal-robots-content').val();
-
-    $.post('/stott.robotshandler/save/', { siteId: siteId, siteName: siteName, robotsContent: robotsContent })
-        .done(function () {
-            let saveSuccess = '<div class="alert alert-success alert-dismissible fade show m-3" role="alert">'
-                + '<strong>Success!</strong> Your robots.txt content changes were successfully applied.'
-                + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-                + '</div>';
-            $(saveSuccess).insertAfter('.js-header');
-            myModal.toggle();
-        })
-        .fail(function () {
-            let saveError = '<div class="alert alert-danger alert-dismissible fade show" role="alert">'
-                + '<strong>Failure!</strong> An error was encountered when trying to save your robots.txt content.'
-                + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-                + '</div>';
-            $(saveError).insertAfter('.js-header');
-            myModal.toggle();
-        });
-});
-
-$('.js-edit-button').click(function () {
-    let siteId = $(this).data('siteid');
-    $.get('/stott.robotshandler/details/', { siteId: siteId })
-        .done(function (data) {
-            $('.js-modal-title').html(data.siteName);
-            $('.js-modal-siteid').html(data.siteId);
-            $('.js-modal-robots-content').val(data.robotsContent);
-
-            myModal.toggle();
-        })
-        .fail(function () {
-            let loadError = '<div class="alert alert-danger alert-dismissible fade show m-3" role="alert">'
-                + '<strong>Failure!</strong> An error was encountered when trying to retrieve your robots.txt content.'
-                + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'
-                + '</div>';
-            $(loadError).insertAfter('.js-header');
-        });
-});
-
-
-<div id="edit-robots-content-modal" class="modal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title js-modal-title">Modal title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-body">
-
-                    <input type="hidden" name="SiteId" class="js-modal-siteid" />
-
-                    <div class="mb-3">
-                        <label for="Robots-Content">Robots.txt Content</label>
-                        <textarea class="form-control js-modal-robots-content" name="RobotsContent" cols="60" rows="10"></textarea>
-                    </div>
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-nowrap js-save-button">Save changes</button>
-                <button type="button" class="btn btn-secondary text-nowrap" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-*/

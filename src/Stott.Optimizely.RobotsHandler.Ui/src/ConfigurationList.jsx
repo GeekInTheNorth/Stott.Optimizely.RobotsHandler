@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Container } from 'react-bootstrap'
 import EditSiteRobots from './EditSiteRobots';
 
-function ConfigurationList()
+function ConfigurationList(props)
 {
 
     const [siteCollection, setSiteCollection] = useState([])
@@ -12,6 +12,8 @@ function ConfigurationList()
         getSiteCollection()
     }, [])
 
+    const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description)
+
     const getSiteCollection = async () => {
         await axios.get(import.meta.env.VITE_APP_ROBOTS_LIST)
             .then((response) => {
@@ -19,11 +21,11 @@ function ConfigurationList()
                     setSiteCollection(response.data.list);
                 }
                 else{
-                    // handleShowFailureToast("Get CSP Sources", "Failed to retrieve Content Security Policy Sources.");
+                    handleShowFailureToast('Failure', 'Failed to retrieve site data.');
                 }
             },
             () => {
-                // handleShowFailureToast("Error", "Failed to retrieve the Content Security Policy Sources.");
+                handleShowFailureToast('Failure', 'Failed to retrieve site data.');
             });
     }
 
@@ -35,7 +37,7 @@ function ConfigurationList()
                     <td>{name}</td>
                     <td>{url}</td>
                     <td>
-                        <EditSiteRobots siteId={id}></EditSiteRobots>
+                        <EditSiteRobots siteId={id} showToastNotificationEvent={props.showToastNotificationEvent}></EditSiteRobots>
                     </td>
                 </tr>
             )
