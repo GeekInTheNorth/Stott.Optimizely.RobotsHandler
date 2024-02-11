@@ -72,6 +72,15 @@ public class RobotsController : Controller
     }
 
     [HttpGet]
+    [Route("/stott.robotshandler/api/list/")]
+    public IActionResult ApiList()
+    {
+        var model = _listingViewModelBuilder.Build();
+
+        return CreateSafeJsonResult(model);
+    }
+
+    [HttpGet]
     [Route("/stott.robotshandler/[action]")]
     public IActionResult Details(string siteId)
     {
