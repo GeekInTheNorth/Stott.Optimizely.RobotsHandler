@@ -10,7 +10,6 @@
     using Microsoft.Extensions.Hosting;
 
     using OptimizelyTwelveTest.Features.Common;
-    using Microsoft.AspNetCore.Rewrite;
 
     using ServiceExtensions;
 
@@ -53,7 +52,7 @@
                     .AddFind()
                     .AddMediatR(config =>
                     {
-                        config.RegisterServicesFromAssemblyContaining<RobotsController>();
+                        config.RegisterServicesFromAssemblyContaining<RobotsApiController>();
                     })
                     .AddCustomDependencies()
                     .AddSwaggerGen();

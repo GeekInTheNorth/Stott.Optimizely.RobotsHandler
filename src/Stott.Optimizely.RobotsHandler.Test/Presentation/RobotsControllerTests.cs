@@ -19,7 +19,7 @@ namespace Stott.Optimizely.RobotsHandler.Test.Presentation
 
         private Mock<IRobotsListViewModelBuilder> _mockListingViewModelBuilder;
 
-        private RobotsController _controller;
+        private RobotsApiController _controller;
 
         [SetUp]
         public void SetUp()
@@ -31,7 +31,7 @@ namespace Stott.Optimizely.RobotsHandler.Test.Presentation
 
             _mockListingViewModelBuilder = new Mock<IRobotsListViewModelBuilder>();
 
-            _controller = new RobotsController(_mockService.Object, _mockEditViewModelBuilder.Object, _mockListingViewModelBuilder.Object);
+            _controller = new RobotsApiController(_mockService.Object, _mockEditViewModelBuilder.Object, _mockListingViewModelBuilder.Object);
         }
 
         [Test]
