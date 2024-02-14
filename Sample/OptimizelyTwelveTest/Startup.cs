@@ -62,7 +62,7 @@
             {
                 authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
                 {
-                    policy.RequireRole("RobotAdmins", "Everyone");
+                    policy.RequireRole("RobotAdmins");
                 });
             });
 
@@ -74,7 +74,7 @@
             {
                 authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
                 {
-                    policy.RequireRole("WebAdmins", "Everyone");
+                    policy.RequireRole("WebAdmins");
                 });
             });
 
