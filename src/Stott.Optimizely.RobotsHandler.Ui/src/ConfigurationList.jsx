@@ -49,9 +49,9 @@ function ConfigurationList(props)
             <table className='table table-striped'>
                 <thead>
                     <tr>
-                        <th>Site Name</th>
-                        <th>Host Url</th>
-                        <th>Actions</th>
+                        <th className='table-header-fix'>Site Name</th>
+                        <th className='table-header-fix'>Host Url</th>
+                        <th className='table-header-fix'>Actions</th>
                     </tr>
                 </thead>
                 <tbody>

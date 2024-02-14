@@ -34,7 +34,7 @@ function App() {
           <Toast.Header className={toastHeaderClass}>
             <strong className="me-auto">{toastTitle}</strong>
           </Toast.Header>
-          <Toast.Body>{toastDescription}</Toast.Body>
+          <Toast.Body className='bg-full-opacity'>{toastDescription}</Toast.Body>
         </Toast>
       </ToastContainer>
     </>
