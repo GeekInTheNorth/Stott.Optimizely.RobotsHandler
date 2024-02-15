@@ -8,6 +8,10 @@
 
 This is a new admin extension for Optimizely CMS 12+ for managing robots.txt on a per site basis.  The Stott.Optimizely.RobotsHandler project is a Razor Class Library which contains Razor Files, static JS files and relevent business logic specific to this functionality.
 
+Stott Robots Handler is a free to use module, however if you want to show your support, buy me a coffee on ko-fi:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V0RX2BQ)
+
 ## Configuration
 
 ### Startup.cs
@@ -66,6 +70,21 @@ If the ```authorizationOptions``` is not provided, then any of the following rol
 - CmsAdmins
 - Administrator
 - WebAdmins
+
+### Authentication With Optimizely Opti ID
+
+If you are using the new Optimizely Opti ID package for authentication into Optimizely CMS and the rest of the Optimizely One suite, then you will need to define the `authorizationOptions` for this module as part of your application start up. This should be a simple case of adding `policy.AddAuthenticationSchemes(OptimizelyIdentityDefaults.SchemeName);` to the `authorizationOptions` as per the example below.
+
+```C#
+services.AddRobotsHandler(authorizationOptions =>
+{
+    authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
+    {
+        policy.AddAuthenticationSchemes(OptimizelyIdentityDefaults.SchemeName);
+        policy.RequireRole("WebAdmins");
+    });
+});
+```
 
 ## Contributing
 
