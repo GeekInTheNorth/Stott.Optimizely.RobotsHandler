@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Presentation;
 using Stott.Optimizely.RobotsHandler.Services;
+using Stott.Security.Optimizely.Features.StaticFile;
 
 public static class ServiceExtensions
 {
@@ -20,6 +21,7 @@ public static class ServiceExtensions
         serviceCollection.AddTransient<IRobotsContentRepository, RobotsContentRepository>();
         serviceCollection.AddTransient<IRobotsEditViewModelBuilder, RobotsEditViewModelBuilder>();
         serviceCollection.AddTransient<IRobotsListViewModelBuilder, RobotsListViewModelBuilder>();
+        serviceCollection.AddScoped<IStaticFileResolver, StaticFileResolver>();
 
         // Authorization
         if (authorizationOptions != null)

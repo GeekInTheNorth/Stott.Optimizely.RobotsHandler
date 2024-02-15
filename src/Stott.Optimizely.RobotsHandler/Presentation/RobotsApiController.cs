@@ -5,7 +5,6 @@ using System.Net;
 using System.Text.Json;
 
 using EPiServer.Logging;
-using EPiServer.Web;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +15,7 @@ using Stott.Optimizely.RobotsHandler.Services;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
-public class RobotsController : Controller
+public class RobotsApiController : Controller
 {
     private readonly IRobotsContentService _service;
 
@@ -24,9 +23,9 @@ public class RobotsController : Controller
 
     private readonly IRobotsListViewModelBuilder _listingViewModelBuilder;
 
-    private readonly ILogger _logger = LogManager.GetLogger(typeof(RobotsController));
+    private readonly ILogger _logger = LogManager.GetLogger(typeof(RobotsApiController));
 
-    public RobotsController(
+    public RobotsApiController(
         IRobotsContentService service,
         IRobotsEditViewModelBuilder viewModelBuilder,
         IRobotsListViewModelBuilder listingViewModelBuilder)
@@ -37,42 +36,16 @@ public class RobotsController : Controller
     }
 
     [HttpGet]
-    [Route("robots.txt")]
-    [AllowAnonymous]
-    public IActionResult Index()
-    {
-        try
-        {
-            var robotsContent = _service.GetRobotsContent(SiteDefinition.Current.Id);
-
-            // Set a low cache duration, but not zero to ensure the CDN protects against DDOS attacks
-            Response.Headers.CacheControl = "public, max-age=300";
-
-            return new ContentResult
-            {
-                Content = robotsContent,
-                ContentType = "text/plain",
-                StatusCode = 200
-            };
-        }
-        catch (Exception exception)
-        {
-            _logger.Error("Failed to load the robots.txt for the current site.", exception);
-            throw;
-        }
-    }
-
-    [HttpGet]
-    [Route("/stott.robotshandler/administration/")]
-    public IActionResult List()
+    [Route("/stott.robotshandler/api/list/")]
+    public IActionResult ApiList()
     {
         var model = _listingViewModelBuilder.Build();
 
-        return View("RobotsSiteList", model);
+        return CreateSafeJsonResult(model);
     }
 
     [HttpGet]
-    [Route("/stott.robotshandler/[action]")]
+    [Route("/stott.robotshandler/api/[action]")]
     public IActionResult Details(string siteId)
     {
         if (!Guid.TryParse(siteId, out var siteIdGuid) || Guid.Empty.Equals(siteIdGuid))
@@ -86,7 +59,7 @@ public class RobotsController : Controller
     }
 
     [HttpPost]
-    [Route("/stott.robotshandler/[action]")]
+    [Route("/stott.robotshandler/api/[action]")]
     public IActionResult Save(RobotsEditViewModel formSubmitModel)
     {
         try

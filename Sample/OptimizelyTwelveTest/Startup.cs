@@ -10,7 +10,6 @@
     using Microsoft.Extensions.Hosting;
 
     using OptimizelyTwelveTest.Features.Common;
-    using Microsoft.AspNetCore.Rewrite;
 
     using ServiceExtensions;
 
@@ -53,7 +52,7 @@
                     .AddFind()
                     .AddMediatR(config =>
                     {
-                        config.RegisterServicesFromAssemblyContaining<RobotsController>();
+                        config.RegisterServicesFromAssemblyContaining<RobotsApiController>();
                     })
                     .AddCustomDependencies()
                     .AddSwaggerGen();
@@ -67,7 +66,7 @@
                 });
             });
 
-            services.AddCspManager(cspSetupOptions =>
+            services.AddStottSecurity(cspSetupOptions =>
             {
                 cspSetupOptions.ConnectionStringName = "EPiServerDB";
             },
@@ -100,7 +99,7 @@
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCspManager();
+            app.UseStottSecurity();
 
             app.UseSwagger();
             app.UseSwaggerUI();

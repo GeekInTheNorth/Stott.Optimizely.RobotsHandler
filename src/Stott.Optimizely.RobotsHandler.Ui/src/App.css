@@ -1,0 +1,8 @@
+.toast {
+  --bs-toast-bg: rgba(var(--bs-body-bg-rgb), 1) !important;
+}
+
+.table-header-fix {
+  font-size: 1rem !important;
+  color: black !important;
+}
