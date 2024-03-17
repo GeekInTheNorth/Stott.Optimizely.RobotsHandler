@@ -1,14 +1,11 @@
 ﻿namespace Stott.Optimizely.RobotsHandler.Presentation.LandingPage;
 
-using System;
-using System.Reflection;
-
 using EPiServer.Framework.ClientResources;
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
 using Stott.Security.Optimizely.Features.StaticFile;
+using System;
+using System.Reflection;
 
 public sealed class RobotsLandingPageController : Controller
 {
@@ -50,8 +47,6 @@ public sealed class RobotsLandingPageController : Controller
         {
             return NotFound("The requested file does not exist.");
         }
-
-        Response.Headers.Add("cache-control", "public, max-age=31557600");
 
         return File(fileBytes, mimeType);
     }
