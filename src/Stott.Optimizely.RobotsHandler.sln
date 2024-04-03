@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stott.Optimizely.RobotsHandler", "Stott.Optimizely.RobotsHandler\Stott.Optimizely.RobotsHandler.csproj", "{66E8FA25-BB65-4C72-A273-C346FD626D8F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stott.Optimizely.RobotsHandler.Test", "Stott.Optimizely.RobotsHandler.Test\Stott.Optimizely.RobotsHandler.Test.csproj", "{985E99D3-03FF-4DB6-AB6D-C43DD9A5A2E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stott.Optimizely.RobotsHandler.Web", "..\Sample\Stott.Optimizely.RobotsHandler.Web\Stott.Optimizely.RobotsHandler.Web.csproj", "{7718E859-E463-41B2-B6B3-981D4CD582A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{985E99D3-03FF-4DB6-AB6D-C43DD9A5A2E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{985E99D3-03FF-4DB6-AB6D-C43DD9A5A2E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{985E99D3-03FF-4DB6-AB6D-C43DD9A5A2E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7718E859-E463-41B2-B6B3-981D4CD582A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7718E859-E463-41B2-B6B3-981D4CD582A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7718E859-E463-41B2-B6B3-981D4CD582A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7718E859-E463-41B2-B6B3-981D4CD582A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
