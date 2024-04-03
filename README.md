@@ -21,14 +21,22 @@ After pulling in a reference to the Stott.Optimizely.RobotsHandler project, you 
 ```
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddRazorPages();
     services.AddRobotsHandler();
+}
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapContent();
+        endpoints.MapControllers();
+    });
 }
 ```
 
-The call to ```services.AddRazorPages()``` is a standard .NET call to ensure razor pages are included in your solution.
-
 The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by Microsoft.
+
+The call to ```endpoints.MapControllers();``` ensures that the routing for the administration page, assets and robots.txt are correctly mapped.
 
 ### Program.cs
 
