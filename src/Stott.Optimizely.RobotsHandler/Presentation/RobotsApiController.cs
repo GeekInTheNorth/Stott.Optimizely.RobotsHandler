@@ -36,8 +36,8 @@ public class RobotsApiController : Controller
     }
 
     [HttpGet]
-    [Route("/stott.robotshandler/api/list/")]
-    public IActionResult ApiList()
+    [Route("/stott.robotshandler/api/[action]")]
+    public IActionResult List()
     {
         var model = _listingViewModelBuilder.Build();
 

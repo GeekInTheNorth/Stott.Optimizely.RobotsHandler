@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 using Stott.Optimizely.RobotsHandler.Common;
@@ -41,5 +42,17 @@ public static class ServiceExtensions
         }
 
         return serviceCollection;
+    }
+
+    public static IApplicationBuilder AddRobotsHandler(this IApplicationBuilder builder)
+    {
+        return builder.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllerRoute(
+                name: "RobotsLandingPage",
+                pattern: "{controller=RobotsLandingPage}/{action=Index}/{id?}"
+                );
+            endpoints.MapControllerRoute("RobotsApi", "api/{controller}/{action}/{id?}");
+        });
     }
 }
