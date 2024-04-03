@@ -30,6 +30,20 @@ The call to ```services.AddRazorPages()``` is a standard .NET call to ensure raz
 
 The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by Microsoft.
 
+```
+
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+{
+    ...
+
+    app.AddRobotsHandler();
+
+    ...
+
+```
+
+The call to ```app.AddRobotsHandler()``` register's the necessary routes for RobotsHandler.
+
 ### Program.cs
 
 As this package includes static files such as JS and CSS files within the Razor Class Library, your solution must be configured to use Static Web Assets.  This is done by adding `webBuilder.UseStaticWebAssets();` to your `Program.cs` as follows:
