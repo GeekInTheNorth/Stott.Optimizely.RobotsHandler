@@ -1,42 +1,44 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using EPiServer.Data;
 using EPiServer.Data.Dynamic;
 
 using Stott.Optimizely.RobotsHandler.Models;
 
-namespace Stott.Optimizely.RobotsHandler.Services
+namespace Stott.Optimizely.RobotsHandler.Services;
+
+public sealed class RobotsContentRepository : IRobotsContentRepository
 {
-    public class RobotsContentRepository : IRobotsContentRepository
+    private readonly DynamicDataStore store;
+
+    public RobotsContentRepository()
     {
-        private readonly DynamicDataStore store;
+        store = DynamicDataStoreFactory.Instance.CreateStore(typeof(RobotsEntity));
+    }
 
-        public RobotsContentRepository()
+    public RobotsEntity Get(Guid siteId)
+    {
+        return store.Load<RobotsEntity>(Identity.NewIdentity(siteId));
+    }
+
+    public List<RobotsEntity> GetAll()
+    {
+        return store.Find<RobotsEntity>(new Dictionary<string, object>()).ToList();
+    }
+
+    public void Save(Guid siteId, string robotsContent)
+    {
+        var recordToSave = Get(siteId);
+        recordToSave ??= new RobotsEntity
         {
-            store = DynamicDataStoreFactory.Instance.CreateStore(typeof(RobotsEntity));
-        }
+            Id = Identity.NewIdentity(siteId),
+            SiteId = siteId
+        };
 
-        public RobotsEntity Get(Guid siteId)
-        {
-            return store.Load<RobotsEntity>(Identity.NewIdentity(siteId));
-        }
+        recordToSave.RobotsContent = robotsContent;
 
-        public void Save(Guid siteId, string robotsContent)
-        {
-            var recordToSave = Get(siteId);
-            if (recordToSave == null)
-            {
-                recordToSave = new RobotsEntity
-                {
-                    Id = Identity.NewIdentity(siteId),
-                    SiteId = siteId,
-                    RobotsContent = robotsContent
-                };
-            }
-
-            recordToSave.RobotsContent = robotsContent;
-
-            store.Save(recordToSave);
-        }
+        store.Save(recordToSave);
     }
 }

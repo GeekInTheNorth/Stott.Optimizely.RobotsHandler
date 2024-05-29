@@ -5,31 +5,22 @@ using System.Linq;
 using EPiServer.Web;
 
 using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+using Stott.Optimizely.RobotsHandler.Services;
 
 public class RobotsListViewModelBuilder : IRobotsListViewModelBuilder
 {
-    private readonly ISiteDefinitionRepository _siteDefinitionRepository;
+    private readonly IRobotsContentService _robotsContentService;
 
-    public RobotsListViewModelBuilder(ISiteDefinitionRepository siteDefinitionRepository)
+    public RobotsListViewModelBuilder(IRobotsContentService robotsContentService)
     {
-        _siteDefinitionRepository = siteDefinitionRepository;
+        _robotsContentService = robotsContentService;
     }
 
     public RobotsListViewModel Build()
     {
         return new RobotsListViewModel
         {
-            List = _siteDefinitionRepository.List().Select(ToViewModel).ToList()
-        };
-    }
-
-    private RobotsListItemViewModel ToViewModel(SiteDefinition siteDefinition)
-    {
-        return new RobotsListItemViewModel
-        {
-            Id = siteDefinition.Id,
-            Name = siteDefinition.Name,
-            Url = siteDefinition.SiteUrl.ToString()
+            List = _robotsContentService.GetRobots()
         };
     }
 }

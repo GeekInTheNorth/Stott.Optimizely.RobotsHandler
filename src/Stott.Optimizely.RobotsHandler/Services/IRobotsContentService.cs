@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace Stott.Optimizely.RobotsHandler.Services
+namespace Stott.Optimizely.RobotsHandler.Services;
+
+public interface IRobotsContentService
 {
-    public interface IRobotsContentService
-    {
-        string GetRobotsContent(Guid siteId);
+    IList<SiteRobotsViewModel> GetRobots();
 
-        string GetDefaultRobotsContent();
+    string GetRobotsContent(Guid siteId);
 
-        void SaveRobotsContent(Guid siteId, string robotsContent);
-    }
+    string GetDefaultRobotsContent();
+
+    void SaveRobotsContent(Guid siteId, string robotsContent);
 }

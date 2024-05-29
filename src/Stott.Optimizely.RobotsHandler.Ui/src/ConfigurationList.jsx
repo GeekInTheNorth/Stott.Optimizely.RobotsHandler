@@ -30,12 +30,13 @@ function ConfigurationList(props)
     }
 
     const renderSiteList = () => {
-        return siteCollection && siteCollection.map((siteDetails, index) => {
-            const { id, name, url } = siteDetails
+        return siteCollection && siteCollection.map(siteDetails => {
+            const { id, siteId, siteName, availableHosts, isForWholeSite, specificHost, robotsContent } = siteDetails
+            const hostName = isForWholeSite === true ? 'All Hosts' : specificHost;
             return (
                 <tr key={id}>
-                    <td>{name}</td>
-                    <td>{url}</td>
+                    <td>{siteName}</td>
+                    <td>{hostName}</td>
                     <td>
                         <EditSiteRobots siteId={id} showToastNotificationEvent={props.showToastNotificationEvent}></EditSiteRobots>
                     </td>
@@ -50,7 +51,7 @@ function ConfigurationList(props)
                 <thead>
                     <tr>
                         <th className='table-header-fix'>Site Name</th>
-                        <th className='table-header-fix'>Host Url</th>
+                        <th className='table-header-fix'>Hosts</th>
                         <th className='table-header-fix'>Actions</th>
                     </tr>
                 </thead>
