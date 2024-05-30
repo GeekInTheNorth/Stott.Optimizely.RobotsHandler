@@ -7,118 +7,131 @@ using EPiServer.Web;
 using Moq;
 
 using NUnit.Framework;
+
 using Stott.Optimizely.RobotsHandler.Models;
+using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 using Stott.Optimizely.RobotsHandler.Services;
 
-namespace Stott.Optimizely.RobotsHandler.Test.Services
+namespace Stott.Optimizely.RobotsHandler.Test.Services;
+
+[TestFixture]
+public sealed class RobotsContentServiceTests
 {
-    [TestFixture]
-    public class RobotsContentServiceTests
+    private Mock<HostDefinition> _mockHostDefinition;
+
+    private Mock<SiteDefinition> _mockSiteDefinition;
+
+    private Mock<ISiteDefinitionRepository> _mockSiteDefinitionRepository;
+
+    private Mock<IRobotsContentRepository> _mockRobotsContentRepository;
+
+    private RobotsContentService _robotsContentService;
+
+    [SetUp]
+    public void SetUp()
     {
-        private Mock<HostDefinition> _mockHostDefinition;
+        _mockHostDefinition = new Mock<HostDefinition>();
 
-        private Mock<SiteDefinition> _mockSiteDefinition;
+        _mockSiteDefinition = new Mock<SiteDefinition>();
+        _mockSiteDefinition.Setup(x => x.Hosts).Returns(new List<HostDefinition> { _mockHostDefinition.Object });
 
-        private Mock<ISiteDefinitionRepository> _mockSiteDefinitionRepository;
+        _mockSiteDefinitionRepository = new Mock<ISiteDefinitionRepository>();
+        _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(new List<SiteDefinition> { _mockSiteDefinition.Object });
 
-        private Mock<IRobotsContentRepository> _mockRobotsContentRepository;
+        _mockRobotsContentRepository = new Mock<IRobotsContentRepository>();
 
-        private RobotsContentService _robotsContentService;
+        _robotsContentService = new RobotsContentService(_mockSiteDefinitionRepository.Object, _mockRobotsContentRepository.Object);
+    }
 
-        [SetUp]
-        public void SetUp()
+    [Test]
+    public void GetRobotsContent_siteId_ReturnsDefaultRobotsForAValidSiteWhenRobotsContentDoesNotExist()
+    {
+        // Arrange
+        var siteId = Guid.NewGuid();
+        _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((RobotsEntity)null);
+
+        // Act
+        var robotsContent = _robotsContentService.GetRobotsContent(siteId);
+
+        // Assert
+        Assert.That(robotsContent, Is.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
+    }
+
+    [Test]
+    public void GetRobotsContent_siteId_ReturnsSavedRobotsForAValidSiteWhenRobotsContentDoesExist()
+    {
+        // Arrange
+        var siteId = Guid.NewGuid();
+        var robotsEntity = new RobotsEntity { RobotsContent = GetSavedRobots() };
+        _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(robotsEntity);
+
+        // Act
+        var robotsContent = _robotsContentService.GetRobotsContent(siteId);
+
+        // Assert
+        Assert.That(robotsContent, Is.Not.Null);
+        Assert.That(robotsContent, Is.Not.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
+    }
+
+    [Test]
+    public void SaveRobotsContent_ThrowsArgumentExceptionWhenPassedAnEmptyGuid()
+    {
+        // Arrange
+        var model = new SaveRobotsModel
         {
-            _mockHostDefinition = new Mock<HostDefinition>();
+            Id = Guid.NewGuid(),
+            SiteId = Guid.Empty,
+            RobotsContent = GetSavedRobots()
+        };
 
-            _mockSiteDefinition = new Mock<SiteDefinition>();
-            _mockSiteDefinition.Setup(x => x.Hosts).Returns(new List<HostDefinition> { _mockHostDefinition.Object });
+        // Assert
+        Assert.Throws<ArgumentException>(() => _robotsContentService.SaveRobotsContent(model));
+    }
 
-            _mockSiteDefinitionRepository = new Mock<ISiteDefinitionRepository>();
-            _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(new List<SiteDefinition> { _mockSiteDefinition.Object });
-
-            _mockRobotsContentRepository = new Mock<IRobotsContentRepository>();
-
-            _robotsContentService = new RobotsContentService(_mockSiteDefinitionRepository.Object, _mockRobotsContentRepository.Object);
-        }
-
-        [Test]
-        public void GetRobotsContent_siteId_ReturnsDefaultRobotsForAValidSiteWhenRobotsContentDoesNotExist()
+    [Test]
+    public void SaveRobotsContent_ThrowsArgumentExceptionWhenSiteIdRefersToANonExistantSite()
+    {
+        // Arrange
+        var model = new SaveRobotsModel
         {
-            // Arrange
-            var siteId = Guid.NewGuid();
-            _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((RobotsEntity)null);
+            Id = Guid.NewGuid(),
+            SiteId = Guid.NewGuid(),
+            RobotsContent = GetSavedRobots()
+        };
 
-            // Act
-            var robotsContent = _robotsContentService.GetRobotsContent(siteId);
+        _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((SiteDefinition)null);
 
-            // Assert
-            Assert.That(robotsContent, Is.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
-        }
+        // Assert
+        Assert.Throws<ArgumentException>(() => _robotsContentService.SaveRobotsContent(model));
+    }
 
-        [Test]
-        public void GetRobotsContent_siteId_ReturnsSavedRobotsForAValidSiteWhenRobotsContentDoesExist()
-        {
-            // Arrange
-            var siteId = Guid.NewGuid();
-            var robotsEntity = new RobotsEntity { RobotsContent = GetSavedRobots() };
-            _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(robotsEntity);
+    [Test]
+    public void SaveRobotsContent_CallsSaveOnTheRobotsContentRepositoryForAValidSite()
+    {
+        // Arrange
+        var model = new SaveRobotsModel 
+        { 
+            Id = Guid.NewGuid(),
+            SiteId = Guid.NewGuid(), 
+            RobotsContent = GetSavedRobots()
+        };
 
-            // Act
-            var robotsContent = _robotsContentService.GetRobotsContent(siteId);
+        _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(_mockSiteDefinition.Object);
 
-            // Assert
-            Assert.That(robotsContent, Is.Not.Null);
-            Assert.That(robotsContent, Is.Not.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
-        }
+        // Act
+        _robotsContentService.SaveRobotsContent(model);
 
-        [Test]
-        public void SaveRobotsContent_ThrowsArgumentExceptionWhenPassedAnEmptyGuid()
-        {
-            // Arrange
-            var siteId = Guid.Empty;
-            var robotsContent = GetSavedRobots();
+        // Assert
+        _mockRobotsContentRepository.Verify(x => x.Save(It.IsAny<SaveRobotsModel>()), Times.Once);
+    }
 
-            // Assert
-            Assert.Throws<ArgumentException>(() => _robotsContentService.SaveRobotsContent(siteId, robotsContent));
-        }
+    private static string GetSavedRobots()
+    {
+        var stringBuilder = new StringBuilder();
+        stringBuilder.AppendLine("User-agent: *");
+        stringBuilder.AppendLine("Disallow: /someurl/");
+        stringBuilder.AppendLine("# This is a test content item.");
 
-        [Test]
-        public void SaveRobotsContent_ThrowsArgumentExceptionWhenSiteIdRefersToANonExistantSite()
-        {
-            // Arrange
-            var siteId = Guid.NewGuid();
-            var robotsContent = GetSavedRobots();
-
-            _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((SiteDefinition)null);
-
-            // Assert
-            Assert.Throws<ArgumentException>(() => _robotsContentService.SaveRobotsContent(siteId, robotsContent));
-        }
-
-        [Test]
-        public void SaveRobotsContent_CallsSaveOnTheRobotsContentRepositoryForAValidSite()
-        {
-            // Arrange
-            var siteId = Guid.NewGuid();
-            var robotsContent = GetSavedRobots();
-
-            _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(_mockSiteDefinition.Object);
-
-            // Act
-            _robotsContentService.SaveRobotsContent(siteId, robotsContent);
-
-            // Assert
-            _mockRobotsContentRepository.Verify(x => x.Save(It.IsAny<Guid>(), It.IsAny<string>()), Times.Once);
-        }
-
-        private static string GetSavedRobots()
-        {
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("User-agent: *");
-            stringBuilder.AppendLine("Disallow: /someurl/");
-            stringBuilder.AppendLine("# This is a test content item.");
-
-            return stringBuilder.ToString();
-        }
+        return stringBuilder.ToString();
     }
 }

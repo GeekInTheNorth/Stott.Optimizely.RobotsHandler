@@ -6,6 +6,7 @@ using System.Text;
 using EPiServer.Web;
 
 using Stott.Optimizely.RobotsHandler.Models;
+using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 
 namespace Stott.Optimizely.RobotsHandler.Services;
 
@@ -90,20 +91,20 @@ public sealed class RobotsContentService : IRobotsContentService
         return robots.RobotsContent;
     }
 
-    public void SaveRobotsContent(Guid siteId, string robotsContent)
+    public void SaveRobotsContent(SaveRobotsModel model)
     {
-        if (Guid.Empty.Equals(siteId))
+        if (Guid.Empty.Equals(model.SiteId))
         {
-            throw new ArgumentException($"{nameof(siteId)} is not a non-null non-empty value.", nameof(siteId));
+            throw new ArgumentException($"{nameof(model)}.{nameof(model.SiteId)} must not be null or empty.", nameof(model));
         }
 
-        var existingSite = siteDefinitionRepository.Get(siteId);
+        var existingSite = siteDefinitionRepository.Get(model.SiteId);
         if (existingSite == null)
         {
-            throw new ArgumentException($"{nameof(siteId)} does not correlate to a known site.", nameof(siteId));
+            throw new ArgumentException($"{nameof(model)}.{nameof(model.SiteId)} does not correlate to a known site.", nameof(model));
         }
 
-        robotsContentRepository.Save(existingSite.Id, robotsContent);
+        robotsContentRepository.Save(model);
     }
 
     private static IEnumerable<KeyValuePair<string, string>> GetHosts(SiteDefinition siteDefinition)

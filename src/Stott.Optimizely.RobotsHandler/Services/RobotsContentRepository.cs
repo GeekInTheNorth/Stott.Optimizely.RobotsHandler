@@ -6,6 +6,7 @@ using EPiServer.Data;
 using EPiServer.Data.Dynamic;
 
 using Stott.Optimizely.RobotsHandler.Models;
+using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 
 namespace Stott.Optimizely.RobotsHandler.Services;
 
@@ -28,16 +29,18 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
         return store.Find<RobotsEntity>(new Dictionary<string, object>()).ToList();
     }
 
-    public void Save(Guid siteId, string robotsContent)
+    public void Save(SaveRobotsModel model)
     {
-        var recordToSave = Get(siteId);
+        var recordToSave = Get(model.Id);
         recordToSave ??= new RobotsEntity
         {
-            Id = Identity.NewIdentity(siteId),
-            SiteId = siteId
+            Id = Identity.NewIdentity(Guid.NewGuid()),
+            SiteId = model.SiteId,
         };
 
-        recordToSave.RobotsContent = robotsContent;
+        recordToSave.SpecificHost = model.SpecificHost;
+        recordToSave.IsForWholeSite = string.IsNullOrWhiteSpace(model.SpecificHost);
+        recordToSave.RobotsContent = model.RobotsContent;
 
         store.Save(recordToSave);
     }

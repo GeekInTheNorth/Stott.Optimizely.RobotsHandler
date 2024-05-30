@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+
 namespace Stott.Optimizely.RobotsHandler.Services;
 
 public interface IRobotsContentService
@@ -15,5 +17,5 @@ public interface IRobotsContentService
 
     string GetDefaultRobotsContent();
 
-    void SaveRobotsContent(Guid siteId, string robotsContent);
+    void SaveRobotsContent(SaveRobotsModel model);
 }

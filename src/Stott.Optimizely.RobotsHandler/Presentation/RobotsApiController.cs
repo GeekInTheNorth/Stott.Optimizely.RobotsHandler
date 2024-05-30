@@ -59,11 +59,11 @@ public class RobotsApiController : Controller
 
     [HttpPost]
     [Route("/stott.robotshandler/api/[action]")]
-    public IActionResult Save(RobotsEditViewModel formSubmitModel)
+    public IActionResult Save(SaveRobotsModel formSubmitModel)
     {
         try
         {
-            _service.SaveRobotsContent(formSubmitModel.SiteId, formSubmitModel.RobotsContent);
+            _service.SaveRobotsContent(formSubmitModel);
 
             return new OkResult();
         }
