@@ -51,7 +51,7 @@ public sealed class RobotsContentService : IRobotsContentService
 
         foreach (var site in sites)
         {
-            if (models.All(x => x.SiteId != site.Id && !x.IsForWholeSite))
+            if (!models.Any(x => x.SiteId == site.Id && x.IsForWholeSite))
             {
                 models.Add(ToModel(site));
             }
