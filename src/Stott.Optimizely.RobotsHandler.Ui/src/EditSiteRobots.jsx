@@ -73,8 +73,9 @@ function EditSiteRobots(props) {
     const renderAvailableHosts = () => {
         return availableHosts && availableHosts.map(host => {
             const { key, value } = host
+            const isSelected = value === specificHost;
             return (
-                <option value={value}>{key}</option>
+                <option value={value} selected={isSelected}>{key}</option>
             )
         })
     }
