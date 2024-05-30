@@ -31,14 +31,14 @@ function ConfigurationList(props)
 
     const renderSiteList = () => {
         return siteCollection && siteCollection.map(siteDetails => {
-            const { id, siteId, siteName, availableHosts, isForWholeSite, specificHost, robotsContent } = siteDetails
-            const hostName = isForWholeSite === true ? 'All Hosts' : specificHost;
+            const { id, siteId, siteName, isForWholeSite, specificHost } = siteDetails
+            const hostName = isForWholeSite === true ? 'Default' : specificHost;
             return (
                 <tr key={id}>
                     <td>{siteName}</td>
                     <td>{hostName}</td>
                     <td>
-                        <EditSiteRobots siteId={id} showToastNotificationEvent={props.showToastNotificationEvent}></EditSiteRobots>
+                        <EditSiteRobots id={id} siteId={siteId} showToastNotificationEvent={props.showToastNotificationEvent}></EditSiteRobots>
                     </td>
                 </tr>
             )

@@ -18,9 +18,9 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
         store = DynamicDataStoreFactory.Instance.CreateStore(typeof(RobotsEntity));
     }
 
-    public RobotsEntity Get(Guid siteId)
+    public RobotsEntity Get(Guid id)
     {
-        return store.Load<RobotsEntity>(Identity.NewIdentity(siteId));
+        return store.Load<RobotsEntity>(Identity.NewIdentity(id));
     }
 
     public List<RobotsEntity> GetAll()

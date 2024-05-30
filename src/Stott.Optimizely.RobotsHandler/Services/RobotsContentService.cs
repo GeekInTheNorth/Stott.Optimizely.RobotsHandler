@@ -5,6 +5,8 @@ using System.Text;
 
 using EPiServer.Web;
 
+using Stott.Optimizely.RobotsHandler.Models;
+
 namespace Stott.Optimizely.RobotsHandler.Services;
 
 public sealed class RobotsContentService : IRobotsContentService
@@ -31,31 +33,50 @@ public sealed class RobotsContentService : IRobotsContentService
         return stringBuilder.ToString();
     }
 
-    public IList<SiteRobotsViewModel> GetRobots()
+    public IList<SiteRobotsViewModel> GetAll()
     {
         var robotRecords = robotsContentRepository.GetAll();
         var sites = siteDefinitionRepository.List();
         var models = new List<SiteRobotsViewModel>();
 
-        foreach (var model in robotRecords)
+        foreach (var robotRecord in robotRecords)
         {
-            var site = sites.FirstOrDefault(x => x.Id.Equals(model.SiteId));
+            var site = sites.FirstOrDefault(x => x.Id.Equals(robotRecord.SiteId));
             if (site != null)
             {
-                models.Add(new SiteRobotsViewModel
-                {
-                    Id = model.Id.ExternalId,
-                    SiteId = model.SiteId,
-                    IsForWholeSite = model.IsForWholeSite || string.IsNullOrWhiteSpace(model.SpecificHost),
-                    SpecificHost = model.SpecificHost,
-                    RobotsContent = model.RobotsContent,
-                    SiteName = site.Name,
-                    AvailableHosts = GetHosts(site).ToList()
-                });
+                models.Add(ToModel(robotRecord, site));
             }
         }
 
-        return models;
+        foreach (var site in sites)
+        {
+            if (models.All(x => x.SiteId != site.Id && !x.IsForWholeSite))
+            {
+                models.Add(ToModel(site));
+            }
+        }
+
+        return models.OrderBy(x => x.SiteName).ThenBy(x => x.SpecificHost).ToList();
+    }
+
+    public SiteRobotsViewModel Get(Guid id)
+    {
+        var robotRecord = robotsContentRepository.Get(id);
+        var sites = siteDefinitionRepository.List();
+        var site = sites.FirstOrDefault(x => x.Id.Equals(robotRecord.SiteId));
+
+        return ToModel(robotRecord, site);
+    }
+
+    public SiteRobotsViewModel GetDefault(Guid siteId)
+    {
+        var site = siteDefinitionRepository.Get(siteId);
+        if (site == null)
+        {
+            throw new ArgumentException($"{nameof(siteId)} does not correlate to a known site.", nameof(siteId));
+        }
+
+        return ToModel(site);
     }
 
     public string GetRobotsContent(Guid siteId)
@@ -87,6 +108,8 @@ public sealed class RobotsContentService : IRobotsContentService
 
     private static IEnumerable<KeyValuePair<string, string>> GetHosts(SiteDefinition siteDefinition)
     {
+        yield return new KeyValuePair<string, string>("Default", string.Empty);
+
         if (siteDefinition is not { Hosts.Count: > 0 })
         {
             yield break;
@@ -96,5 +119,32 @@ public sealed class RobotsContentService : IRobotsContentService
         {
             yield return new KeyValuePair<string, string>(host.Name, host.Url.ToString());
         }
+    }
+
+    private static SiteRobotsViewModel ToModel(RobotsEntity robotsEntity, SiteDefinition siteDefinition)
+    {
+        return new SiteRobotsViewModel
+        {
+            Id = robotsEntity.Id.ExternalId,
+            SiteId = robotsEntity.SiteId,
+            IsForWholeSite = robotsEntity.IsForWholeSite || string.IsNullOrWhiteSpace(robotsEntity.SpecificHost),
+            SpecificHost = robotsEntity.SpecificHost,
+            RobotsContent = robotsEntity.RobotsContent,
+            SiteName = siteDefinition.Name,
+            AvailableHosts = GetHosts(siteDefinition).ToList()
+        };
+    }
+
+    private SiteRobotsViewModel ToModel(SiteDefinition siteDefinition)
+    {
+        return new SiteRobotsViewModel
+        {
+            Id = Guid.Empty,
+            SiteId = siteDefinition.Id,
+            IsForWholeSite = true,
+            RobotsContent = GetDefaultRobotsContent(),
+            SiteName = siteDefinition.Name,
+            AvailableHosts = GetHosts(siteDefinition).ToList()
+        };
     }
 }

@@ -5,7 +5,11 @@ namespace Stott.Optimizely.RobotsHandler.Services;
 
 public interface IRobotsContentService
 {
-    IList<SiteRobotsViewModel> GetRobots();
+    IList<SiteRobotsViewModel> GetAll();
+
+    SiteRobotsViewModel Get(Guid id);
+
+    SiteRobotsViewModel GetDefault(Guid siteId);
 
     string GetRobotsContent(Guid siteId);
 

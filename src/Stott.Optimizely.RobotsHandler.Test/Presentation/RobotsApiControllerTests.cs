@@ -11,13 +11,9 @@ using Stott.Optimizely.RobotsHandler.Test.TestCases;
 namespace Stott.Optimizely.RobotsHandler.Test.Presentation;
 
 [TestFixture]
-public class RobotsApiControllerTests
+public sealed class RobotsApiControllerTests
 {
     private Mock<IRobotsContentService> _mockService;
-
-    private Mock<IRobotsEditViewModelBuilder> _mockEditViewModelBuilder;
-
-    private Mock<IRobotsListViewModelBuilder> _mockListingViewModelBuilder;
 
     private RobotsApiController _controller;
 
@@ -26,12 +22,7 @@ public class RobotsApiControllerTests
     {
         _mockService = new Mock<IRobotsContentService>();
 
-        _mockEditViewModelBuilder = new Mock<IRobotsEditViewModelBuilder>();
-        _mockEditViewModelBuilder.Setup(x => x.WithSiteId(It.IsAny<Guid>())).Returns(_mockEditViewModelBuilder.Object);
-
-        _mockListingViewModelBuilder = new Mock<IRobotsListViewModelBuilder>();
-
-        _controller = new RobotsApiController(_mockService.Object, _mockEditViewModelBuilder.Object, _mockListingViewModelBuilder.Object);
+        _controller = new RobotsApiController(_mockService.Object);
     }
 
     [Test]
@@ -39,7 +30,7 @@ public class RobotsApiControllerTests
     public void Details_ThrowsArgumentExceptionWhenPresentedWithAnInvalidSiteId(string siteId)
     {
         // Assert
-        Assert.Throws<ArgumentException>(() => _controller.Details(siteId));
+        Assert.Throws<ArgumentException>(() => _controller.Details(Guid.NewGuid().ToString(), siteId));
     }
 
     [Test]
@@ -49,9 +40,9 @@ public class RobotsApiControllerTests
         var siteId = Guid.NewGuid().ToString();
 
         // Act
-        _controller.Details(siteId);
+        _controller.Details(Guid.NewGuid().ToString(), siteId);
 
         // Assert
-        _mockEditViewModelBuilder.Verify(x => x.WithSiteId(It.IsAny<Guid>()), Times.Once);
+        _mockService.Verify(x => x.Get(It.IsAny<Guid>()), Times.Once);
     }
 }

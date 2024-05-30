@@ -8,6 +8,7 @@ using EPiServer.Framework.ClientResources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using Stott.Optimizely.RobotsHandler.Models;
 using Stott.Security.Optimizely.Features.StaticFile;
 
 public sealed class RobotsLandingPageController : Controller
@@ -58,7 +59,7 @@ public sealed class RobotsLandingPageController : Controller
 
     private static string GetApplicationVersion()
     {
-        var assembly = Assembly.GetAssembly(typeof(RobotsEditViewModelBuilder));
+        var assembly = Assembly.GetAssembly(typeof(RobotsEntity));
         var assemblyName = assembly?.GetName();
 
         return $"v{assemblyName?.Version}";

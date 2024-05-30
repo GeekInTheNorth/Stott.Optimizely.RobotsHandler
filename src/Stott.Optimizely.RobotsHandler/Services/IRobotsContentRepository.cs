@@ -9,7 +9,7 @@ public interface IRobotsContentRepository
 {
     List<RobotsEntity> GetAll();
 
-    RobotsEntity Get(Guid siteId);
+    RobotsEntity Get(Guid id);
 
     void Save(Guid siteId, string robotsContent);
 }

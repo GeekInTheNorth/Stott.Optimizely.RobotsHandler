@@ -19,41 +19,40 @@ public class RobotsApiController : Controller
 {
     private readonly IRobotsContentService _service;
 
-    private readonly IRobotsEditViewModelBuilder _editViewModelBuilder;
-
-    private readonly IRobotsListViewModelBuilder _listingViewModelBuilder;
-
     private readonly ILogger _logger = LogManager.GetLogger(typeof(RobotsApiController));
 
-    public RobotsApiController(
-        IRobotsContentService service,
-        IRobotsEditViewModelBuilder viewModelBuilder,
-        IRobotsListViewModelBuilder listingViewModelBuilder)
+    public RobotsApiController(IRobotsContentService service)
     {
         _service = service;
-        _editViewModelBuilder = viewModelBuilder;
-        _listingViewModelBuilder = listingViewModelBuilder;
     }
 
     [HttpGet]
     [Route("/stott.robotshandler/api/list/")]
     public IActionResult ApiList()
     {
-        var model = _listingViewModelBuilder.Build();
+        var model = new RobotsListViewModel
+        {
+            List = _service.GetAll()
+        };
 
         return CreateSafeJsonResult(model);
     }
 
     [HttpGet]
     [Route("/stott.robotshandler/api/[action]")]
-    public IActionResult Details(string siteId)
+    public IActionResult Details(string id, string siteId)
     {
-        if (!Guid.TryParse(siteId, out var siteIdGuid) || Guid.Empty.Equals(siteIdGuid))
+        if (!Guid.TryParse(id, out var robotsId))
         {
-            throw new ArgumentException("siteId cannot be parsed as a valid GUID.", nameof(siteId));
+            throw new ArgumentException("Id cannot be parsed as a valid GUID.", nameof(id));
         }
 
-        var model = _editViewModelBuilder.WithSiteId(siteIdGuid).Build();
+        if (!Guid.TryParse(siteId, out var robotsSiteId) || Guid.Empty.Equals(robotsSiteId))
+        {
+            throw new ArgumentException("SiteId cannot be parsed as a valid GUID.", nameof(siteId));
+        }
+
+        var model = Guid.Empty.Equals(robotsId) ? _service.GetDefault(robotsSiteId) : _service.Get(robotsId);
 
         return CreateSafeJsonResult(model);
     }
