@@ -5,6 +5,7 @@ using System.Text;
 
 using EPiServer.Web;
 
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Models;
 using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 
@@ -28,8 +29,7 @@ public sealed class RobotsContentService : IRobotsContentService
     {
         var stringBuilder = new StringBuilder();
         stringBuilder.AppendLine("User-agent: *");
-        stringBuilder.AppendLine("Disallow: /episerver/");
-        stringBuilder.AppendLine("Disallow: /utils/");
+        stringBuilder.AppendLine("Disallow: /");
 
         return stringBuilder.ToString();
     }
@@ -107,21 +107,6 @@ public sealed class RobotsContentService : IRobotsContentService
         robotsContentRepository.Save(model);
     }
 
-    private static IEnumerable<KeyValuePair<string, string>> GetHosts(SiteDefinition siteDefinition)
-    {
-        yield return new KeyValuePair<string, string>("Default", string.Empty);
-
-        if (siteDefinition is not { Hosts.Count: > 0 })
-        {
-            yield break;
-        }
-
-        foreach (var host in siteDefinition.Hosts.Where(x => x.Url is not null))
-        {
-            yield return new KeyValuePair<string, string>(host.Name, host.Url.ToString());
-        }
-    }
-
     private static SiteRobotsViewModel ToModel(RobotsEntity robotsEntity, SiteDefinition siteDefinition)
     {
         return new SiteRobotsViewModel
@@ -132,7 +117,7 @@ public sealed class RobotsContentService : IRobotsContentService
             SpecificHost = robotsEntity.SpecificHost,
             RobotsContent = robotsEntity.RobotsContent,
             SiteName = siteDefinition.Name,
-            AvailableHosts = GetHosts(siteDefinition).ToList()
+            AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList()
         };
     }
 
@@ -145,7 +130,7 @@ public sealed class RobotsContentService : IRobotsContentService
             IsForWholeSite = true,
             RobotsContent = GetDefaultRobotsContent(),
             SiteName = siteDefinition.Name,
-            AvailableHosts = GetHosts(siteDefinition).ToList()
+            AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList()
         };
     }
 }

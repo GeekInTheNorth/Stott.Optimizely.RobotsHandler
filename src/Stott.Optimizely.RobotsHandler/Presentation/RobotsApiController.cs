@@ -1,29 +1,39 @@
 ﻿namespace Stott.Optimizely.RobotsHandler.Presentation;
 
 using System;
+using System.Linq;
 using System.Net;
 using System.Text.Json;
 
-using EPiServer.Logging;
+using EPiServer.Web;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 using Stott.Optimizely.RobotsHandler.Common;
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 using Stott.Optimizely.RobotsHandler.Services;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
-public class RobotsApiController : Controller
+public sealed class RobotsApiController : Controller
 {
     private readonly IRobotsContentService _service;
 
-    private readonly ILogger _logger = LogManager.GetLogger(typeof(RobotsApiController));
+    private readonly ISiteDefinitionRepository _siteRepository;
 
-    public RobotsApiController(IRobotsContentService service)
+    private readonly ILogger<RobotsApiController> _logger;
+
+    public RobotsApiController(
+        IRobotsContentService service,
+        ISiteDefinitionRepository siteRepository,
+        ILogger<RobotsApiController> logger)
     {
         _service = service;
+        _siteRepository = siteRepository;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -69,7 +79,7 @@ public class RobotsApiController : Controller
         }
         catch (Exception exception)
         {
-            _logger.Error($"Failed to save robots.txt content for {formSubmitModel.SiteName}", exception);
+            _logger.LogError(exception, "Failed to save robots.txt content for {siteName}", formSubmitModel.SiteName);
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
@@ -77,6 +87,22 @@ public class RobotsApiController : Controller
                 ContentType = "text/plain"
             };
         }
+    }
+
+    [HttpGet]
+    [Route("/stott.robotshandler/api/[action]")]
+    public IActionResult Sites()
+    {
+        var sites = _siteRepository.List()
+                                   .Select(x => new SiteViewModel 
+                                   { 
+                                       SiteId = x.Id, 
+                                       SiteName = x.Name, 
+                                       AvailableHosts = x.Hosts.ToHostSummaries().ToList()
+                                   })
+                                   .ToList();
+
+        return CreateSafeJsonResult(sites);
     }
 
     private static IActionResult CreateSafeJsonResult<T>(T objectToSerialize)

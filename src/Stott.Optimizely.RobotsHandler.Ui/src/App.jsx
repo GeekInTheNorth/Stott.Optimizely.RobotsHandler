@@ -1,8 +1,9 @@
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react'
-import { Toast, ToastContainer } from 'react-bootstrap'
+import { Alert, Col, Container, Row, Toast, ToastContainer } from 'react-bootstrap'
 import ConfigurationList from './ConfigurationList'
+import AddSiteRobots from './AddSiteRobots';
 
 function App() {
 
@@ -28,6 +29,17 @@ function App() {
 
   return (
     <>
+      <Container>
+        <Row>
+          <Col lg={9} xs={12}>
+            <Alert variant='primary' className='p-3'>A default configuration will always be shown for each site to reflect the fallback behaviour of the AddOn.</Alert>
+          </Col>
+          <Col lg={3} xs={12}>
+            <AddSiteRobots showToastNotificationEvent={showToastNotificationEvent}></AddSiteRobots>
+          </Col>
+        </Row>
+      </Container>
+      
       <ConfigurationList showToastNotificationEvent={showToastNotificationEvent}></ConfigurationList>
       <ToastContainer className="p-3" position='middle-center'>
         <Toast onClose={closeToastNotification} show={showToastNotification} delay={4000} autohide={true}>

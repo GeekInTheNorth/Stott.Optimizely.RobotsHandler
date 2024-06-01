@@ -21,6 +21,11 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
 
     public RobotsEntity Get(Guid id)
     {
+        if (Guid.Empty.Equals(id))
+        {
+            return null;
+        }
+
         return store.Load<RobotsEntity>(Identity.NewIdentity(id));
     }
 

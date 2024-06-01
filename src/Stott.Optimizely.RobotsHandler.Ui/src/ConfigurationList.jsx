@@ -21,11 +21,11 @@ function ConfigurationList(props)
                     setSiteCollection(response.data.list);
                 }
                 else{
-                    handleShowFailureToast('Failure', 'Failed to retrieve site data.');
+                    handleShowFailureToast('Failure', 'Failed to retrieve robots configuration data.');
                 }
             },
             () => {
-                handleShowFailureToast('Failure', 'Failed to retrieve site data.');
+                handleShowFailureToast('Failure', 'Failed to retrieve robots configuration data.');
             });
     }
 

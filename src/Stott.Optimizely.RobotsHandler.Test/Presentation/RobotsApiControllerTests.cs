@@ -1,5 +1,9 @@
 ﻿using System;
 
+using EPiServer.Web;
+
+using Microsoft.Extensions.Logging;
+
 using Moq;
 
 using NUnit.Framework;
@@ -15,6 +19,10 @@ public sealed class RobotsApiControllerTests
 {
     private Mock<IRobotsContentService> _mockService;
 
+    private Mock<ISiteDefinitionRepository> _mockSiteRepository;
+
+    private Mock<ILogger<RobotsApiController>> _mockLogger;
+
     private RobotsApiController _controller;
 
     [SetUp]
@@ -22,7 +30,11 @@ public sealed class RobotsApiControllerTests
     {
         _mockService = new Mock<IRobotsContentService>();
 
-        _controller = new RobotsApiController(_mockService.Object);
+        _mockSiteRepository = new Mock<ISiteDefinitionRepository>();
+
+        _mockLogger = new Mock<ILogger<RobotsApiController>>();
+
+        _controller = new RobotsApiController(_mockService.Object, _mockSiteRepository.Object, _mockLogger.Object);
     }
 
     [Test]
