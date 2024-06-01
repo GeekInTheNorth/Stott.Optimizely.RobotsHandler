@@ -116,7 +116,7 @@ public sealed class RobotsContentService : IRobotsContentService
             yield break;
         }
 
-        foreach (var host in siteDefinition.Hosts)
+        foreach (var host in siteDefinition.Hosts.Where(x => x.Url is not null))
         {
             yield return new KeyValuePair<string, string>(host.Name, host.Url.ToString());
         }
