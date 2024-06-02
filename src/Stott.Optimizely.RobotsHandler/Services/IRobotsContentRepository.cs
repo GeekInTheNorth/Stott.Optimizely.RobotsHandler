@@ -13,4 +13,6 @@ public interface IRobotsContentRepository
     RobotsEntity Get(Guid id);
 
     void Save(SaveRobotsModel model);
+
+    void Delete(Guid id);
 }

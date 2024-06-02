@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container } from 'react-bootstrap'
+import { Alert, Col, Container, Row } from 'react-bootstrap';
+import AddSiteRobots from './AddSiteRobots';
 import EditSiteRobots from './EditSiteRobots';
+import DeleteSiteRobots from './DeleteSiteRobots';
 
 function ConfigurationList(props)
 {
@@ -15,6 +17,9 @@ function ConfigurationList(props)
     const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description)
 
     const getSiteCollection = async () => {
+        
+        setSiteCollection([]);
+        
         await axios.get(import.meta.env.VITE_APP_ROBOTS_LIST)
             .then((response) => {
                 if (response.data && response.data.list && Array.isArray(response.data.list)){
@@ -30,15 +35,16 @@ function ConfigurationList(props)
     }
 
     const renderSiteList = () => {
-        return siteCollection && siteCollection.map(siteDetails => {
-            const { id, siteId, siteName, isForWholeSite, specificHost } = siteDetails
+        return siteCollection && siteCollection.map((siteDetails, index) => {
+            const { id, siteId, siteName, isForWholeSite, specificHost, canDelete } = siteDetails
             const hostName = isForWholeSite === true ? 'Default' : specificHost;
             return (
-                <tr key={id}>
+                <tr key={index}>
                     <td>{siteName}</td>
                     <td>{hostName}</td>
                     <td>
-                        <EditSiteRobots id={id} siteId={siteId} showToastNotificationEvent={props.showToastNotificationEvent}></EditSiteRobots>
+                        <EditSiteRobots id={id} siteId={siteId} showToastNotificationEvent={props.showToastNotificationEvent} reloadEvent={getSiteCollection}></EditSiteRobots>
+                        <DeleteSiteRobots id={id} siteName={siteName} showToastNotificationEvent={props.showToastNotificationEvent} canDelete={canDelete} reloadEvent={getSiteCollection}></DeleteSiteRobots>
                     </td>
                 </tr>
             )
@@ -47,18 +53,28 @@ function ConfigurationList(props)
 
     return(
         <Container>
-            <table className='table table-striped'>
-                <thead>
-                    <tr>
-                        <th className='table-header-fix'>Site Name</th>
-                        <th className='table-header-fix'>Hosts</th>
-                        <th className='table-header-fix'>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {renderSiteList()}
-                </tbody>
-            </table>
+            <Row>
+                <Col xl={9} lg={9} sm={12} xs={12}>
+                    <Alert variant='primary' className='p-3'>A default configuration will always be shown for each site to reflect the fallback behaviour of the AddOn.</Alert>
+                </Col>
+                <Col xl={3} lg={3} sm={12} xs={12}>
+                    <AddSiteRobots showToastNotificationEvent={props.showToastNotificationEvent} reloadEvent={getSiteCollection}></AddSiteRobots>
+                </Col>
+            </Row>
+            <Row>
+                <table className='table table-striped'>
+                    <thead>
+                        <tr>
+                            <th className='table-header-fix'>Site Name</th>
+                            <th className='table-header-fix'>Hosts</th>
+                            <th className='table-header-fix'>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {renderSiteList()}
+                    </tbody>
+                </table>
+            </Row>
         </Container>
     )
 }

@@ -85,7 +85,7 @@ public sealed class RobotsContentServiceTests
         };
 
         // Assert
-        Assert.Throws<ArgumentException>(() => _robotsContentService.SaveRobotsContent(model));
+        Assert.Throws<ArgumentException>(() => _robotsContentService.Save(model));
     }
 
     [Test]
@@ -102,7 +102,7 @@ public sealed class RobotsContentServiceTests
         _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((SiteDefinition)null);
 
         // Assert
-        Assert.Throws<ArgumentException>(() => _robotsContentService.SaveRobotsContent(model));
+        Assert.Throws<ArgumentException>(() => _robotsContentService.Save(model));
     }
 
     [Test]
@@ -119,7 +119,7 @@ public sealed class RobotsContentServiceTests
         _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(_mockSiteDefinition.Object);
 
         // Act
-        _robotsContentService.SaveRobotsContent(model);
+        _robotsContentService.Save(model);
 
         // Assert
         _mockRobotsContentRepository.Verify(x => x.Save(It.IsAny<SaveRobotsModel>()), Times.Once);

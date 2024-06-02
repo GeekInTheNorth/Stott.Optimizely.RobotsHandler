@@ -49,4 +49,9 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
 
         store.Save(recordToSave);
     }
+
+    public void Delete(Guid id)
+    {
+        store.Delete(Identity.NewIdentity(id));
+    }
 }

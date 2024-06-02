@@ -8,10 +8,9 @@ function AddSiteRobots(props) {
     const [siteCollection, setSiteCollection] = useState([])
     const [hostCollection, setHostCollection] = useState([])
     const [siteId, setSiteId] = useState(null);
+    const [siteName, setSiteName] = useState(null);
     const [siteRobotsContent, setSiteRobotsContent] = useState('')
     const [hostName, setHostName] = useState('');
-
-    const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description)
 
     const handleCloseModal = () => {
         setShowModal(false);
@@ -23,7 +22,13 @@ function AddSiteRobots(props) {
                 if (response.data && response.data && Array.isArray(response.data)){
                     setSiteCollection(response.data);
                     if(response.data.length > 0){
-                        setHostCollection(response.data[0].availableHosts ?? []);
+                        var firstSite = response.data[0];
+                        var hosts = firstSite.availableHosts ?? [];
+                        setSiteId(firstSite.siteId);
+                        setHostCollection(hosts);
+                        if (hosts.length > 0){
+                            setHostName(hosts[0].value);
+                        }
                     }
 
                     setShowModal(true);
@@ -51,20 +56,22 @@ function AddSiteRobots(props) {
             .then(() => {
                 handleShowSuccessToast('Success', 'Your robots.txt content changes for \'' + siteName + '\' were successfully applied.');
                 setShowModal(false);
+                handleReload();
             },
-            () => {
-                handleShowFailureToast('Failure', 'An error was encountered when trying to save your robots.txt content for \'' + siteName + '\'.');
-                setShowModal(false);
+            (error) => {
+                handleShowFailureToast('Failure', error.response.data);
             });
     }
 
     const handleSiteSelection = (event) => {
         const selectedSiteid = event.target.value;
-        const availableHosts = siteCollection.filter(x => x.siteId == selectedSiteid)[0].availableHosts ?? [];
-        const firstHost = availableHosts.length > 0 ? availableHosts[0].key : '';
+        const selectedSite = siteCollection.filter(x => x.siteId == selectedSiteid)[0];
+        const availableHosts = selectedSite.availableHosts ?? [];
+        const firstHost = availableHosts.length > 0 ? availableHosts[0].value : '';
 
-        setSiteId(selectedSiteid);
+        setSiteId(selectedSite.siteId);
         setHostName(firstHost);
+        setSiteName(selectedSite.siteName);
         setHostCollection(availableHosts);
     }
 
@@ -96,10 +103,20 @@ function AddSiteRobots(props) {
 
     const getSelectedSite = () => {
         if (siteId === undefined || siteId === null || siteId === '') {
-            return siteCollection[0];
+            var firstSite = siteCollection[0];
+            setSiteId(firstSite.siteId);
+            setSiteName(firstSite.siteName);
+
+            return firstSite;
         }
 
-        siteCollection.filter(x => x.siteId == siteId)[0];
+        var matches = siteCollection.filter(matchSite);
+
+        return matches[0];
+    }
+
+    const matchSite = (thisSite) => {
+        return thisSite && thisSite.siteId && thisSite.siteId === siteId;
     }
 
     const getSelectedHostName = () => {
@@ -107,10 +124,14 @@ function AddSiteRobots(props) {
             return '';
         }
 
-        return hostCollection[0].value;
+        return hostName;
     }
 
     useEffect(() => { renderAvailableHosts() }, [hostCollection]);
+
+    const handleShowSuccessToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(true, title, description);
+    const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description);
+    const handleReload = () => props.reloadEvent && props.reloadEvent();
 
     return(
         <>

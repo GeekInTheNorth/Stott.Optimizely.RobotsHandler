@@ -73,13 +73,54 @@ public sealed class RobotsApiController : Controller
     {
         try
         {
-            _service.SaveRobotsContent(formSubmitModel);
+            if (_service.DoesConflictExists(formSubmitModel))
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)HttpStatusCode.Conflict,
+                    Content = "A robots configuration already exists for this site and host combination.",
+                    ContentType = "text/plain"
+                };
+            }
+            _service.Save(formSubmitModel);
 
             return new OkResult();
         }
         catch (Exception exception)
         {
             _logger.LogError(exception, "Failed to save robots.txt content for {siteName}", formSubmitModel.SiteName);
+            return new ContentResult
+            {
+                StatusCode = (int)HttpStatusCode.InternalServerError,
+                Content = exception.Message,
+                ContentType = "text/plain"
+            };
+        }
+    }
+
+    [HttpDelete]
+    [Route("/stott.robotshandler/api/[action]/{id}")]
+    public IActionResult Delete(Guid id)
+    {
+        try
+        {
+            if (Guid.Empty.Equals(id))
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Content = "Id must not be empty.",
+                    ContentType = "text/plain"
+                };
+            }
+
+            _service.Delete(id);
+
+            return new OkResult();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Failed to delete this robots configuration.");
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,

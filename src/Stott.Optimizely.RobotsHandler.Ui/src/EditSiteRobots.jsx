@@ -22,9 +22,6 @@ function EditSiteRobots(props) {
         setIsDefault(event.target.value === '');
     }
 
-    const handleShowSuccessToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(true, title, description);
-    const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description);
-
     const handleShowEditModal = async () => {
         await axios.get(import.meta.env.VITE_APP_ROBOTS_EDIT, { params: { id: id, siteId: siteId } })
             .then((response) => {
@@ -59,6 +56,7 @@ function EditSiteRobots(props) {
             .then(() => {
                 handleShowSuccessToast('Success', 'Your robots.txt content changes for \'' + siteName + '\' were successfully applied.');
                 setShowModal(false);
+                handleReload();
             },
             () => {
                 handleShowFailureToast('Failure', 'An error was encountered when trying to save your robots.txt content for \'' + siteName + '\'.');
@@ -80,9 +78,13 @@ function EditSiteRobots(props) {
         })
     }
 
+    const handleShowSuccessToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(true, title, description);
+    const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description);
+    const handleReload = () => props.reloadEvent && props.reloadEvent();
+
     return (
         <>
-            <Button variant='primary' onClick={handleShowEditModal} className='text-nowrap'>Edit</Button>
+            <Button variant='primary' onClick={handleShowEditModal} className='text-nowrap me-2'>Edit</Button>
             <Modal show={showModal} size='lg'>
                 <Modal.Header closeButton onClick={handleCloseModal}>
                     <Modal.Title>{siteName}</Modal.Title>

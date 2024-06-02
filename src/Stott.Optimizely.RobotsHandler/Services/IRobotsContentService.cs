@@ -17,5 +17,9 @@ public interface IRobotsContentService
 
     string GetDefaultRobotsContent();
 
-    void SaveRobotsContent(SaveRobotsModel model);
+    void Save(SaveRobotsModel model);
+
+    void Delete(Guid id);
+
+    bool DoesConflictExists(SaveRobotsModel model);
 }

@@ -91,7 +91,7 @@ public sealed class RobotsContentService : IRobotsContentService
         return robots.RobotsContent;
     }
 
-    public void SaveRobotsContent(SaveRobotsModel model)
+    public void Save(SaveRobotsModel model)
     {
         if (Guid.Empty.Equals(model.SiteId))
         {
@@ -107,6 +107,22 @@ public sealed class RobotsContentService : IRobotsContentService
         robotsContentRepository.Save(model);
     }
 
+    public void Delete(Guid id)
+    {
+        if (Guid.Empty.Equals(id))
+        {
+            return;
+        }
+        
+        robotsContentRepository.Delete(id);
+    }
+
+    public bool DoesConflictExists(SaveRobotsModel model)
+    {
+        var existingConfigurations = robotsContentRepository.GetAll() ?? new List<RobotsEntity>(0);
+        return existingConfigurations.Any(x => IsConflict(model, x));
+    }
+
     private static SiteRobotsViewModel ToModel(RobotsEntity robotsEntity, SiteDefinition siteDefinition)
     {
         return new SiteRobotsViewModel
@@ -117,7 +133,8 @@ public sealed class RobotsContentService : IRobotsContentService
             SpecificHost = robotsEntity.SpecificHost,
             RobotsContent = robotsEntity.RobotsContent,
             SiteName = siteDefinition.Name,
-            AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList()
+            AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList(),
+            CanDelete = true
         };
     }
 
@@ -132,5 +149,17 @@ public sealed class RobotsContentService : IRobotsContentService
             SiteName = siteDefinition.Name,
             AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList()
         };
+    }
+
+    private static bool IsConflict(SaveRobotsModel model, RobotsEntity entity)
+    {
+        if (Guid.Empty.Equals(model.Id))
+        {
+            return model.SiteId == entity.SiteId &&
+                   string.IsNullOrWhiteSpace(model.SpecificHost) == string.IsNullOrWhiteSpace(entity.SpecificHost);
+        }
+
+        return Guid.Equals(model.SiteId, entity.SiteId) && !Guid.Equals(model.Id, entity.Id) &&
+               string.IsNullOrWhiteSpace(model.SpecificHost) == string.IsNullOrWhiteSpace(entity.SpecificHost);
     }
 }

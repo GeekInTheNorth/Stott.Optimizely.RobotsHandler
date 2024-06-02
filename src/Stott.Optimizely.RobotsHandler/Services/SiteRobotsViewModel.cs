@@ -18,4 +18,6 @@ public sealed class SiteRobotsViewModel
     public string SpecificHost { get; set; }
 
     public string RobotsContent { get; set; }
+
+    public bool CanDelete { get; set; }
 }
