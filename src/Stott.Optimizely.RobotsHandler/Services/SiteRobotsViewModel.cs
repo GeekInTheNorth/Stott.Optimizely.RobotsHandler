@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+
 namespace Stott.Optimizely.RobotsHandler.Services;
 
 public sealed class SiteRobotsViewModel
@@ -11,7 +13,7 @@ public sealed class SiteRobotsViewModel
 
     public string SiteName { get; set; }
 
-    public List<KeyValuePair<string, string>> AvailableHosts { get; set; }
+    public List<SiteHostViewModel> AvailableHosts { get; set; }
 
     public bool IsForWholeSite { get; set; }
 

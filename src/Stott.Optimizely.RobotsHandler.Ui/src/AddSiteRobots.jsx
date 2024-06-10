@@ -94,9 +94,9 @@ function AddSiteRobots(props) {
 
     const renderAvailableHosts = () => {
         return hostCollection && hostCollection.map((host, index) => {
-            const { key, value } = host
+            const { hostName, displayName } = host
             return (
-                <option key={index} value={value}>{key}</option>
+                <option key={index} value={hostName}>{displayName}</option>
             )
         })
     }

@@ -63,8 +63,17 @@ public sealed class RobotsContentService : IRobotsContentService
     public SiteRobotsViewModel Get(Guid id)
     {
         var robotRecord = robotsContentRepository.Get(id);
+        if (robotRecord == null)
+        {
+            throw new RobotsEntityNotFoundException(id);
+        }
+
         var sites = siteDefinitionRepository.List();
         var site = sites.FirstOrDefault(x => x.Id.Equals(robotRecord.SiteId));
+        if (site == null)
+        {
+            throw new RobotsEntityNotFoundException($"Robotes entity with id '{id}' not match a site definition.");
+        }
 
         return ToModel(robotRecord, site);
     }
@@ -80,15 +89,18 @@ public sealed class RobotsContentService : IRobotsContentService
         return ToModel(site);
     }
 
-    public string GetRobotsContent(Guid siteId)
+    public string GetRobotsContent(Guid siteId, string host)
     {
-        var robots = robotsContentRepository.Get(siteId);
-        if (robots == null)
+        var robots = robotsContentRepository.GetAllForSite(siteId) ?? new List<RobotsEntity>(0);
+        var matchingRobots = robots.FirstOrDefault(x => string.Equals(x.SpecificHost, host, StringComparison.OrdinalIgnoreCase)) ??
+                             robots.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.SpecificHost));
+
+        if (matchingRobots == null)
         {
             return GetDefaultRobotsContent();
         }
 
-        return robots.RobotsContent;
+        return matchingRobots.RobotsContent;
     }
 
     public void Save(SaveRobotsModel model)

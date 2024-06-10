@@ -10,6 +10,8 @@ public interface IRobotsContentRepository
 {
     List<RobotsEntity> GetAll();
 
+    List<RobotsEntity> GetAllForSite(Guid siteId);
+
     RobotsEntity Get(Guid id);
 
     void Save(SaveRobotsModel model);

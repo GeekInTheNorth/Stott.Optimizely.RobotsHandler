@@ -9,5 +9,5 @@ public sealed class SiteViewModel
 
     public string SiteName { get; set; }
 
-    public List<KeyValuePair<string, string>> AvailableHosts { get; set; }
+    public List<SiteHostViewModel> AvailableHosts { get; set; }
 }

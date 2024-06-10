@@ -13,6 +13,21 @@ namespace Stott.Optimizely.RobotsHandler.Test.Extensions;
 public sealed class SiteDefinitionExtensionTests
 {
     [Test]
+    public void ToHostSummaries_ReturnsDefaultHost_WhenHostDefinitionsIsNull()
+    {
+        // Arrange
+        IList<HostDefinition> hostDefinitions = null;
+
+        // Act
+        var result = hostDefinitions.ToHostSummaries().ToList();
+
+        // Assert
+        Assert.That(result, Has.Count.EqualTo(1));
+        Assert.That(result.First().DisplayName, Is.EqualTo("Default"));
+        Assert.That(result.First().HostName, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
     public void ToHostSummaries_ReturnsDefaultHost_WhenHostDefinitionsIsEmpty()
     {
         // Arrange
@@ -23,8 +38,8 @@ public sealed class SiteDefinitionExtensionTests
 
         // Assert
         Assert.That(result, Has.Count.EqualTo(1));
-        Assert.That(result.First().Key, Is.EqualTo("Default"));
-        Assert.That(result.First().Value, Is.EqualTo(string.Empty));
+        Assert.That(result.First().DisplayName, Is.EqualTo("Default"));
+        Assert.That(result.First().HostName, Is.EqualTo(string.Empty));
     }
 
     [Test]
@@ -42,12 +57,12 @@ public sealed class SiteDefinitionExtensionTests
 
         // Assert
         Assert.That(result, Has.Count.EqualTo(3));
-        Assert.That(result[0].Key, Is.EqualTo("Default"));
-        Assert.That(result[0].Value, Is.EqualTo(string.Empty));
-        Assert.That(result[1].Key, Is.EqualTo("host1.com"));
-        Assert.That(result[1].Value, Is.EqualTo("http://host1.com/"));
-        Assert.That(result[2].Key, Is.EqualTo("host2.com"));
-        Assert.That(result[2].Value, Is.EqualTo("http://host2.com/"));
+        Assert.That(result[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[0].HostName, Is.EqualTo(string.Empty));
+        Assert.That(result[1].DisplayName, Is.EqualTo("host1.com"));
+        Assert.That(result[1].HostName, Is.EqualTo("host1.com"));
+        Assert.That(result[2].DisplayName, Is.EqualTo("host2.com"));
+        Assert.That(result[2].HostName, Is.EqualTo("host2.com"));
     }
 
     [Test]
@@ -65,9 +80,9 @@ public sealed class SiteDefinitionExtensionTests
 
         // Assert
         Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result[0].Key, Is.EqualTo("Default"));
-        Assert.That(result[0].Value, Is.EqualTo(string.Empty));
-        Assert.That(result[1].Key, Is.EqualTo("host1.com"));
-        Assert.That(result[1].Value, Is.EqualTo("http://host1.com/"));
+        Assert.That(result[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[0].HostName, Is.EqualTo(string.Empty));
+        Assert.That(result[1].DisplayName, Is.EqualTo("host1.com"));
+        Assert.That(result[1].HostName, Is.EqualTo("host1.com"));
     }
 }

@@ -34,6 +34,11 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
         return store.Find<RobotsEntity>(new Dictionary<string, object>()).ToList();
     }
 
+    public List<RobotsEntity> GetAllForSite(Guid siteId)
+    {
+        return store.Find<RobotsEntity>(new Dictionary<string, object> { { nameof(RobotsEntity.SiteId), siteId } }).ToList();
+    }
+
     public void Save(SaveRobotsModel model)
     {
         var recordToSave = Get(model.Id);

@@ -13,7 +13,7 @@ public interface IRobotsContentService
 
     SiteRobotsViewModel GetDefault(Guid siteId);
 
-    string GetRobotsContent(Guid siteId);
+    string GetRobotsContent(Guid siteId, string host);
 
     string GetDefaultRobotsContent();
 

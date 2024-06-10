@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
+using EPiServer.LinkAnalyzer.Robots.Internal;
 using EPiServer.Web;
 
 using Moq;
@@ -49,28 +50,95 @@ public sealed class RobotsContentServiceTests
         // Arrange
         var siteId = Guid.NewGuid();
         _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((RobotsEntity)null);
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity>(0));
 
         // Act
-        var robotsContent = _robotsContentService.GetRobotsContent(siteId);
+        var robotsContent = _robotsContentService.GetRobotsContent(siteId, null);
 
         // Assert
         Assert.That(robotsContent, Is.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
     }
 
     [Test]
-    public void GetRobotsContent_siteId_ReturnsSavedRobotsForAValidSiteWhenRobotsContentDoesExist()
+    public void GetRobotsContent_siteId_ReturnsRobotsContentForASpecificHostWhenRobotsContentExists()
     {
         // Arrange
         var siteId = Guid.NewGuid();
-        var robotsEntity = new RobotsEntity { RobotsContent = GetSavedRobots() };
-        _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(robotsEntity);
+        var robotsContent = GetSavedRobots();
+        var robotsEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = "www.example.com", RobotsContent = robotsContent };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { robotsEntity });
 
         // Act
-        var robotsContent = _robotsContentService.GetRobotsContent(siteId);
+        var result = _robotsContentService.GetRobotsContent(siteId, "www.example.com");
 
         // Assert
-        Assert.That(robotsContent, Is.Not.Null);
-        Assert.That(robotsContent, Is.Not.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
+        Assert.That(result, Is.EqualTo(robotsContent));
+    }
+
+    [Test]
+    public void GetRobotsContent_siteId_ReturnsDefaultRobotsForASiteWhenRobotsContentExistsButNoSpecificHostIsProvided()
+    {
+        // Arrange
+        var siteId = Guid.NewGuid();
+        var robotsContent = GetSavedRobots();
+        var robotsEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = string.Empty, RobotsContent = robotsContent };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { robotsEntity });
+
+        // Act
+        var result = _robotsContentService.GetRobotsContent(siteId, null);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(robotsContent));
+    }
+
+    [Test]
+    public void GetRobotsContent_siteId_ReturnsDefaultRobotsForASiteWhenRobotsContentExistsButNoMatchingSpecificHostIsProvided()
+    {
+        // Arrange
+        var siteId = Guid.NewGuid();
+        var robotsContent = GetSavedRobots();
+        var robotsEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = "www.example.com", RobotsContent = robotsContent };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { robotsEntity });
+
+        // Act
+        var result = _robotsContentService.GetRobotsContent(siteId, "www.non-matching.com");
+
+        // Assert
+        Assert.That(result, Is.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
+    }
+
+    [Test]
+    public void GetRobotsContent_siteId_ReturnsMatchingHostWhenBothDefaultAndDefinedHostExist()
+    {
+        // Arrange
+        var siteId = Guid.NewGuid();
+        var robotsContent = GetSavedRobots();
+        var hostDefinedEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = "www.example.com", RobotsContent = "Defined Robots" };
+        var defaultEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, RobotsContent = "Default Robots" };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { hostDefinedEntity, defaultEntity });
+
+        // Act
+        var result = _robotsContentService.GetRobotsContent(siteId, "www.example.com");
+
+        // Assert
+        Assert.That(result, Is.EqualTo(hostDefinedEntity.RobotsContent));
+    }
+
+    [Test]
+    public void GetRobotsContent_siteId_ReturnsDefaultHostWhenBothDefaultAndDefinedHostExistForANonMatchingHost()
+    {
+        // Arrange
+        var siteId = Guid.NewGuid();
+        var robotsContent = GetSavedRobots();
+        var hostDefinedEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = "www.example.com", RobotsContent = "Defined Robots" };
+        var defaultEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, RobotsContent = "Default Robots" };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { hostDefinedEntity, defaultEntity });
+
+        // Act
+        var result = _robotsContentService.GetRobotsContent(siteId, "www.non-matching.com");
+
+        // Assert
+        Assert.That(result, Is.EqualTo(defaultEntity.RobotsContent));
     }
 
     [Test]
@@ -248,8 +316,8 @@ public sealed class RobotsContentServiceTests
         // Arrange
         var sites = new List<SiteDefinition>
         {
-            new SiteDefinition { Id = Guid.NewGuid() },
-            new SiteDefinition { Id = Guid.NewGuid() }
+            new() { Id = Guid.NewGuid() },
+            new() { Id = Guid.NewGuid() }
         };
 
         _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns(new List<RobotsEntity>(0));
@@ -262,7 +330,149 @@ public sealed class RobotsContentServiceTests
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2));
         Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
         Assert.That(result[1].SiteId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void GetAll_WhenTheRobotsContentRepositoryHasRecords_ThenTheRecordsShouldBeReturnedForEachSite()
+    {
+        // Arrange
+        var sites = new List<SiteDefinition>
+        {
+            new() { Id = Guid.NewGuid() },
+            new() { Id = Guid.NewGuid() }
+        };
+
+        var robotsEntities = new List<RobotsEntity>
+        {
+            new() { Id = Guid.NewGuid(), SiteId = sites[0].Id },
+            new() { Id = Guid.NewGuid(), SiteId = sites[1].Id }
+        };
+
+        _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns(robotsEntities);
+        _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(sites);
+
+        // Act
+        var result = _robotsContentService.GetAll();
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
+        Assert.That(result[1].SiteId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
+    }
+
+    [Test]
+    public void GetAll_WhenThereAreRobotsContentForSpecificHosts_ThenTheSpecificHostsShouldBeReturned()
+    {
+        // Arrange
+        var sites = new List<SiteDefinition>
+        {
+            new() { Id = Guid.NewGuid(), Name = "Site 1", Hosts = new List<HostDefinition> { new() { Name = "www.exampleone.com" } } },
+            new() { Id = Guid.NewGuid(), Name = "Site 2", Hosts = new List<HostDefinition> { new() { Name = "www.exampletwo.com" } } },
+        };
+
+        var robotsEntities = new List<RobotsEntity>
+        {
+            new() { Id = Guid.NewGuid(), SiteId = sites[0].Id, SpecificHost = "www.exampleone.com" },
+            new() { Id = Guid.NewGuid(), SiteId = sites[1].Id, SpecificHost = "www.exampletwo.com" }
+        };
+
+        _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns(robotsEntities);
+        _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(sites);
+
+        // Act
+        var result = _robotsContentService.GetAll();
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result, Has.Count.EqualTo(4));
+        
+        Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].SiteName, Is.EqualTo(sites[0].Name));
+        Assert.That(result[0].SpecificHost, Is.Null);
+        Assert.That(result[0].CanDelete, Is.False);
+        Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
+        Assert.That(result[0].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[0].AvailableHosts[1].HostName, Is.EqualTo("www.exampleone.com"));
+
+        Assert.That(result[1].SiteId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[1].SiteName, Is.EqualTo(sites[0].Name));
+        Assert.That(result[1].SpecificHost, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[1].CanDelete, Is.True);
+        Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
+        Assert.That(result[1].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[1].AvailableHosts[1].HostName, Is.EqualTo("www.exampleone.com"));
+
+        Assert.That(result[2].SiteId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[2].SiteName, Is.EqualTo(sites[1].Name));
+        Assert.That(result[2].SpecificHost, Is.Null);
+        Assert.That(result[2].CanDelete, Is.False);
+        Assert.That(result[2].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[2].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
+        Assert.That(result[2].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[2].AvailableHosts[1].HostName, Is.EqualTo("www.exampletwo.com"));
+
+        Assert.That(result[3].SiteId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[3].SiteName, Is.EqualTo(sites[1].Name));
+        Assert.That(result[3].SpecificHost, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[3].CanDelete, Is.True);
+        Assert.That(result[3].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
+        Assert.That(result[3].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
+        Assert.That(result[3].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[3].AvailableHosts[1].HostName, Is.EqualTo("www.exampletwo.com"));
+    }
+
+    [Test]
+    public void Get_WhenPassedAnIdForARobotsEntityThatDoesNotExist_ThenThrowsRobotsEntityNotFoundException()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((RobotsEntity)null);
+
+        // Assert
+        Assert.Throws<RobotsEntityNotFoundException>(() => _robotsContentService.Get(id));
+    }
+
+    [Test]
+    public void Get_WhenPassedAnIdForARobotsEntityThatDoesExistButForANonMatchingSite_ThenThrowsRobotsEntityNotFoundException()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var robotsEntity = new RobotsEntity { Id = id, SiteId = Guid.NewGuid() };
+        _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(robotsEntity);
+
+        // Assert
+        Assert.Throws<RobotsEntityNotFoundException>(() => _robotsContentService.Get(id));
+    }
+
+    [Test]
+    public void Get_WhenPassedAnIdForARobotsEntityThatExists_ThenReturnsTheModel()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var siteId = Guid.NewGuid();
+        var robotsEntity = new RobotsEntity { Id = id, SiteId = siteId };
+        _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(robotsEntity);
+
+        _mockSiteDefinition.Setup(x => x.Id).Returns(siteId);
+
+        // Act
+        var result = _robotsContentService.Get(id);
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.Id, Is.EqualTo(id));
     }
 
     private static string GetSavedRobots()
