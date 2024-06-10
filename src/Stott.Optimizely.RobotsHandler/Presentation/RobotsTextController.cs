@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Services;
 
 public sealed class RobotsTextController : Controller
@@ -32,7 +33,7 @@ public sealed class RobotsTextController : Controller
             var robotsContent = _service.GetRobotsContent(SiteDefinition.Current.Id, Request.Host.Value);
 
             // Set a low cache duration, but not zero to ensure the CDN protects against DDOS attacks
-            Response.Headers.CacheControl = "public, max-age=300";
+            Response.Headers.AddOrUpdateHeader("Cache-Control", "public, max-age=300");
 
             return new ContentResult
             {
