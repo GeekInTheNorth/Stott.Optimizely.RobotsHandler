@@ -9,14 +9,18 @@ internal static class HeaderDictionaryExtensions
 {
     public static void AddOrUpdateHeader(this IHeaderDictionary headers, string headerName, string headerValue)
     {
-        if (headers is null || string.IsNullOrWhiteSpace(headerName) || string.IsNullOrWhiteSpace(headerValue))
+        if (headers is null || string.IsNullOrWhiteSpace(headerName))
         {
             return;
         }
 
         try
         {
-            if (headers.ContainsKey(headerName))
+            if (string.IsNullOrWhiteSpace(headerValue))
+            {
+                headers.Remove(headerName);
+            }
+            else if (headers.ContainsKey(headerName))
             {
                 headers[headerName] = headerValue;
             }
