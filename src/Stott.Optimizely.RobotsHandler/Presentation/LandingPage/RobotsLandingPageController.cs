@@ -52,8 +52,6 @@ public sealed class RobotsLandingPageController : Controller
             return NotFound("The requested file does not exist.");
         }
 
-        Response.Headers.Add("cache-control", "public, max-age=31557600");
-
         return File(fileBytes, mimeType);
     }
 
