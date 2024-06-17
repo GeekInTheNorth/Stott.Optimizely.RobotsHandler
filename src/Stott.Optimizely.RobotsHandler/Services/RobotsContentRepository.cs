@@ -1,42 +1,62 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using EPiServer.Data;
 using EPiServer.Data.Dynamic;
 
 using Stott.Optimizely.RobotsHandler.Models;
+using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 
-namespace Stott.Optimizely.RobotsHandler.Services
+namespace Stott.Optimizely.RobotsHandler.Services;
+
+public sealed class RobotsContentRepository : IRobotsContentRepository
 {
-    public class RobotsContentRepository : IRobotsContentRepository
+    private readonly DynamicDataStore store;
+
+    public RobotsContentRepository()
     {
-        private readonly DynamicDataStore store;
+        store = DynamicDataStoreFactory.Instance.CreateStore(typeof(RobotsEntity));
+    }
 
-        public RobotsContentRepository()
+    public RobotsEntity Get(Guid id)
+    {
+        if (Guid.Empty.Equals(id))
         {
-            store = DynamicDataStoreFactory.Instance.CreateStore(typeof(RobotsEntity));
+            return null;
         }
 
-        public RobotsEntity Get(Guid siteId)
+        return store.Load<RobotsEntity>(Identity.NewIdentity(id));
+    }
+
+    public List<RobotsEntity> GetAll()
+    {
+        return store.Find<RobotsEntity>(new Dictionary<string, object>()).ToList();
+    }
+
+    public List<RobotsEntity> GetAllForSite(Guid siteId)
+    {
+        return store.Find<RobotsEntity>(new Dictionary<string, object> { { nameof(RobotsEntity.SiteId), siteId } }).ToList();
+    }
+
+    public void Save(SaveRobotsModel model)
+    {
+        var recordToSave = Get(model.Id);
+        recordToSave ??= new RobotsEntity
         {
-            return store.Load<RobotsEntity>(Identity.NewIdentity(siteId));
-        }
+            Id = Identity.NewIdentity(Guid.NewGuid()),
+            SiteId = model.SiteId,
+        };
 
-        public void Save(Guid siteId, string robotsContent)
-        {
-            var recordToSave = Get(siteId);
-            if (recordToSave == null)
-            {
-                recordToSave = new RobotsEntity
-                {
-                    Id = Identity.NewIdentity(siteId),
-                    SiteId = siteId,
-                    RobotsContent = robotsContent
-                };
-            }
+        recordToSave.SpecificHost = model.SpecificHost;
+        recordToSave.IsForWholeSite = string.IsNullOrWhiteSpace(model.SpecificHost);
+        recordToSave.RobotsContent = model.RobotsContent;
 
-            recordToSave.RobotsContent = robotsContent;
+        store.Save(recordToSave);
+    }
 
-            store.Save(recordToSave);
-        }
+    public void Delete(Guid id)
+    {
+        store.Delete(Identity.NewIdentity(id));
     }
 }
