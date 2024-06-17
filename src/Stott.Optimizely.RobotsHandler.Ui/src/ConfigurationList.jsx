@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Alert, Col, Container, Row } from 'react-bootstrap';
+import { Alert, Container, Row } from 'react-bootstrap';
 import AddSiteRobots from './AddSiteRobots';
 import EditSiteRobots from './EditSiteRobots';
 import DeleteSiteRobots from './DeleteSiteRobots';
@@ -53,13 +53,13 @@ function ConfigurationList(props)
 
     return(
         <Container>
-            <Row>
-                <Col xl={9} lg={9} sm={12} xs={12}>
+            <Row className='mb-2'>
+                <div className='col-xl-9 col-lg-9 col-sm-12 col-xs-12'>
                     <Alert variant='primary' className='p-3'>A default configuration will always be shown for each site to reflect the fallback behaviour of the AddOn.</Alert>
-                </Col>
-                <Col xl={3} lg={3} sm={12} xs={12}>
+                </div>
+                <div className='col-xl-3 col-lg-3 col-sm-12 col-xs-12'>
                     <AddSiteRobots showToastNotificationEvent={props.showToastNotificationEvent} reloadEvent={getSiteCollection}></AddSiteRobots>
-                </Col>
+                </div>
             </Row>
             <Row>
                 <table className='table table-striped'>
