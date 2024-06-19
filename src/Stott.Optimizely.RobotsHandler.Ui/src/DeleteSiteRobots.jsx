@@ -40,7 +40,7 @@ function DeleteSiteRobots(props) {
                     <Modal.Title>Delete Robots Configuration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <label>Are you sure you want to delete this configuration for {props.siteName}?</label>
+                    <label>Are you sure you want to delete this configuration for '{props.siteName}'?</label>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant='danger' type='button' onClick={handleDeleteRobotsContent}>Delete</Button>

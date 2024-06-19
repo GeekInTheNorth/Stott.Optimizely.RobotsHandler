@@ -66,7 +66,7 @@ function ConfigurationList(props)
                     <thead>
                         <tr>
                             <th className='table-header-fix'>Site Name</th>
-                            <th className='table-header-fix'>Hosts</th>
+                            <th className='table-header-fix'>Host</th>
                             <th className='table-header-fix'>Actions</th>
                         </tr>
                     </thead>

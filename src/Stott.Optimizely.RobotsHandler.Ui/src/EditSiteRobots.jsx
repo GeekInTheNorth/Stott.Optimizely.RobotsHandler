@@ -58,9 +58,15 @@ function EditSiteRobots(props) {
                 setShowModal(false);
                 handleReload();
             },
-            () => {
-                handleShowFailureToast('Failure', 'An error was encountered when trying to save your robots.txt content for \'' + siteName + '\'.');
-                setShowModal(false);
+            (error) => {
+                if (error.response && error.response.status === 409) {
+                    handleShowFailureToast('Failure', error.response.data);
+                    setShowModal(false);
+                }
+                else {
+                    handleShowFailureToast('Failure', 'An error was encountered when trying to save your robots.txt content for \'' + siteName + '\'.');
+                    setShowModal(false);
+                }
             });
     }
 

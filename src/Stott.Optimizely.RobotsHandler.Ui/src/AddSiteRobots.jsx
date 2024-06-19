@@ -59,7 +59,14 @@ function AddSiteRobots(props) {
                 handleReload();
             },
             (error) => {
-                handleShowFailureToast('Failure', error.response.data);
+                if (error.response && error.response.status === 409) {
+                    handleShowFailureToast('Failure', error.response.data);
+                    setShowModal(false);
+                }
+                else {
+                    handleShowFailureToast('Failure', 'An error was encountered when trying to save your robots.txt content.');
+                    setShowModal(false);
+                }
             });
     }
 
