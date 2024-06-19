@@ -234,9 +234,12 @@ public sealed class RobotsContentServiceTests
 
     [Test]
     [TestCase("f70719d4-adc6-4a06-8662-7c7e78ab3dbc", "5645bc86-f7f7-4c3a-924c-13612c55914a", "", false)]
+    [TestCase("a841af98-cdbd-4e64-82b2-f31f3b0fe647", "5645bc86-f7f7-4c3a-924c-13612c55914a", "", true)]
     [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86-f7f7-4c3a-924c-13612c55914a", "", true)]
+    [TestCase("00000000-0000-0000-0000-000000000000", "5645bc86-f7f7-4c3a-924c-13612c55914a", "", true)]
     [TestCase("a841af98-cdbd-4e64-82b2-f31f3b0fe647", "5645bc86-f7f7-4c3a-924c-13612c55914a", "www.example.com", false)]
     [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86-f7f7-4c3a-924c-13612c55914a", "www.example.com", true)]
+    [TestCase("00000000-0000-0000-0000-000000000000", "5645bc86-f7f7-4c3a-924c-13612c55914a", "www.example.com", true)]
     [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86-f7f7-4c3a-924c-13612c55914a", "www.non-matching.com", false)]
     public void DoesConflictExists_GivenTheRepositoryContainsAConflictingConfiguration_ThenTrueIsReturned(Guid id, Guid siteId, string host, bool expectedValue)
     {
