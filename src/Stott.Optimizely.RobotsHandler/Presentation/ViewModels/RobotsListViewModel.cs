@@ -2,7 +2,9 @@
 
 using System.Collections.Generic;
 
+using Stott.Optimizely.RobotsHandler.Services;
+
 public class RobotsListViewModel
 {
-    public List<RobotsListItemViewModel> List { get; set; }
+    public IList<SiteRobotsViewModel> List { get; set; }
 }

@@ -8,6 +8,7 @@ using EPiServer.Framework.ClientResources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using Stott.Optimizely.RobotsHandler.Models;
 using Stott.Security.Optimizely.Features.StaticFile;
 
 public sealed class RobotsLandingPageController : Controller
@@ -51,14 +52,12 @@ public sealed class RobotsLandingPageController : Controller
             return NotFound("The requested file does not exist.");
         }
 
-        Response.Headers.Add("cache-control", "public, max-age=31557600");
-
         return File(fileBytes, mimeType);
     }
 
     private static string GetApplicationVersion()
     {
-        var assembly = Assembly.GetAssembly(typeof(RobotsEditViewModelBuilder));
+        var assembly = Assembly.GetAssembly(typeof(RobotsEntity));
         var assemblyName = assembly?.GetName();
 
         return $"v{assemblyName?.Version}";

@@ -1,114 +1,133 @@
-﻿namespace OptimizelyTwelveTest
+﻿namespace OptimizelyTwelveTest;
+
+using System;
+
+using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.Scheduler;
+using EPiServer.Web.Routing;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
+
+using OptimizelyTwelveTest.Features.Common;
+
+using ServiceExtensions;
+
+using Stott.Optimizely.RobotsHandler.Common;
+using Stott.Optimizely.RobotsHandler.Configuration;
+using Stott.Optimizely.RobotsHandler.Presentation;
+using Stott.Security.Optimizely.Common;
+using Stott.Security.Optimizely.Features.Configuration;
+
+public class Startup
 {
-    using EPiServer.Cms.UI.AspNetIdentity;
-    using EPiServer.Scheduler;
-    using EPiServer.Web.Routing;
+    private readonly IWebHostEnvironment _webHostingEnvironment;
 
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-
-    using OptimizelyTwelveTest.Features.Common;
-
-    using ServiceExtensions;
-
-    using Stott.Optimizely.RobotsHandler.Common;
-    using Stott.Optimizely.RobotsHandler.Configuration;
-    using Stott.Optimizely.RobotsHandler.Presentation;
-    using Stott.Security.Optimizely.Common;
-    using Stott.Security.Optimizely.Features.Configuration;
-
-    public class Startup
+    public Startup(IWebHostEnvironment webHostingEnvironment)
     {
-        private readonly IWebHostEnvironment _webHostingEnvironment;
+        _webHostingEnvironment = webHostingEnvironment;
+    }
 
-        public Startup(IWebHostEnvironment webHostingEnvironment)
+    public void ConfigureServices(IServiceCollection services)
+    {
+        if (_webHostingEnvironment.IsDevelopment())
         {
-            _webHostingEnvironment = webHostingEnvironment;
+            services.Configure<SchedulerOptions>(o =>
+            {
+                o.Enabled = false;
+            });
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        services.AddRazorPages();
+        services.AddCmsAspNetIdentity<ApplicationUser>();
+        
+        // Various serialization formats.
+        //// services.AddMvc().AddNewtonsoftJson();
+        services.AddMvc().AddJsonOptions(config =>
         {
-            if (_webHostingEnvironment.IsDevelopment())
-            {
-                services.Configure<SchedulerOptions>(o =>
+            config.JsonSerializerOptions.PropertyNamingPolicy = new UpperCaseNamingPolicy();
+        });
+
+        services.AddCms()
+                .AddFind()
+                .AddMediatR(config =>
                 {
-                    o.Enabled = false;
-                });
+                    config.RegisterServicesFromAssemblyContaining<RobotsApiController>();
+                })
+                .AddCustomDependencies()
+                .AddSwaggerGen();
+
+        //// services.AddRobotsHandler();
+        services.AddRobotsHandler(authorizationOptions =>
+        {
+            authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
+            {
+                policy.RequireRole("RobotAdmins");
+            });
+        });
+
+        services.AddStottSecurity(cspSetupOptions =>
+        {
+            cspSetupOptions.ConnectionStringName = "EPiServerDB";
+        },
+        authorizationOptions =>
+        {
+            authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
+            {
+                policy.RequireRole("WebAdmins");
+            });
+        });
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = "/util/Login";
+        });
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+
+        app.UseResponseCaching();
+        app.Use(async (context, next) =>
+        {
+            if (context.Request is not null && !context.Request.Path.Value.StartsWith("/episerver/", StringComparison.OrdinalIgnoreCase))
+            {
+                if (context.Response.Headers.ContainsKey(HeaderNames.CacheControl))
+                {
+                    context.Response.Headers[HeaderNames.CacheControl] = "no-cache, max-age=0";
+                }
+                else
+                {
+                    context.Response.Headers.Add(HeaderNames.CacheControl, "no-cache, max-age=0");
+                }
             }
 
-            services.AddRazorPages();
-            services.AddCmsAspNetIdentity<ApplicationUser>();
-            
-            // Various serialization formats.
-            //// services.AddMvc().AddNewtonsoftJson();
-            services.AddMvc().AddJsonOptions(config =>
-            {
-                config.JsonSerializerOptions.PropertyNamingPolicy = new UpperCaseNamingPolicy();
-            });
+            await next();
+        });
 
-            services.AddCms()
-                    .AddFind()
-                    .AddMediatR(config =>
-                    {
-                        config.RegisterServicesFromAssemblyContaining<RobotsApiController>();
-                    })
-                    .AddCustomDependencies()
-                    .AddSwaggerGen();
+        app.AddRedirects();
+        app.UseStaticFiles();
+        app.UseRouting();
 
-            //// services.AddRobotsHandler();
-            services.AddRobotsHandler(authorizationOptions =>
-            {
-                authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
-                {
-                    policy.RequireRole("RobotAdmins");
-                });
-            });
+        app.UseAuthentication();
+        app.UseAuthorization();
+        app.UseStottSecurity();
 
-            services.AddStottSecurity(cspSetupOptions =>
-            {
-                cspSetupOptions.ConnectionStringName = "EPiServerDB";
-            },
-            authorizationOptions =>
-            {
-                authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
-                {
-                    policy.RequireRole("WebAdmins");
-                });
-            });
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/util/Login";
-            });
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        app.UseEndpoints(endpoints =>
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.AddRedirects();
-            app.UseStaticFiles();
-            app.UseRouting();
-            
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseStottSecurity();
-
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapContent();
-                endpoints.MapRazorPages();
-            });
-        }
+            endpoints.MapContent();
+            endpoints.MapRazorPages();
+        });
     }
 }

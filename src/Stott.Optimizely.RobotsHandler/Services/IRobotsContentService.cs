@@ -1,13 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace Stott.Optimizely.RobotsHandler.Services
+using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+
+namespace Stott.Optimizely.RobotsHandler.Services;
+
+public interface IRobotsContentService
 {
-    public interface IRobotsContentService
-    {
-        string GetRobotsContent(Guid siteId);
+    IList<SiteRobotsViewModel> GetAll();
 
-        string GetDefaultRobotsContent();
+    SiteRobotsViewModel Get(Guid id);
 
-        void SaveRobotsContent(Guid siteId, string robotsContent);
-    }
+    SiteRobotsViewModel GetDefault(Guid siteId);
+
+    string GetRobotsContent(Guid siteId, string host);
+
+    string GetDefaultRobotsContent();
+
+    void Save(SaveRobotsModel model);
+
+    void Delete(Guid id);
+
+    bool DoesConflictExists(SaveRobotsModel model);
 }

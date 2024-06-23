@@ -1,23 +1,29 @@
 ﻿using System;
 
+using EPiServer.Web;
+
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
 using Moq;
 
 using NUnit.Framework;
 
 using Stott.Optimizely.RobotsHandler.Presentation;
+using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 using Stott.Optimizely.RobotsHandler.Services;
 using Stott.Optimizely.RobotsHandler.Test.TestCases;
 
 namespace Stott.Optimizely.RobotsHandler.Test.Presentation;
 
 [TestFixture]
-public class RobotsApiControllerTests
+public sealed class RobotsApiControllerTests
 {
     private Mock<IRobotsContentService> _mockService;
 
-    private Mock<IRobotsEditViewModelBuilder> _mockEditViewModelBuilder;
+    private Mock<ISiteDefinitionRepository> _mockSiteRepository;
 
-    private Mock<IRobotsListViewModelBuilder> _mockListingViewModelBuilder;
+    private Mock<ILogger<RobotsApiController>> _mockLogger;
 
     private RobotsApiController _controller;
 
@@ -26,12 +32,21 @@ public class RobotsApiControllerTests
     {
         _mockService = new Mock<IRobotsContentService>();
 
-        _mockEditViewModelBuilder = new Mock<IRobotsEditViewModelBuilder>();
-        _mockEditViewModelBuilder.Setup(x => x.WithSiteId(It.IsAny<Guid>())).Returns(_mockEditViewModelBuilder.Object);
+        _mockSiteRepository = new Mock<ISiteDefinitionRepository>();
 
-        _mockListingViewModelBuilder = new Mock<IRobotsListViewModelBuilder>();
+        _mockLogger = new Mock<ILogger<RobotsApiController>>();
 
-        _controller = new RobotsApiController(_mockService.Object, _mockEditViewModelBuilder.Object, _mockListingViewModelBuilder.Object);
+        _controller = new RobotsApiController(_mockService.Object, _mockSiteRepository.Object, _mockLogger.Object);
+    }
+
+    [Test]
+    public void ApiList_RetrievesDataFromTheRepository()
+    {
+        // Act
+        _controller.ApiList();
+
+        // Assert
+        _mockService.Verify(x => x.GetAll(), Times.Once);
     }
 
     [Test]
@@ -39,7 +54,7 @@ public class RobotsApiControllerTests
     public void Details_ThrowsArgumentExceptionWhenPresentedWithAnInvalidSiteId(string siteId)
     {
         // Assert
-        Assert.Throws<ArgumentException>(() => _controller.Details(siteId));
+        Assert.Throws<ArgumentException>(() => _controller.Details(Guid.NewGuid().ToString(), siteId));
     }
 
     [Test]
@@ -49,9 +64,141 @@ public class RobotsApiControllerTests
         var siteId = Guid.NewGuid().ToString();
 
         // Act
-        _controller.Details(siteId);
+        _controller.Details(Guid.NewGuid().ToString(), siteId);
 
         // Assert
-        _mockEditViewModelBuilder.Verify(x => x.WithSiteId(It.IsAny<Guid>()), Times.Once);
+        _mockService.Verify(x => x.Get(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
+    public void Details_RetrievesDefaultModelWhenPresentedWithAnEmptyId()
+    {
+        // Arrange
+        var siteId = Guid.NewGuid().ToString();
+
+        // Act
+        _controller.Details(Guid.Empty.ToString(), siteId);
+
+        // Assert
+        _mockService.Verify(x => x.GetDefault(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
+    public void Save_ReturnsConflictResultWhenConflictExists()
+    {
+        // Arrange
+        var formSubmitModel = new SaveRobotsModel();
+
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Returns(true);
+
+        // Act
+        var result = _controller.Save(formSubmitModel);
+
+        // Assert
+        Assert.That(result, Is.AssignableFrom<ContentResult>());
+        Assert.That(((ContentResult)result).StatusCode, Is.EqualTo(409));
+    }
+
+    [Test]
+    public void Save_DoesNotSaveModelWhenConflictExists()
+    {
+        // Arrange
+        var formSubmitModel = new SaveRobotsModel();
+
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Returns(true);
+
+        // Act
+        _controller.Save(formSubmitModel);
+
+        // Assert
+        _mockService.Verify(x => x.Save(It.IsAny<SaveRobotsModel>()), Times.Never);
+    }
+
+    [Test]
+    public void Save_SavesModelWhenNoConflictExists()
+    {
+        // Arrange
+        var formSubmitModel = new SaveRobotsModel();
+
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Returns(false);
+
+        // Act
+        _controller.Save(formSubmitModel);
+
+        // Assert
+        _mockService.Verify(x => x.Save(It.IsAny<SaveRobotsModel>()), Times.Once);
+    }
+
+    [Test]
+    public void Save_WhenDoesConflictExistsThrowsAnException_ThenAnInternalServerErrorIsReturned()
+    {
+        // Arrange
+        var formSubmitModel = new SaveRobotsModel();
+
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Throws<Exception>();
+
+        // Act
+        var result = _controller.Save(formSubmitModel);
+
+        // Assert
+        Assert.That(result, Is.AssignableFrom<ContentResult>());
+        Assert.That(((ContentResult)result).StatusCode, Is.EqualTo(500));
+    }
+
+    [Test]
+    public void Save_WhenSaveOnTheServiceThrowsAnException_ThenAnInternalServerErrorIsReturned()
+    {
+        // Arrange
+        var formSubmitModel = new SaveRobotsModel();
+
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Returns(false);
+        _mockService.Setup(x => x.Save(It.IsAny<SaveRobotsModel>())).Throws<Exception>();
+
+        // Act
+        var result = _controller.Save(formSubmitModel);
+
+        // Assert
+        Assert.That(result, Is.AssignableFrom<ContentResult>());
+        Assert.That(((ContentResult)result).StatusCode, Is.EqualTo(500));
+    }
+
+    [Test]
+    public void Delete_WhenGivenAnEmptyId_ReturnsABadRequest()
+    {
+        // Act
+        var result = _controller.Delete(Guid.Empty);
+
+        // Assert
+        Assert.That(result, Is.AssignableFrom<ContentResult>());
+        Assert.That(((ContentResult)result).StatusCode, Is.EqualTo(400));
+    }
+
+    [Test]
+    public void Delete_WhenGivenAValidId_CallsDeleteOnTheService()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        // Act
+        _controller.Delete(id);
+
+        // Assert
+        _mockService.Verify(x => x.Delete(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Test]
+    public void Delete_WhenServiceThrowsAnException_ReturnsInternalServerError()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+
+        _mockService.Setup(x => x.Delete(It.IsAny<Guid>())).Throws<Exception>();
+
+        // Act
+        var result = _controller.Delete(id);
+
+        // Assert
+        Assert.That(result, Is.AssignableFrom<ContentResult>());
+        Assert.That(((ContentResult)result).StatusCode, Is.EqualTo(500));
     }
 }
