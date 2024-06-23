@@ -25,12 +25,14 @@ function AddSiteRobots(props) {
                         var firstSite = response.data[0];
                         var hosts = firstSite.availableHosts ?? [];
                         setSiteId(firstSite.siteId);
+                        setSiteName(firstSite.siteName);
                         setHostCollection(hosts);
                         if (hosts.length > 0){
                             setHostName(hosts[0].value);
                         }
                     }
 
+                    setSiteRobotsContent('');
                     setShowModal(true);
                 }
                 else{
@@ -77,8 +79,8 @@ function AddSiteRobots(props) {
         const firstHost = availableHosts.length > 0 ? availableHosts[0].value : '';
 
         setSiteId(selectedSite.siteId);
-        setHostName(firstHost);
         setSiteName(selectedSite.siteName);
+        setHostName(firstHost);
         setHostCollection(availableHosts);
     }
 
