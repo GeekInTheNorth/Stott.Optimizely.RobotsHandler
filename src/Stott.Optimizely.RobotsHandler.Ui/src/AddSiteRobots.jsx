@@ -25,12 +25,14 @@ function AddSiteRobots(props) {
                         var firstSite = response.data[0];
                         var hosts = firstSite.availableHosts ?? [];
                         setSiteId(firstSite.siteId);
+                        setSiteName(firstSite.siteName);
                         setHostCollection(hosts);
                         if (hosts.length > 0){
                             setHostName(hosts[0].value);
                         }
                     }
 
+                    setSiteRobotsContent('');
                     setShowModal(true);
                 }
                 else{
@@ -59,7 +61,14 @@ function AddSiteRobots(props) {
                 handleReload();
             },
             (error) => {
-                handleShowFailureToast('Failure', error.response.data);
+                if (error.response && error.response.status === 409) {
+                    handleShowFailureToast('Failure', error.response.data);
+                    setShowModal(false);
+                }
+                else {
+                    handleShowFailureToast('Failure', 'An error was encountered when trying to save your robots.txt content.');
+                    setShowModal(false);
+                }
             });
     }
 
@@ -70,8 +79,8 @@ function AddSiteRobots(props) {
         const firstHost = availableHosts.length > 0 ? availableHosts[0].value : '';
 
         setSiteId(selectedSite.siteId);
-        setHostName(firstHost);
         setSiteName(selectedSite.siteName);
+        setHostName(firstHost);
         setHostCollection(availableHosts);
     }
 

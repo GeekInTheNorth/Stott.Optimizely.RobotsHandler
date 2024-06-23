@@ -165,16 +165,10 @@ public sealed class RobotsContentService : IRobotsContentService
 
     private static bool IsConflict(SaveRobotsModel model, RobotsEntity entity)
     {
-        if (Guid.Empty.Equals(model.Id))
-        {
-            return model.SiteId == entity.SiteId &&
-                   string.IsNullOrWhiteSpace(model.SpecificHost) == string.IsNullOrWhiteSpace(entity.SpecificHost);
-        }
-
         var modelHost = model.SpecificHost ?? string.Empty;
         var entityHost = entity.SpecificHost ?? string.Empty;
 
         return Guid.Equals(model.SiteId, entity.SiteId) && !Guid.Equals(model.Id, entity.Id.ExternalId) &&
-               string.Equals(model.SpecificHost, entity.SpecificHost, StringComparison.OrdinalIgnoreCase);
+               string.Equals(modelHost, entityHost, StringComparison.OrdinalIgnoreCase);
     }
 }
