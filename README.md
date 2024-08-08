@@ -6,7 +6,9 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/GeekInTheNorth/Stott.Optimizely.RobotsHandler/dotnet.yml?branch=develop)
 ![Nuget](https://img.shields.io/nuget/v/Stott.Optimizely.RobotsHandler)
 
-This is a new admin extension for Optimizely CMS 12+ for managing robots.txt on a per site basis.  The Stott.Optimizely.RobotsHandler project is a Razor Class Library which contains Razor Files, static JS files and relevent business logic specific to this functionality.
+This is an admin extension for Optimizely CMS 12+ for managing robots.txt on a per site and host definition basis.  The Stott.Optimizely.RobotsHandler project is a Razor Class Library which contains Razor Files, static JS files and relevent business logic specific to this functionality.
+
+![Stott Robots Handler](/StottRobotsList1.png)
 
 Stott Robots Handler is a free to use module, however if you want to show your support, buy me a coffee on ko-fi:
 
@@ -109,8 +111,11 @@ Thank you for your feedback and contributions go to the following members of the
 
 | Contributor | Bug Reports | Pull Requests |
 |-------------|-------------|---------------|
-| [Anish Peethambaran](https://github.com/Anish-Peethambaran) | 1 | - |
+| [Paul Mcgann](https://github.com/paulmcgann) | 1 | 1 |
 | [Ellinge](https://github.com/ellinge) | 1 | 1 |
+| [Tomas Hensrud Gulla](https://github.com/tomahg) | - | 1 |
+| [Anish Peethambaran](https://github.com/Anish-Peethambaran) | 1 | - |
+| [Deepa V Puranik](https://github.com/Deepa-Puranik) | 1 | - |
 | [Mahdi Shahbazi](https://github.com/mahdishahbazi) | 1 | - |
 | [Praveen Soni](https://world.optimizely.com/System/Users-and-profiles/Community-Profile-Card/?userId=fd64fb7a-ba91-e911-a968-000d3a441525) | 1 | - |
-| [Tomas Hensrud Gulla](https://github.com/tomahg) | - | 1 |
+| [jhope-kc](https://github.com/jhope-kc) | 1 | - |

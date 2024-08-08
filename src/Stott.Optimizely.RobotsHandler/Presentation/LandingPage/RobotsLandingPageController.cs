@@ -7,10 +7,11 @@ using EPiServer.Framework.ClientResources;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
+using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Models;
 using Stott.Security.Optimizely.Features.StaticFile;
 
+[Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
 public sealed class RobotsLandingPageController : Controller
 {
     private readonly ICspNonceService _cspNonceService;
@@ -41,7 +42,6 @@ public sealed class RobotsLandingPageController : Controller
 
     [HttpGet]
     [Route("/stott.robotshandler/static/{staticFileName}")]
-    [AllowAnonymous]
     public IActionResult ApplicationStaticFile(string staticFileName)
     {
         var fileBytes = _staticFileResolver.GetFileContent(staticFileName);
