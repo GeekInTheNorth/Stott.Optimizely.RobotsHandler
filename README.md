@@ -118,3 +118,4 @@ Thank you for your feedback and contributions go to the following members of the
 | [Deepa V Puranik](https://github.com/Deepa-Puranik) | 1 | - |
 | [Mahdi Shahbazi](https://github.com/mahdishahbazi) | 1 | - |
 | [Praveen Soni](https://world.optimizely.com/System/Users-and-profiles/Community-Profile-Card/?userId=fd64fb7a-ba91-e911-a968-000d3a441525) | 1 | - |
+| [jhope-kc](https://github.com/jhope-kc) | 1 | - |
