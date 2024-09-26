@@ -2,7 +2,7 @@ import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState } from 'react'
 import { Toast, ToastContainer } from 'react-bootstrap'
-import ConfigurationList from './ConfigurationList'
+import NavigationContainer from './NavigationContainer';
 
 function App() {
 
@@ -28,7 +28,7 @@ function App() {
 
   return (
     <>
-      <ConfigurationList showToastNotificationEvent={showToastNotificationEvent}></ConfigurationList>
+      <NavigationContainer showToastNotificationEvent={showToastNotificationEvent}></NavigationContainer>
       <ToastContainer className="p-3" position='middle-center'>
         <Toast onClose={closeToastNotification} show={showToastNotification} delay={4000} autohide={true}>
           <Toast.Header className={toastHeaderClass}>
