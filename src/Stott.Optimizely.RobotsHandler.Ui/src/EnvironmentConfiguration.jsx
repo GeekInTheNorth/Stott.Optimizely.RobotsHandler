@@ -1,47 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, Card, Container, Form, Row } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Alert, Button, Card, Form } from 'react-bootstrap';
 
 function EnvironmentConfiguration(props) {
     
-    const [robotsTagBehavior, setRobotsTagBehavior] = useState(false);
-    const [useNoFollow, setUseNoFollow] = useState(false);
-    const [useNoIndex, setUseNoIndex] = useState(false);
-    const [useNoImageIndex, setUseNoImageIndex] = useState(false);
-    const [useNoArchive, setUseNoArchive] = useState(false);
-    const [useNoSnippet, setUseNoSnippet] = useState(false);
-    const [useNoTranslate, setUseNoTranslate] = useState(false);
-    const environmentName = props.environmentName ?? 'Unknown'
+    const [useNoFollow, setUseNoFollow] = useState(props.environment.useNoFollow ?? false);
+    const [useNoIndex, setUseNoIndex] = useState(props.environment.useNoIndex ?? false);
+    const [useNoImageIndex, setUseNoImageIndex] = useState(props.environment.useNoImageIndex ?? false);
+    const [useNoArchive, setUseNoArchive] = useState(props.environment.useNoArchive ?? false);
+    const [enableSaveButton, setEnableSaveButton] = useState(false);
+    const environmentName = props.environment.environmentName ?? 'Unknown'
+    const isCurrentEnvironment = props.environment.isCurrentEnvironment ?? false;
 
-    const handleSetUseNoFollow = (event) => { setUseNoFollow(event.target.checked); }
-    const handleSetUseNoIndex = (event) => { setUseNoIndex(event.target.checked); }
-    const handleSetUseNoImageIndex = (event) => { setUseNoImageIndex(event.target.checked); }
-    const handleSetUseNoArchive = (event) => { setUseNoArchive(event.target.checked); }
-    const handleSetUseNoSnippet = (event) => { setUseNoSnippet(event.target.checked); }
-    const handleSetUseNoTranslate = (event) => { setUseNoTranslate(event.target.checked); }
-    const handleSetRobotsTagBehavior = (event) => { setRobotsTagBehavior(event.target.value); }
+    const handleSetUseNoFollow = (event) => { setUseNoFollow(event.target.checked); setEnableSaveButton(true); }
+    const handleSetUseNoIndex = (event) => { setUseNoIndex(event.target.checked); setEnableSaveButton(true); }
+    const handleSetUseNoImageIndex = (event) => { setUseNoImageIndex(event.target.checked); setEnableSaveButton(true); }
+    const handleSetUseNoArchive = (event) => { setUseNoArchive(event.target.checked); setEnableSaveButton(true); }
+    const getEnvironmentClass = () => { return isCurrentEnvironment ? 'fw-bold bg-primary text-light' : 'fw-bold'; }
+    const getEnvironmentSuffix = () => { return isCurrentEnvironment ? ' (Current)' : ''; }
+    
+    const getInfoPanel = () => {
+        let isActive = useNoArchive || useNoFollow || useNoIndex || useNoImageIndex;
+        if (isCurrentEnvironment && isActive) {
+            return (
+                <Alert variant='warning' className='my-2 p-2'>
+                    If a meta robots element is present within the HTML of the page, it will have its contents replaced by the options selected here.
+                    These options will also be present on every response from the site in an <strong>X-Robots-Tag</strong> header.
+                </Alert>
+            )
+        }
+        else if (isActive) {
+            return (
+                <Alert variant='secondary' className='my-2 p-2'>
+                    These options will be applied when the current database is cloned into to the <strong>{environmentName}</strong> environment.
+                </Alert>
+            )
+        }
+        else if (isCurrentEnvironment) {
+            return (
+                <p className='my-2 form-text'>
+                    Please note that no action will be taken unless at least one option is selected.
+                </p>
+            )
+        }
+        else {
+            return null;
+        }
+    }
 
     return(
         <Card className='my-3'>
-            <Card.Header className='fw-bold'>{environmentName}</Card.Header>
+            <Card.Header className={getEnvironmentClass()}>{environmentName} {getEnvironmentSuffix()}</Card.Header>
             <Card.Body>
                 <Form.Group className='mb-3'>
-                    <Form.Label id='lblConfigurationType'>Robot Tag Behaviour</Form.Label>
-                    <Form.Select label='Robot Tag Behaviour' aria-describedby='lblConfigurationType' onChange={handleSetRobotsTagBehavior} value={robotsTagBehavior}>
-                        <option value='None'>Disabled</option>
-                        <option value='Replace'>Replace Page Values</option>
-                        <option value='Merge'>Merge With Page Values</option>
-                    </Form.Select>
-                </Form.Group>
-                <Form.Group className='mb-3'>
-                    <Form.Label>Robots Options</Form.Label>
+                    <Form.Label>Select Instructions to Apply Globally to Robots</Form.Label>
                     <Form.Check type='switch' label='No Follow - Instruct search engines not to follow links on a page.' checked={useNoFollow} onChange={handleSetUseNoFollow} />
                     <Form.Check type='switch' label='No Index - Instruct search engines not to index a page.' checked={useNoIndex} onChange={handleSetUseNoIndex} />
                     <Form.Check type='switch' label='No Image Index - Instruct search engines not to index images on a page.' checked={useNoImageIndex} onChange={handleSetUseNoImageIndex} />
                     <Form.Check type='switch' label='No Archive - Instruct search engines not to show a cached link in search results.' checked={useNoArchive} onChange={handleSetUseNoArchive} />
-                    <Form.Check type='switch' label='No Snippet - Instruct search engines not to show a text snippet or video preview in the search results.' checked={useNoSnippet} onChange={handleSetUseNoSnippet} />
-                    <Form.Check type='switch' label='No Translate - Instruct search engines not to offer a translation of a page in search results.' checked={useNoTranslate} onChange={handleSetUseNoTranslate} />
                 </Form.Group>
+                {getInfoPanel()}
             </Card.Body>
+            <Card.Footer>
+                <Button disabled={!enableSaveButton}>Save Changes</Button>
+            </Card.Footer>
         </Card>)
 }
 

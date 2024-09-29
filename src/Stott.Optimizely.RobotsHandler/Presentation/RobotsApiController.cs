@@ -3,7 +3,6 @@
 using System;
 using System.Linq;
 using System.Net;
-using System.Text.Json;
 
 using EPiServer.Web;
 
@@ -18,7 +17,7 @@ using Stott.Optimizely.RobotsHandler.Services;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
-public sealed class RobotsApiController : Controller
+public sealed class RobotsApiController : BaseApiController
 {
     private readonly IRobotsContentService _service;
 
@@ -144,22 +143,5 @@ public sealed class RobotsApiController : Controller
                                    .ToList();
 
         return CreateSafeJsonResult(sites);
-    }
-
-    private static IActionResult CreateSafeJsonResult<T>(T objectToSerialize)
-    {
-        var serializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
-        var content = JsonSerializer.Serialize(objectToSerialize, serializationOptions);
-
-        return new ContentResult
-        {
-            StatusCode = (int)HttpStatusCode.OK,
-            ContentType = "application/json",
-            Content = content
-        };
     }
 }

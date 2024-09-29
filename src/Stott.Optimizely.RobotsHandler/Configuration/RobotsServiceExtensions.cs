@@ -18,6 +18,9 @@ public static class ServiceExtensions
     {
         serviceCollection.AddTransient<IRobotsContentService, RobotsContentService>();
         serviceCollection.AddTransient<IRobotsContentRepository, RobotsContentRepository>();
+        serviceCollection.AddTransient<IEnvironmentRobotsService, EnvironmentRobotsService>();
+        serviceCollection.AddTransient<IEnvironmentRobotsRepository, EnvironmentRobotsRepository>();
+        serviceCollection.AddScoped(provider => new Lazy<IEnvironmentRobotsRepository>(() => provider.GetRequiredService<IEnvironmentRobotsRepository>()));
         serviceCollection.AddScoped<IStaticFileResolver, StaticFileResolver>();
 
         // Authorization
