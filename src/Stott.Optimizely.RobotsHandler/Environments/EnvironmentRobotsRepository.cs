@@ -4,10 +4,9 @@ using System.Linq;
 
 using EPiServer.Data;
 using EPiServer.Data.Dynamic;
-
 using Stott.Optimizely.RobotsHandler.Models;
 
-namespace Stott.Optimizely.RobotsHandler.Services;
+namespace Stott.Optimizely.RobotsHandler.Environments;
 
 public sealed class EnvironmentRobotsRepository : IEnvironmentRobotsRepository
 {

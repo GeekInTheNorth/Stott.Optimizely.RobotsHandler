@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Stott.Optimizely.RobotsHandler.Services;
+namespace Stott.Optimizely.RobotsHandler.Environments;
 
 public interface IEnvironmentRobotsService
 {

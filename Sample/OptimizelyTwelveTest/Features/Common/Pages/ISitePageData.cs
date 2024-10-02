@@ -1,19 +1,20 @@
-﻿namespace OptimizelyTwelveTest.Features.Common.Pages
+﻿namespace OptimizelyTwelveTest.Features.Common.Pages;
+
+using EPiServer.Core;
+
+public interface ISitePageData
 {
-    using EPiServer.Core;
+    string TeaserTitle { get; }
 
-    public interface ISitePageData
-    {
-        string TeaserTitle { get; }
+    string TeaserText { get; }
 
-        string TeaserText { get; }
+    ContentReference TeaserImage { get; }
 
-        ContentReference TeaserImage { get; }
+    string MetaTitle { get; }
 
-        string MetaTitle { get; }
+    string MetaText { get; }
 
-        string MetaText { get; }
+    ContentReference MetaImage { get; }
 
-        ContentReference MetaImage { get; }
-    }
+    string MetaRobots { get; }
 }

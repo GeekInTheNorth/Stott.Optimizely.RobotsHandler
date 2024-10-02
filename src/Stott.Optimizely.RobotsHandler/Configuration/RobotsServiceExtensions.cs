@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 using Stott.Optimizely.RobotsHandler.Common;
+using Stott.Optimizely.RobotsHandler.Environments;
 using Stott.Optimizely.RobotsHandler.Services;
 using Stott.Security.Optimizely.Features.StaticFile;
 

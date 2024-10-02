@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Hosting;
-
 using Stott.Optimizely.RobotsHandler.Common;
 
-namespace Stott.Optimizely.RobotsHandler.Services;
+namespace Stott.Optimizely.RobotsHandler.Environments;
 
 public class EnvironmentRobotsService : IEnvironmentRobotsService
 {
@@ -15,7 +14,7 @@ public class EnvironmentRobotsService : IEnvironmentRobotsService
     private readonly IWebHostEnvironment _hostingEnvironment;
 
     public EnvironmentRobotsService(
-        Lazy<IEnvironmentRobotsRepository> repository, 
+        Lazy<IEnvironmentRobotsRepository> repository,
         IWebHostEnvironment hostingEnvironment)
     {
         _repository = repository;

@@ -4,11 +4,10 @@ using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-
 using Stott.Optimizely.RobotsHandler.Common;
-using Stott.Optimizely.RobotsHandler.Services;
+using Stott.Optimizely.RobotsHandler.Presentation;
 
-namespace Stott.Optimizely.RobotsHandler.Presentation;
+namespace Stott.Optimizely.RobotsHandler.Environments;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
@@ -19,7 +18,7 @@ public sealed class EnvironmentApiController : BaseApiController
     private readonly ILogger<EnvironmentApiController> _logger;
 
     public EnvironmentApiController(
-        IEnvironmentRobotsService service, 
+        IEnvironmentRobotsService service,
         ILogger<EnvironmentApiController> logger)
     {
         _service = service;
