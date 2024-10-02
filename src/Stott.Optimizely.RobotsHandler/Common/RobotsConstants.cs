@@ -6,8 +6,6 @@ public static class RobotsConstants
 
     public static class EnvironmentNames
     {
-        public const string Development = "Development";
-
         public const string Integration = "Integration";
 
         public const string Preproduction = "Preproduction";

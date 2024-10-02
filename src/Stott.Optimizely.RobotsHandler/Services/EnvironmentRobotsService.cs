@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
 
 using Stott.Optimizely.RobotsHandler.Common;
 
@@ -25,8 +24,9 @@ public class EnvironmentRobotsService : IEnvironmentRobotsService
 
     public IList<EnvironmentRobotsModel> GetAll()
     {
+        var currentEnvironment = _hostingEnvironment.EnvironmentName;
         var configurations = _repository.Value.GetAll();
-        IncludeAllEnvironments(configurations);
+        IncludeAllEnvironments(configurations, currentEnvironment);
 
         var currentConfig = configurations.FirstOrDefault(x => string.Equals(x.EnvironmentName, _hostingEnvironment.EnvironmentName, StringComparison.OrdinalIgnoreCase));
         if (currentConfig != null)
@@ -52,11 +52,11 @@ public class EnvironmentRobotsService : IEnvironmentRobotsService
         _repository.Value.Save(model);
     }
 
-    private void IncludeAllEnvironments(IList<EnvironmentRobotsModel> environmentModels)
+    private static void IncludeAllEnvironments(IList<EnvironmentRobotsModel> environmentModels, string currentEnvironmentName)
     {
-        if (_hostingEnvironment.IsDevelopment() && !environmentModels.Any(x => string.Equals(x.EnvironmentName, RobotsConstants.EnvironmentNames.Development, StringComparison.OrdinalIgnoreCase)))
+        if (!string.IsNullOrWhiteSpace(currentEnvironmentName) && !environmentModels.Any(x => string.Equals(x.EnvironmentName, currentEnvironmentName, StringComparison.OrdinalIgnoreCase)))
         {
-            environmentModels.Add(new EnvironmentRobotsModel { Id = Guid.NewGuid(), EnvironmentName = RobotsConstants.EnvironmentNames.Development });
+            environmentModels.Add(new EnvironmentRobotsModel { Id = Guid.NewGuid(), EnvironmentName = currentEnvironmentName });
         }
 
         if (!environmentModels.Any(x => string.Equals(x.EnvironmentName, RobotsConstants.EnvironmentNames.Integration, StringComparison.OrdinalIgnoreCase)))
