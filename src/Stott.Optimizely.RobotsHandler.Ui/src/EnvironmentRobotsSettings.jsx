@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Container } from 'react-bootstrap';
 import EnvironmentConfiguration from './EnvironmentConfiguration';
 
-function EnvironmentRobotsSettings() {
+function EnvironmentRobotsSettings(props) {
   
     const [availableEnvironments, setAvailableEnvironments] = useState([])
     
@@ -34,7 +34,7 @@ function EnvironmentRobotsSettings() {
     const renderEnvironmentList = () => {
         return availableEnvironments && availableEnvironments.map((environment, index) => {
             return (
-                <EnvironmentConfiguration key={index} environment={environment}></EnvironmentConfiguration>
+                <EnvironmentConfiguration key={index} environment={environment} showToastNotificationEvent={props.showToastNotificationEvent}></EnvironmentConfiguration>
             )
         })
     };

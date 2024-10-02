@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import ConfigurationList from './ConfigurationList';
 import EnvironmentRobotsSettings from './EnvironmentRobotsSettings';
 
-function NavigationContainer() {
+function NavigationContainer(props) {
 
     const [showRobotsList, setShowRobotsList] = useState(false);
     const [showEnvironmentRobots, setShowEnvironmentRobots] = useState(false);
-    const [containerTitle, setContainerTitle] = useState('Robots.txt List');
-
-    const handleHandleShowToastNotification = (isSuccess, title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(isSuccess, title, description);
+    const [containerTitle, setContainerTitle] = useState('Robots.txt Files');
 
     const handleSelect = (key) => {
         setContainerTitle('');
@@ -16,12 +14,12 @@ function NavigationContainer() {
         setShowEnvironmentRobots(false);
 
         switch(key){
-            case 'robots-list':
-                setContainerTitle('Robots.txt List');
+            case 'robots-files':
+                setContainerTitle('Robots.txt Files');
                 setShowRobotsList(true);
                 break;
-            case 'site-robots':
-                setContainerTitle('Site Robots');
+            case 'environment-robots':
+                setContainerTitle('Environment Robots');
                 setShowEnvironmentRobots(true);
                 break;
             default:
@@ -37,7 +35,7 @@ function NavigationContainer() {
                 handleSelect(hash);
             }
             else {
-                handleSelect('robots-list');
+                handleSelect('robots-files');
             }
         };
 
@@ -55,8 +53,8 @@ function NavigationContainer() {
                 <p className="my-0 h5">Stott Robots Handler | {containerTitle}</p>
             </div>
             <div className="container-fluid security-app-container">
-                { showRobotsList ? <ConfigurationList showToastNotificationEvent={handleHandleShowToastNotification}></ConfigurationList> : null }
-                { showEnvironmentRobots ? <EnvironmentRobotsSettings showToastNotificationEvent={handleHandleShowToastNotification}></EnvironmentRobotsSettings> : null }
+                { showRobotsList ? <ConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></ConfigurationList> : null }
+                { showEnvironmentRobots ? <EnvironmentRobotsSettings showToastNotificationEvent={props.showToastNotificationEvent}></EnvironmentRobotsSettings> : null }
             </div>
         </>
     )

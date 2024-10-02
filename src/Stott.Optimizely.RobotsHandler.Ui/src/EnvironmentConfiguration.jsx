@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Alert, Button, Card, Form } from 'react-bootstrap';
 
 function EnvironmentConfiguration(props) {
@@ -8,6 +9,7 @@ function EnvironmentConfiguration(props) {
     const [useNoImageIndex, setUseNoImageIndex] = useState(props.environment.useNoImageIndex ?? false);
     const [useNoArchive, setUseNoArchive] = useState(props.environment.useNoArchive ?? false);
     const [enableSaveButton, setEnableSaveButton] = useState(false);
+    const configurationId = props.environment.id ?? '00000000-0000-0000-0000-000000000000';
     const environmentName = props.environment.environmentName ?? 'Unknown'
     const isCurrentEnvironment = props.environment.isCurrentEnvironment ?? false;
 
@@ -47,6 +49,33 @@ function EnvironmentConfiguration(props) {
         }
     }
 
+    const handleSaveEnvironmentContent = async () => {
+        let params = new URLSearchParams();
+        params.append('id', configurationId);
+        params.append('environmentName', environmentName);
+        params.append('useNoFollow', useNoFollow);
+        params.append('useNoIndex', useNoIndex);
+        params.append('useNoImageIndex', useNoImageIndex);
+        params.append('useNoArchive', useNoArchive);
+
+        await axios.post(import.meta.env.VITE_APP_ENVIRONMENT_SAVE, params)
+            .then(() => {
+                handleShowSuccessToast('Success', 'Your environment configuration changes for \'' + environmentName + '\' were successfully applied.');
+                setEnableSaveButton(false);
+            },
+            (error) => {
+                if (error.response && error.response.status === 409) {
+                    handleShowFailureToast('Failure', error.response.data);
+                }
+                else {
+                    handleShowFailureToast('Failure', 'An error was encountered when trying to save your environment configuration for \'' + environmentName + '\'.');
+                }
+            });
+    }
+
+    const handleShowSuccessToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(true, title, description);
+    const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description);
+
     return(
         <Card className='my-3'>
             <Card.Header className={getEnvironmentClass()}>{environmentName} {getEnvironmentSuffix()}</Card.Header>
@@ -61,7 +90,7 @@ function EnvironmentConfiguration(props) {
                 {getInfoPanel()}
             </Card.Body>
             <Card.Footer>
-                <Button disabled={!enableSaveButton}>Save Changes</Button>
+                <Button disabled={!enableSaveButton} onClick={handleSaveEnvironmentContent}>Save Changes</Button>
             </Card.Footer>
         </Card>)
 }
