@@ -23,17 +23,31 @@ public sealed class MetaRobotsTagHelper : TagHelper
         if (string.Equals(metaName, "robots", System.StringComparison.OrdinalIgnoreCase))
         {
             var environmentContent = _environmentRobotsService.GetCurrent();
-            output.Attributes.SetAttribute("content", environmentContent?.ToMetaContent() ?? string.Empty);
+            var newContent = environmentContent?.ToMetaContent();
+            var existingContent = GetMetaContent(context);
+
+            if (!string.IsNullOrWhiteSpace(newContent))
+            {
+                output.Attributes.SetAttribute("content", newContent);
+            }
+            else if (string.IsNullOrWhiteSpace(existingContent))
+            {
+                output.TagName = null;
+            }
         }
 
         return base.ProcessAsync(context, output);
     }
 
-    private static string GetMetaName(TagHelperContext context)
+    private static string GetMetaName(TagHelperContext context) => GetAttributeValue(context, "name");
+
+    private static string GetMetaContent(TagHelperContext context) => GetAttributeValue(context, "content");
+
+    private static string GetAttributeValue(TagHelperContext context, string attributeName)
     {
-        if (context.AllAttributes.TryGetAttribute("name", out var nameAttribute))
+        if (context.AllAttributes.TryGetAttribute(attributeName, out var attribute))
         {
-            return nameAttribute.Value?.ToString();
+            return attribute.Value?.ToString();
         }
 
         return null;
