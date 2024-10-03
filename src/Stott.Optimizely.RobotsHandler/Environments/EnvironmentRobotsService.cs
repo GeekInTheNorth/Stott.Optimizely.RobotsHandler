@@ -7,7 +7,7 @@ using Stott.Optimizely.RobotsHandler.Common;
 
 namespace Stott.Optimizely.RobotsHandler.Environments;
 
-public class EnvironmentRobotsService : IEnvironmentRobotsService
+public sealed class EnvironmentRobotsService : IEnvironmentRobotsService
 {
     private readonly Lazy<IEnvironmentRobotsRepository> _repository;
 

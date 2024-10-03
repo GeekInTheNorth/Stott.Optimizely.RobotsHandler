@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
@@ -23,12 +22,11 @@ public sealed class MetaRobotsTagHelper : TagHelper
         if (string.Equals(metaName, "robots", System.StringComparison.OrdinalIgnoreCase))
         {
             var environmentContent = _environmentRobotsService.GetCurrent();
-            var newContent = environmentContent?.ToMetaContent();
             var existingContent = GetMetaContent(context);
 
-            if (!string.IsNullOrWhiteSpace(newContent))
+            if (environmentContent is { IsEnabled: true })
             {
-                output.Attributes.SetAttribute("content", newContent);
+                output.Attributes.SetAttribute("content", environmentContent.ToMetaContent());
             }
             else if (string.IsNullOrWhiteSpace(existingContent))
             {

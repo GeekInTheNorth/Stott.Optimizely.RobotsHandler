@@ -19,6 +19,8 @@ public sealed class EnvironmentRobotsModel
 
     public bool IsCurrentEnvironment { get; set; }
 
+    public bool IsEnabled => UseNoFollow || UseNoIndex || UseNoImageIndex || UseNoArchive;
+
     public string ToMetaContent()
     {
         var options = new List<string>(0);
