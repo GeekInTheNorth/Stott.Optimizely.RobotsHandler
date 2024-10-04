@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
+using Stott.Optimizely.RobotsHandler.Cache;
 using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Environments;
 using Stott.Optimizely.RobotsHandler.Services;
@@ -24,10 +25,11 @@ public static class ServiceExtensions
         this IServiceCollection serviceCollection,
         Action<AuthorizationOptions> authorizationOptions = null)
     {
-        serviceCollection.AddTransient<IRobotsContentService, RobotsContentService>();
-        serviceCollection.AddTransient<IRobotsContentRepository, RobotsContentRepository>();
-        serviceCollection.AddTransient<IEnvironmentRobotsService, EnvironmentRobotsService>();
-        serviceCollection.AddTransient<IEnvironmentRobotsRepository, EnvironmentRobotsRepository>();
+        serviceCollection.AddScoped<IRobotsCacheHandler, RobotsCacheHandler>();
+        serviceCollection.AddScoped<IRobotsContentService, RobotsContentService>();
+        serviceCollection.AddScoped<IRobotsContentRepository, RobotsContentRepository>();
+        serviceCollection.AddScoped<IEnvironmentRobotsService, EnvironmentRobotsService>();
+        serviceCollection.AddScoped<IEnvironmentRobotsRepository, EnvironmentRobotsRepository>();
         serviceCollection.AddScoped(provider => new Lazy<IEnvironmentRobotsRepository>(() => provider.GetRequiredService<IEnvironmentRobotsRepository>()));
         serviceCollection.AddScoped<IStaticFileResolver, StaticFileResolver>();
 

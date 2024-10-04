@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Hosting;
+
+using Stott.Optimizely.RobotsHandler.Cache;
 using Stott.Optimizely.RobotsHandler.Common;
 
 namespace Stott.Optimizely.RobotsHandler.Environments;
@@ -13,18 +15,22 @@ public sealed class EnvironmentRobotsService : IEnvironmentRobotsService
 
     private readonly IWebHostEnvironment _hostingEnvironment;
 
+    private readonly IRobotsCacheHandler _cacheHandler;
+
     public EnvironmentRobotsService(
         Lazy<IEnvironmentRobotsRepository> repository,
-        IWebHostEnvironment hostingEnvironment)
+        IWebHostEnvironment hostingEnvironment,
+        IRobotsCacheHandler cacheHandler)
     {
         _repository = repository;
         _hostingEnvironment = hostingEnvironment;
+        _cacheHandler = cacheHandler;
     }
 
     public IList<EnvironmentRobotsModel> GetAll()
     {
         var currentEnvironment = _hostingEnvironment.EnvironmentName;
-        var configurations = _repository.Value.GetAll();
+        var configurations = _repository.Value.GetAll() ?? new List<EnvironmentRobotsModel>(0);
         IncludeAllEnvironments(configurations, currentEnvironment);
 
         var currentConfig = configurations.FirstOrDefault(x => string.Equals(x.EnvironmentName, _hostingEnvironment.EnvironmentName, StringComparison.OrdinalIgnoreCase));
@@ -38,16 +44,40 @@ public sealed class EnvironmentRobotsService : IEnvironmentRobotsService
 
     public EnvironmentRobotsModel Get(string environmentName)
     {
-        return _repository.Value.Get(environmentName);
+        if (string.IsNullOrWhiteSpace(environmentName))
+        {
+            return null;
+        }
+
+        var cacheKey = GetCacheKey(environmentName);
+        var environmentModel = _cacheHandler.Get<EnvironmentRobotsModel>(cacheKey);
+        if (environmentModel is not null)
+        {
+            return environmentModel;
+        }
+
+        environmentModel = _repository.Value.Get(environmentName);
+        if (environmentModel is not null)
+        {
+            _cacheHandler.Add(cacheKey, environmentModel);
+        }
+
+        return environmentModel;
     }
 
     public EnvironmentRobotsModel GetCurrent()
     {
-        return _repository.Value.Get(_hostingEnvironment.EnvironmentName);
+        return Get(_hostingEnvironment.EnvironmentName);
     }
 
     public void Save(EnvironmentRobotsModel model)
     {
+        if (string.IsNullOrWhiteSpace(model?.EnvironmentName))
+        {
+            return;
+        }
+
+        _cacheHandler.RemoveAll();
         _repository.Value.Save(model);
     }
 
@@ -72,5 +102,10 @@ public sealed class EnvironmentRobotsService : IEnvironmentRobotsService
         {
             environmentModels.Add(new EnvironmentRobotsModel { Id = Guid.NewGuid(), EnvironmentName = RobotsConstants.EnvironmentNames.Production });
         }
+    }
+
+    private static string GetCacheKey(string environmentName)
+    {
+        return $"Stott-RobotsHandler-Environment-{environmentName}";
     }
 }
