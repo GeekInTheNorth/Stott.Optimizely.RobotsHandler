@@ -11,32 +11,32 @@ public class MetaRobotsSelectionFactory : ISelectionFactory
         {
             new()
             {
-                Text = "No Follow - Instruct the Crawler NOT to follow the links in this page.",
+                Text = "No Follow - Instruct search engines not to follow links on a page.",
                 Value = "nofollow"
             },
             new()
             {
-                Text = "No Index - Instruct the Crawler NOT to index on this page.",
+                Text = "No Index - Instruct search engines not to index a page.",
                 Value = "noindex"
             },
             new()
             {
-                Text = "No Image Index - Instruct the Crawler NOT to index images on this page.",
+                Text = "No Image Index - Instruct search engines not to index images on a page.",
                 Value = "noimageindex"
             },
             new()
             {
-                Text = "No Archive - Instruct the Search Engine NOT to show a cached link in search results.",
+                Text = "No Archive - Instruct search engines not to show a cached link in search results.",
                 Value = "noarchive"
             },
             new()
             {
-                Text = "No Snippet - Instruct the Search Engine NOT to show a text snippet or video preview in the search results.",
+                Text = "No Snippet - Instruct search engines not to show a text snippet or video preview in the search results.",
                 Value = "nosnippet"
             },
             new()
             {
-                Text = "No Translate - Instruct the Search Engine NOT to offer a translation of this page in search results.",
+                Text = "No Translate - Instruct search engines not to offer a translation of a page in search results.",
                 Value = "notranslate"
             }
         };
