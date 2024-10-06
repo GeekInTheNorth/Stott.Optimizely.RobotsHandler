@@ -3,7 +3,7 @@
 [![Platform](https://img.shields.io/badge/Platform-.NET%206-blue.svg?style=flat)](https://docs.microsoft.com/en-us/dotnet/)
 [![Platform](https://img.shields.io/badge/Optimizely-%2012-blue.svg?style=flat)](http://world.episerver.com/cms/)
 [![GitHub](https://img.shields.io/github/license/GeekInTheNorth/Stott.Optimizely.RobotsHandler)](https://github.com/GeekInTheNorth/Stott.Optimizely.RobotsHandler/blob/main/LICENSE.txt)
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/GeekInTheNorth/Stott.Optimizely.RobotsHandler/dotnet.yml?branch=develop)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/GeekInTheNorth/Stott.Optimizely.RobotsHandler/dotnet.yml?branch=main)
 ![Nuget](https://img.shields.io/nuget/v/Stott.Optimizely.RobotsHandler)
 
 This is an admin extension for Optimizely CMS 12+ for managing robots.txt on a per site and host definition basis.  The Stott.Optimizely.RobotsHandler project is a Razor Class Library which contains Razor Files, static JS files and relevent business logic specific to this functionality.
