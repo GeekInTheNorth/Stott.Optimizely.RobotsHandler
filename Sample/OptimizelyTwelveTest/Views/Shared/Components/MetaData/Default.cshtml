@@ -2,3 +2,9 @@
 
 <title>@Model.Title</title>
 <meta name="description" content="@Model.Description" />
+<meta name="robots" content="@Model.Robots" />
+
+@foreach(var tag in Model.MetaTags)
+{
+    <meta name="@tag.Key" content="@tag.Value" />
+}

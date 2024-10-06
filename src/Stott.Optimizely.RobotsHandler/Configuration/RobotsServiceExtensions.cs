@@ -4,20 +4,33 @@ using System;
 using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
+using Stott.Optimizely.RobotsHandler.Cache;
 using Stott.Optimizely.RobotsHandler.Common;
+using Stott.Optimizely.RobotsHandler.Environments;
 using Stott.Optimizely.RobotsHandler.Services;
 using Stott.Security.Optimizely.Features.StaticFile;
 
 public static class ServiceExtensions
 {
+    /// <summary>
+    /// Adds dependencies and configures the Stott Robots Handler.
+    /// </summary>
+    /// <param name="serviceCollection"></param>
+    /// <param name="authorizationOptions"></param>
+    /// <returns></returns>
     public static IServiceCollection AddRobotsHandler(
         this IServiceCollection serviceCollection,
         Action<AuthorizationOptions> authorizationOptions = null)
     {
-        serviceCollection.AddTransient<IRobotsContentService, RobotsContentService>();
-        serviceCollection.AddTransient<IRobotsContentRepository, RobotsContentRepository>();
+        serviceCollection.AddScoped<IRobotsCacheHandler, RobotsCacheHandler>();
+        serviceCollection.AddScoped<IRobotsContentService, RobotsContentService>();
+        serviceCollection.AddScoped<IRobotsContentRepository, RobotsContentRepository>();
+        serviceCollection.AddScoped<IEnvironmentRobotsService, EnvironmentRobotsService>();
+        serviceCollection.AddScoped<IEnvironmentRobotsRepository, EnvironmentRobotsRepository>();
+        serviceCollection.AddScoped(provider => new Lazy<IEnvironmentRobotsRepository>(() => provider.GetRequiredService<IEnvironmentRobotsRepository>()));
         serviceCollection.AddScoped<IStaticFileResolver, StaticFileResolver>();
 
         // Authorization
@@ -38,5 +51,14 @@ public static class ServiceExtensions
         }
 
         return serviceCollection;
+    }
+
+    /// <summary>
+    /// Sets up middleware required to handle environment specific robots headers.
+    /// </summary>
+    /// <param name="builder"></param>
+    public static void UseRobotsHandler(this IApplicationBuilder builder)
+    {
+        builder.UseMiddleware<RobotsHeaderMiddleware>();
     }
 }
