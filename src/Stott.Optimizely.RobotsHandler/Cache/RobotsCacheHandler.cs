@@ -48,6 +48,11 @@ public sealed class RobotsCacheHandler : IRobotsCacheHandler
     public T Get<T>(string cacheKey)
         where T : class
     {
+        if (string.IsNullOrWhiteSpace(cacheKey))
+        {
+            return null;
+        }
+
         return _cache.TryGet<T>(cacheKey, ReadStrategy.Wait, out var cachedObject) ? cachedObject : default;
     }
 
