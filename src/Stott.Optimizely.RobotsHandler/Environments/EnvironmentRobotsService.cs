@@ -33,13 +33,13 @@ public sealed class EnvironmentRobotsService : IEnvironmentRobotsService
         var configurations = _repository.Value.GetAll() ?? new List<EnvironmentRobotsModel>(0);
         IncludeAllEnvironments(configurations, currentEnvironment);
 
-        var currentConfig = configurations.FirstOrDefault(x => string.Equals(x.EnvironmentName, _hostingEnvironment.EnvironmentName, StringComparison.OrdinalIgnoreCase));
+        var currentConfig = configurations.FirstOrDefault(x => string.Equals(x.EnvironmentName, currentEnvironment, StringComparison.OrdinalIgnoreCase));
         if (currentConfig != null)
         {
             currentConfig.IsCurrentEnvironment = true;
         }
 
-        return configurations.OrderBy(x => x.EnvironmentName).ToList();
+        return configurations.OrderByDescending(x => x.IsCurrentEnvironment).ThenBy(x => x.EnvironmentName).ToList();
     }
 
     public EnvironmentRobotsModel Get(string environmentName)
