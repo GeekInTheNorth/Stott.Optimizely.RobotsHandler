@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 
 using Moq;
 
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 using Stott.Optimizely.RobotsHandler.Cache;
@@ -41,7 +43,7 @@ public sealed class EnvironmentRobotsServiceTests
     [Test]
     [TestCase("Test")]
     [TestCase("Development")]
-    public void GetAll_WhenCalled_ReturnsAllEnvironments(string currentEnvironment)
+    public void GetAll_WhenCalled_ReturnsAllDxpEnvironments(string currentEnvironment)
     {
         // Arrange
         _mockHostingEnvironment.Setup(x => x.EnvironmentName).Returns(currentEnvironment);
@@ -55,6 +57,21 @@ public sealed class EnvironmentRobotsServiceTests
         Assert.That(result.Any(x => x.EnvironmentName == RobotsConstants.EnvironmentNames.Integration), Is.True);
         Assert.That(result.Any(x => x.EnvironmentName == RobotsConstants.EnvironmentNames.Preproduction), Is.True);
         Assert.That(result.Any(x => x.EnvironmentName == RobotsConstants.EnvironmentNames.Production), Is.True);
+    }
+
+    [Test]
+    [TestCaseSource(typeof(EnvironmentRobotsServiceTestCases), nameof(EnvironmentRobotsServiceTestCases.EnvironmentNameTestCases))]
+    public void GetAll_WhenCalled_AlwaysReturnsTheCurrentEnvironmentFirst(string environmentName)
+    {
+        // Arrange
+        _mockHostingEnvironment.Setup(x => x.EnvironmentName).Returns(environmentName);
+
+        // Act
+        var result = _service.GetAll();
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(result.First().EnvironmentName, Is.EqualTo(environmentName));
     }
 
     [Test]
