@@ -1,13 +1,10 @@
-﻿namespace OptimizelyTwelveTest.Features.Search
+﻿namespace OptimizelyTwelveTest.Features.Search;
+
+using System.Collections.Generic;
+
+public sealed class SearchResponse
 {
-    using OptimizelyTwelveTest.Features.Common.Pages;
+    public int TotalRecords { get; set; }
 
-    using System.Collections.Generic;
-
-    public class SearchResponse
-    {
-        public int TotalRecords { get; set; }
-
-        public IList<SearchResultItem> Results { get; set; }
-    }
+    public IList<SearchResultItem> Results { get; set; }
 }

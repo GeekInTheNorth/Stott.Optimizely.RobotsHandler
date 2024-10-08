@@ -13,10 +13,10 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <NeutralLanguage>en-GB</NeutralLanguage>
         <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-        <AssemblyVersion>3.0.1</AssemblyVersion>
-        <FileVersion>3.0.1</FileVersion>
-        <Version>3.0.1</Version>
-        <PackageReleaseNotes>Add the ability to define robots.txt content by host within a site.</PackageReleaseNotes>
+        <AssemblyVersion>4.0.0</AssemblyVersion>
+        <FileVersion>4.0.0</FileVersion>
+        <Version>4.0.0</Version>
+        <PackageReleaseNotes>Add the ability define environment level robots meta tags and headers.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>

@@ -6,19 +6,53 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/GeekInTheNorth/Stott.Optimizely.RobotsHandler/dotnet.yml?branch=main)
 ![Nuget](https://img.shields.io/nuget/v/Stott.Optimizely.RobotsHandler)
 
-This is an admin extension for Optimizely CMS 12+ for managing robots.txt on a per site and host definition basis.  The Stott.Optimizely.RobotsHandler project is a Razor Class Library which contains Razor Files, static JS files and relevent business logic specific to this functionality.
-
-![Stott Robots Handler](/StottRobotsList1.png)
-
-Stott Robots Handler is a free to use module, however if you want to show your support, buy me a coffee on ko-fi:
+This is an admin extension for Optimizely CMS 12+ for managing robots content. Stott Robots Handler is a free to use module, however if you want to show your support, buy me a coffee on ko-fi:
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V0RX2BQ)
 
-## Configuration
+## Robots.Txt Management
+
+Robots.txt content can be managed on a per site and host definition basis.  A host of "default" applies to all unspecified hosts within a site, while specific host definitions will only apply to the specific host.
+
+![Stott Robots Handler, Robots.txt management](/StottRobotsList1.png)
+
+## Environment Robots
+
+_Introduced within version 4.0.0_
+
+Environment Robots allows you to configure the meta robots tag and `X-Robots-Tag` header for all page requests within the current environment.  This functionality provides the ability to prevent search engine robots from scanning indexing a site that is a lower level environment or a production environment that is not ready for general consumption.
+
+Options will always exist for Integration, Preproduction, Production and the current environment name. This allows you to preconfigure a lower enviroment when cloning content from production to lower environments.
+
+![Stott Robots Handler, Environment robots configuration](/StottRobotsList2.png)
+
+When a configuration is active, a Meta Tag Helper will look for and update the meta robots tag while a middleware will include the `X-Robots-Tag` header.  Its best in this case that your solution always renders the meta robots element and allow the Meta Tag Helper to either override it or remove it where needed.
+
+The meta tag helper will execute for any `meta` tag with a `name` attribute.  The logic within the robots tag helper will only execute where the `name` attribute has a value of `robots`.  In such a circumstance it will perform one of the following actions
+
+- When `name` is `robots`
+  - If the page has a robots definition and an environment configuration is not set, then the page robots value will be used.
+  - If the page has a robots definition and an environment configuration is set, then the environment configuration replaces the page definition.
+  - If the page does not have robots definition and an environment configuration is not set, then the meta tag will be removed.
+  - If the page does not have a robots definition and an environment configuration is set, then the meta tag will use the environment configuration
+- When `name` is not `robots`
+  - Preserve existing state.
+
+Examples:
+| Page Robots | Environment Robots | Result |
+|-------------|--------------------|--------|
+| noindex,nofollow | noindex,nofollow,noimageindex | noindex,nofollow,noimageindex |
+| noindex,nofollow | - | noindex,nofollow |
+| - | noindex,nofollow,noimageindex | noindex,nofollow,noimageindex |
+| - | - | _meta robots tag is removed_ |
+
+## Installation
+
+Install the `Stott.Optimizely.RobotsHandler` package into your website.
 
 ### Startup.cs
 
-After pulling in a reference to the Stott.Optimizely.RobotsHandler project, you need to ensure the following lines are added to the startup class of your solution:
+You need to ensure the following lines are added to the startup class of your solution:
 
 ```
 public void ConfigureServices(IServiceCollection services)
@@ -28,6 +62,8 @@ public void ConfigureServices(IServiceCollection services)
 
 public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 {
+    app.UseRobotsHandler();
+
     app.UseEndpoints(endpoints =>
     {
         endpoints.MapContent();
@@ -36,9 +72,19 @@ public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
 }
 ```
 
-The call to ```services.AddRobotsHandler()``` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by Microsoft.
+The call to `services.AddRobotsHandler()` sets up the dependency injection requirements for the RobotsHandler solution and is required to ensure the solution works as intended.  This works by following the Services Extensions pattern defined by Microsoft.
 
-The call to ```endpoints.MapControllers();``` ensures that the routing for the administration page, assets and robots.txt are correctly mapped.
+The call to `app.UseRobotsHandler()` sets up the middleware required to create the `X-Robots-Tag` header
+
+The call to `endpoints.MapControllers();` ensures that the routing for the administration page, assets and robots.txt are correctly mapped.
+
+### Razor Files
+
+In the `_ViewImports.cshtml` file you will need to add the following line to include meta robots tag helper.  
+
+```
+@addTagHelper *, Stott.Optimizely.RobotsHandler
+```
 
 ### Program.cs
 
