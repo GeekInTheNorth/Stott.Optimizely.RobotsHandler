@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 
 using OptimizelyTwelveTest.Features.Common;
+using OptimizelyTwelveTest.Features.Search;
 
 using ServiceExtensions;
 
@@ -56,6 +57,7 @@ public class Startup
                 .AddMediatR(config =>
                 {
                     config.RegisterServicesFromAssemblyContaining<RobotsApiController>();
+                    config.RegisterServicesFromAssemblyContaining<SearchPageController>();
                 })
                 .AddCustomDependencies()
                 .AddSwaggerGen();
@@ -120,6 +122,7 @@ public class Startup
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseStottSecurity();
+        app.UseRobotsHandler();
 
         app.UseSwagger();
         app.UseSwaggerUI();

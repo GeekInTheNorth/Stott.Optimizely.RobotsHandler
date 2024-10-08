@@ -8,20 +8,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>@Model.ApplicationName</title>
+    <title>@Model.ApplicationName | @Model.ApplicationVersion</title>
     <link href="@Model.CssFile" rel="stylesheet">
 </head>
 <body>
     @Html.CreatePlatformNavigationMenu()
     <div @Html.ApplyPlatformNavigation()>
-        <div class="container-fluid p-2 bg-dark text-light">
-            <p class="my-0">
-                <span class="h5">@Model.ApplicationName</span><span class="mx-3">@Model.ApplicationVersion</span>
-            </p>
-        </div>
-        <div class="container-fluid robots-app-container my-3">
-            <div id="stott-robots-ui"></div>
-        </div>
+        <div id="stott-robots-ui"></div>
     </div>
 
     <script src="@Model.JavaScriptFile" nonce="@Model.Nonce"></script>

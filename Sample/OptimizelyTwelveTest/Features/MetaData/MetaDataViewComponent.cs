@@ -1,33 +1,41 @@
-﻿namespace OptimizelyTwelveTest.Features.MetaData
+﻿namespace OptimizelyTwelveTest.Features.MetaData;
+
+using System.Collections.Generic;
+
+using EPiServer.Web.Routing;
+
+using Microsoft.AspNetCore.Mvc;
+
+using OptimizelyTwelveTest.Features.Common.Pages;
+using OptimizelyTwelveTest.Features.Settings;
+
+public sealed class MetaDataViewComponent : ViewComponent
 {
-    using EPiServer.Web.Routing;
+    private readonly ISiteSettings _siteSettings;
+    private readonly UrlResolver _urlResolver;
 
-    using Microsoft.AspNetCore.Mvc;
-
-    using OptimizelyTwelveTest.Features.Common.Pages;
-    using OptimizelyTwelveTest.Features.Settings;
-
-    public class MetaDataViewComponent : ViewComponent
+    public MetaDataViewComponent(ISiteSettings siteSettings, UrlResolver urlResolver)
     {
-        private readonly ISiteSettings _siteSettings;
-        private readonly UrlResolver _urlResolver;
+        _siteSettings = siteSettings;
+        _urlResolver = urlResolver;
+    }
 
-        public MetaDataViewComponent(ISiteSettings siteSettings, UrlResolver urlResolver)
+    public IViewComponentResult Invoke(ISitePageData sitePage)
+    {
+        var model = new MetaDataViewModel
         {
-            _siteSettings = siteSettings;
-            _urlResolver = urlResolver;
-        }
+            Title = $"{_siteSettings?.SiteName} | {sitePage.MetaTitle}",
+            Description = sitePage.MetaText,
+            Image = _urlResolver.GetUrl(sitePage.MetaImage),
+            Robots = sitePage.MetaRobots
+        };
 
-        public IViewComponentResult Invoke(ISitePageData sitePage)
+        model.MetaTags = new Dictionary<string, string>
         {
-            var model = new MetaDataViewModel
-            {
-                Title = $"{_siteSettings?.SiteName} | {sitePage.MetaTitle}",
-                Description = sitePage.MetaText,
-                Image = _urlResolver.GetUrl(sitePage.MetaImage)
-            };
+            { "description", model.Description },
+            { "robots", model.Robots }
+        };
 
-            return View(model);
-        }
+        return View(model);
     }
 }
