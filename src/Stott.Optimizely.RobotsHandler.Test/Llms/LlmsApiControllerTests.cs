@@ -1,7 +1,5 @@
 ﻿using System;
 
-using EPiServer.Web;
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -9,34 +7,28 @@ using Moq;
 
 using NUnit.Framework;
 
-using Stott.Optimizely.RobotsHandler.Presentation;
-using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
-using Stott.Optimizely.RobotsHandler.Services;
+using Stott.Optimizely.RobotsHandler.Llms;
 using Stott.Optimizely.RobotsHandler.Test.TestCases;
 
-namespace Stott.Optimizely.RobotsHandler.Test.Presentation;
+namespace Stott.Optimizely.RobotsHandler.Test.Llms;
 
 [TestFixture]
-public sealed class RobotsApiControllerTests
+public sealed class LlmsApiControllerTests
 {
-    private Mock<IRobotsContentService> _mockService;
+    private Mock<ILlmsContentService> _mockService;
 
-    private Mock<ISiteDefinitionRepository> _mockSiteRepository;
+    private Mock<ILogger<LlmsApiController>> _mockLogger;
 
-    private Mock<ILogger<RobotsApiController>> _mockLogger;
-
-    private RobotsApiController _controller;
+    private LlmsApiController _controller;
 
     [SetUp]
     public void SetUp()
     {
-        _mockService = new Mock<IRobotsContentService>();
+        _mockService = new Mock<ILlmsContentService>();
 
-        _mockSiteRepository = new Mock<ISiteDefinitionRepository>();
+        _mockLogger = new Mock<ILogger<LlmsApiController>>();
 
-        _mockLogger = new Mock<ILogger<RobotsApiController>>();
-
-        _controller = new RobotsApiController(_mockService.Object, _mockSiteRepository.Object, _mockLogger.Object);
+        _controller = new LlmsApiController(_mockService.Object, _mockLogger.Object);
     }
 
     [Test]
@@ -87,9 +79,9 @@ public sealed class RobotsApiControllerTests
     public void Save_ReturnsConflictResultWhenConflictExists()
     {
         // Arrange
-        var formSubmitModel = new SaveRobotsModel();
+        var formSubmitModel = new SaveLlmsModel();
 
-        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Returns(true);
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Returns(true);
 
         // Act
         var result = _controller.Save(formSubmitModel);
@@ -103,39 +95,39 @@ public sealed class RobotsApiControllerTests
     public void Save_DoesNotSaveModelWhenConflictExists()
     {
         // Arrange
-        var formSubmitModel = new SaveRobotsModel();
+        var formSubmitModel = new SaveLlmsModel();
 
-        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Returns(true);
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Returns(true);
 
         // Act
         _controller.Save(formSubmitModel);
 
         // Assert
-        _mockService.Verify(x => x.Save(It.IsAny<SaveRobotsModel>()), Times.Never);
+        _mockService.Verify(x => x.Save(It.IsAny<SaveLlmsModel>()), Times.Never);
     }
 
     [Test]
     public void Save_SavesModelWhenNoConflictExists()
     {
         // Arrange
-        var formSubmitModel = new SaveRobotsModel();
+        var formSubmitModel = new SaveLlmsModel();
 
-        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Returns(false);
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Returns(false);
 
         // Act
         _controller.Save(formSubmitModel);
 
         // Assert
-        _mockService.Verify(x => x.Save(It.IsAny<SaveRobotsModel>()), Times.Once);
+        _mockService.Verify(x => x.Save(It.IsAny<SaveLlmsModel>()), Times.Once);
     }
 
     [Test]
     public void Save_WhenDoesConflictExistsThrowsAnException_ThenAnInternalServerErrorIsReturned()
     {
         // Arrange
-        var formSubmitModel = new SaveRobotsModel();
+        var formSubmitModel = new SaveLlmsModel();
 
-        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Throws<Exception>();
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Throws<Exception>();
 
         // Act
         var result = _controller.Save(formSubmitModel);
@@ -149,10 +141,10 @@ public sealed class RobotsApiControllerTests
     public void Save_WhenSaveOnTheServiceThrowsAnException_ThenAnInternalServerErrorIsReturned()
     {
         // Arrange
-        var formSubmitModel = new SaveRobotsModel();
+        var formSubmitModel = new SaveLlmsModel();
 
-        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveRobotsModel>())).Returns(false);
-        _mockService.Setup(x => x.Save(It.IsAny<SaveRobotsModel>())).Throws<Exception>();
+        _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Returns(false);
+        _mockService.Setup(x => x.Save(It.IsAny<SaveLlmsModel>())).Throws<Exception>();
 
         // Act
         var result = _controller.Save(formSubmitModel);

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using Stott.Optimizely.RobotsHandler.Common;
-using Stott.Optimizely.RobotsHandler.Presentation;
 
 namespace Stott.Optimizely.RobotsHandler.Environments;
 

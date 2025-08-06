@@ -3,7 +3,7 @@ using System.Linq;
 
 using EPiServer.Web;
 
-using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+using Stott.Optimizely.RobotsHandler.Sites;
 
 namespace Stott.Optimizely.RobotsHandler.Extensions;
 

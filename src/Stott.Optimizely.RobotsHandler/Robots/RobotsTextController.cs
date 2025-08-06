@@ -1,4 +1,4 @@
-﻿namespace Stott.Optimizely.RobotsHandler.Presentation;
+﻿namespace Stott.Optimizely.RobotsHandler.Robots;
 
 using System;
 
@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using Stott.Optimizely.RobotsHandler.Extensions;
-using Stott.Optimizely.RobotsHandler.Services;
 
 public sealed class RobotsTextController : Controller
 {

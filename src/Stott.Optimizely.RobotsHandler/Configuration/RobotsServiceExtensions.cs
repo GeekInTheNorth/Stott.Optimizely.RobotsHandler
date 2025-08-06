@@ -10,7 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Stott.Optimizely.RobotsHandler.Cache;
 using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Environments;
-using Stott.Optimizely.RobotsHandler.Services;
+using Stott.Optimizely.RobotsHandler.Llms;
+using Stott.Optimizely.RobotsHandler.Robots;
 using Stott.Security.Optimizely.Features.StaticFile;
 
 public static class ServiceExtensions
@@ -28,6 +29,8 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IRobotsCacheHandler, RobotsCacheHandler>();
         serviceCollection.AddScoped<IRobotsContentService, RobotsContentService>();
         serviceCollection.AddScoped<IRobotsContentRepository, RobotsContentRepository>();
+        serviceCollection.AddScoped<ILlmsContentRepository, DefaultLlmsContentRepository>();
+        serviceCollection.AddScoped<ILlmsContentService, DefaultLlmsContentService>();
         serviceCollection.AddScoped<IEnvironmentRobotsService, EnvironmentRobotsService>();
         serviceCollection.AddScoped<IEnvironmentRobotsRepository, EnvironmentRobotsRepository>();
         serviceCollection.AddScoped(provider => new Lazy<IEnvironmentRobotsRepository>(() => provider.GetRequiredService<IEnvironmentRobotsRepository>()));

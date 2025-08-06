@@ -1,19 +1,13 @@
-﻿namespace Stott.Optimizely.RobotsHandler.Presentation;
+﻿namespace Stott.Optimizely.RobotsHandler.Robots;
 
 using System;
-using System.Linq;
 using System.Net;
-
-using EPiServer.Web;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 using Stott.Optimizely.RobotsHandler.Common;
-using Stott.Optimizely.RobotsHandler.Extensions;
-using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
-using Stott.Optimizely.RobotsHandler.Services;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
@@ -21,22 +15,18 @@ public sealed class RobotsApiController : BaseApiController
 {
     private readonly IRobotsContentService _service;
 
-    private readonly ISiteDefinitionRepository _siteRepository;
-
     private readonly ILogger<RobotsApiController> _logger;
 
     public RobotsApiController(
         IRobotsContentService service,
-        ISiteDefinitionRepository siteRepository,
         ILogger<RobotsApiController> logger)
     {
         _service = service;
-        _siteRepository = siteRepository;
         _logger = logger;
     }
 
     [HttpGet]
-    [Route("/stott.robotshandler/api/list/")]
+    [Route("/stott.robotshandler/api/robots/list/")]
     public IActionResult ApiList()
     {
         var model = new RobotsListViewModel
@@ -48,7 +38,7 @@ public sealed class RobotsApiController : BaseApiController
     }
 
     [HttpGet]
-    [Route("/stott.robotshandler/api/[action]")]
+    [Route("/stott.robotshandler/api/robots/[action]")]
     public IActionResult Details(string id, string siteId)
     {
         if (!Guid.TryParse(id, out var robotsId))
@@ -67,7 +57,7 @@ public sealed class RobotsApiController : BaseApiController
     }
 
     [HttpPost]
-    [Route("/stott.robotshandler/api/[action]")]
+    [Route("/stott.robotshandler/api/robots/[action]")]
     public IActionResult Save(SaveRobotsModel formSubmitModel)
     {
         try
@@ -98,7 +88,7 @@ public sealed class RobotsApiController : BaseApiController
     }
 
     [HttpDelete]
-    [Route("/stott.robotshandler/api/[action]/{id}")]
+    [Route("/stott.robotshandler/api/robots/[action]/{id}")]
     public IActionResult Delete(Guid id)
     {
         try
@@ -127,21 +117,5 @@ public sealed class RobotsApiController : BaseApiController
                 ContentType = "text/plain"
             };
         }
-    }
-
-    [HttpGet]
-    [Route("/stott.robotshandler/api/[action]")]
-    public IActionResult Sites()
-    {
-        var sites = _siteRepository.List()
-                                   .Select(x => new SiteViewModel 
-                                   { 
-                                       SiteId = x.Id, 
-                                       SiteName = x.Name, 
-                                       AvailableHosts = x.Hosts.ToHostSummaries().ToList()
-                                   })
-                                   .ToList();
-
-        return CreateSafeJsonResult(sites);
     }
 }
