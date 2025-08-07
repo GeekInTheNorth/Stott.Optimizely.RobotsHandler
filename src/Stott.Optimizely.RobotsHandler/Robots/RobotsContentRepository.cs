@@ -6,9 +6,8 @@ using EPiServer.Data;
 using EPiServer.Data.Dynamic;
 
 using Stott.Optimizely.RobotsHandler.Models;
-using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 
-namespace Stott.Optimizely.RobotsHandler.Services;
+namespace Stott.Optimizely.RobotsHandler.Robots;
 
 public sealed class RobotsContentRepository : IRobotsContentRepository
 {

@@ -2,7 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+        <PackageOutputPath>D:\Repos\Nuget</PackageOutputPath>
         <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
         <Authors>Mark Stott</Authors>
         <PackageProjectUrl>https://github.com/GeekInTheNorth/Stott.Optimizely.RobotsHandler</PackageProjectUrl>
@@ -13,10 +14,10 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <NeutralLanguage>en-GB</NeutralLanguage>
         <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-        <AssemblyVersion>4.0.0</AssemblyVersion>
-        <FileVersion>4.0.0</FileVersion>
-        <Version>4.0.0</Version>
-        <PackageReleaseNotes>Add the ability define environment level robots meta tags and headers.</PackageReleaseNotes>
+        <AssemblyVersion>4.0.0.25219</AssemblyVersion>
+        <FileVersion>4.0.0.25219</FileVersion>
+        <Version>4.0.0.25219-alpha</Version>
+        <PackageReleaseNotes>Add the ability to define llms.txt files.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>

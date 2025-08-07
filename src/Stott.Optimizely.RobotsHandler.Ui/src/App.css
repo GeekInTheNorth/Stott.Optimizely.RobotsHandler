@@ -6,3 +6,7 @@
   font-size: 1rem !important;
   color: black !important;
 }
+
+.large-text-area {
+  min-height: calc(100vh - 500px) !important;
+}

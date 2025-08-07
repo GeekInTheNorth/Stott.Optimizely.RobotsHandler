@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+namespace Stott.Optimizely.RobotsHandler.Robots;
 
 public sealed class SaveRobotsModel
 {

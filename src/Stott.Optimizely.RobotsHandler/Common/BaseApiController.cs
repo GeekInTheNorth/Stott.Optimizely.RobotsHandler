@@ -3,7 +3,7 @@ using System.Text.Json;
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Stott.Optimizely.RobotsHandler.Presentation;
+namespace Stott.Optimizely.RobotsHandler.Common;
 
 public abstract class BaseApiController : Controller
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+using Stott.Optimizely.RobotsHandler.Sites;
 
-namespace Stott.Optimizely.RobotsHandler.Services;
+namespace Stott.Optimizely.RobotsHandler.Robots;
 
 public sealed class SiteRobotsViewModel
 {

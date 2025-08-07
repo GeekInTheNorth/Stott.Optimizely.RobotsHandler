@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 
-using EPiServer.LinkAnalyzer.Robots.Internal;
 using EPiServer.Web;
 
 using Moq;
@@ -10,10 +9,9 @@ using Moq;
 using NUnit.Framework;
 
 using Stott.Optimizely.RobotsHandler.Models;
-using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
-using Stott.Optimizely.RobotsHandler.Services;
+using Stott.Optimizely.RobotsHandler.Robots;
 
-namespace Stott.Optimizely.RobotsHandler.Test.Services;
+namespace Stott.Optimizely.RobotsHandler.Test.Robots;
 
 [TestFixture]
 public sealed class RobotsContentServiceTests
@@ -177,10 +175,10 @@ public sealed class RobotsContentServiceTests
     public void SaveRobotsContent_CallsSaveOnTheRobotsContentRepositoryForAValidSite()
     {
         // Arrange
-        var model = new SaveRobotsModel 
-        { 
+        var model = new SaveRobotsModel
+        {
             Id = Guid.NewGuid(),
-            SiteId = Guid.NewGuid(), 
+            SiteId = Guid.NewGuid(),
             RobotsContent = GetSavedRobots()
         };
 
@@ -247,10 +245,10 @@ public sealed class RobotsContentServiceTests
         var savedRecords = new List<RobotsEntity>
         {
             new()
-            { 
-                Id = Guid.Parse("f70719d4-adc6-4a06-8662-7c7e78ab3dbc"), 
-                SiteId = Guid.Parse("5645bc86-f7f7-4c3a-924c-13612c55914a"), 
-                SpecificHost = string.Empty, 
+            {
+                Id = Guid.Parse("f70719d4-adc6-4a06-8662-7c7e78ab3dbc"),
+                SiteId = Guid.Parse("5645bc86-f7f7-4c3a-924c-13612c55914a"),
+                SpecificHost = string.Empty,
                 RobotsContent = GetSavedRobots()
             },
             new()
@@ -398,7 +396,7 @@ public sealed class RobotsContentServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(4));
-        
+
         Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
         Assert.That(result[0].SiteName, Is.EqualTo(sites[0].Name));
         Assert.That(result[0].SpecificHost, Is.Null);
