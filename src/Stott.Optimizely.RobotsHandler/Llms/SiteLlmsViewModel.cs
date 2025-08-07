@@ -5,7 +5,7 @@ using Stott.Optimizely.RobotsHandler.Sites;
 
 namespace Stott.Optimizely.RobotsHandler.Llms
 {
-    public class SiteLlmsViewModel
+    public sealed class SiteLlmsViewModel
     {
         public Guid Id { get; set; }
 
