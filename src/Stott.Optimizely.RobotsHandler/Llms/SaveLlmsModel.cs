@@ -2,7 +2,7 @@
 
 namespace Stott.Optimizely.RobotsHandler.Llms;
 
-public class SaveLlmsModel
+public sealed class SaveLlmsModel
 {
     public Guid Id { get; set; }
 
