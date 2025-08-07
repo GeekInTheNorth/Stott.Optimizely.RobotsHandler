@@ -54,7 +54,10 @@ function LlmsConfigurationList(props)
     return(
         <Container className='mt-3'>
             <Row className='mb-2'>
-                <div className='col-12 p-0 text-end'>
+                <div className='col-xl-9 col-lg-9 col-sm-12 col-xs-12 p-0'>
+                    <Alert variant='primary' className='p-3'>An llms.txt file should be written in <a href='https://www.markdownguide.org/basic-syntax/' target='_blank' rel='noopener noreferrer'>markdown</a> as it is human-readable and helps AI (like Large Language Models) understand a website's content and purpose. You can learn more <a href='https://llmstxt.org/' target='_blank' rel='noopener noreferrer'>here</a>.</Alert>
+                </div>
+                <div className='col-xl-3 col-lg-3 col-sm-12 col-xs-12 p-0 text-end'>
                     <AddSiteLlms showToastNotificationEvent={props.showToastNotificationEvent} reloadEvent={getSiteCollection}></AddSiteLlms>
                 </div>
             </Row>

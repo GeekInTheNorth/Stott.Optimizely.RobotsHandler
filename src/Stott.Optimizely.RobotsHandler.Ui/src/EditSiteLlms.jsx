@@ -91,7 +91,7 @@ function EditSiteLlms(props) {
     return (
         <>
             <Button variant='primary' onClick={handleShowEditModal} className='text-nowrap me-2'>Edit</Button>
-            <Modal show={showModal} size='lg'>
+            <Modal show={showModal} size='xl'>
                 <Modal.Header closeButton onClick={handleCloseModal}>
                     <Modal.Title>{siteName}</Modal.Title>
                 </Modal.Header>
@@ -105,7 +105,7 @@ function EditSiteLlms(props) {
                     </Alert>
                     <div className='mb-3'>
                         <label>LLMS Content</label>
-                        <textarea className='form-control' name='LlmsContent' cols='60' rows='10' onChange={handleSiteLlmsContentChange} value={siteLlmsContent}></textarea>
+                        <textarea className='form-control large-text-area' name='LlmsContent' cols='60' rows='10' onChange={handleSiteLlmsContentChange} value={siteLlmsContent}></textarea>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>

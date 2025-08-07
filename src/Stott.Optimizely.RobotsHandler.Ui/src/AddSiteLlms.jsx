@@ -9,12 +9,28 @@ function AddSiteLlms(props) {
     const [hostCollection, setHostCollection] = useState([])
     const [siteId, setSiteId] = useState(null);
     const [siteName, setSiteName] = useState(null);
-    const [siteLlmsContent, setSiteLlmsContent] = useState('')
+    const [siteLlmsContent, setSiteLlmsContent] = useState('');
     const [hostName, setHostName] = useState('');
 
     const handleCloseModal = () => {
         setShowModal(false);
     }
+
+    const getDefaultLlmsContent = () => {
+        return `# Title
+
+> Optional description goes here
+
+Optional details go here
+
+## Section name
+
+- [Link title](https://link_url): Optional link details
+
+## Optional
+
+- [Link title](https://link_url)`;
+    };
 
     const handleShowEditModal = async () => {
         await axios.get(import.meta.env.VITE_APP_SITES_LIST)
@@ -32,7 +48,7 @@ function AddSiteLlms(props) {
                         }
                     }
 
-                    setSiteLlmsContent('');
+                    setSiteLlmsContent(getDefaultLlmsContent());
                     setShowModal(true);
                 }
                 else{
@@ -160,7 +176,9 @@ function AddSiteLlms(props) {
                     </div>
                     <div className='mb-3'>
                         <label>LLMS.txt Content</label>
-                        <textarea className='form-control' name='LlmsContent' cols='60' rows='10' onChange={handleSiteLlmsContentChange} value={siteLlmsContent}></textarea>
+                        <textarea className='form-control large-text-area' name='LlmsContent' cols='60' rows='10' onChange={handleSiteLlmsContentChange} value={siteLlmsContent}>
+                            
+                        </textarea>
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
