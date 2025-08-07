@@ -7,9 +7,8 @@ using EPiServer.Web;
 
 using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Models;
-using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
 
-namespace Stott.Optimizely.RobotsHandler.Services;
+namespace Stott.Optimizely.RobotsHandler.Robots;
 
 public sealed class RobotsContentService : IRobotsContentService
 {
@@ -125,7 +124,7 @@ public sealed class RobotsContentService : IRobotsContentService
         {
             return;
         }
-        
+
         robotsContentRepository.Delete(id);
     }
 
@@ -168,7 +167,7 @@ public sealed class RobotsContentService : IRobotsContentService
         var modelHost = model.SpecificHost ?? string.Empty;
         var entityHost = entity.SpecificHost ?? string.Empty;
 
-        return Guid.Equals(model.SiteId, entity.SiteId) && !Guid.Equals(model.Id, entity.Id.ExternalId) &&
+        return Equals(model.SiteId, entity.SiteId) && !Equals(model.Id, entity.Id.ExternalId) &&
                string.Equals(modelHost, entityHost, StringComparison.OrdinalIgnoreCase);
     }
 }

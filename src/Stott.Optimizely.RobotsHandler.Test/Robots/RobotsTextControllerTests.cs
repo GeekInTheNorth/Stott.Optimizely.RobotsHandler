@@ -8,10 +8,9 @@ using Moq;
 
 using NUnit.Framework;
 
-using Stott.Optimizely.RobotsHandler.Presentation;
-using Stott.Optimizely.RobotsHandler.Services;
+using Stott.Optimizely.RobotsHandler.Robots;
 
-namespace Stott.Optimizely.RobotsHandler.Test.Presentation;
+namespace Stott.Optimizely.RobotsHandler.Test.Robots;
 
 [TestFixture]
 public sealed class RobotsTextControllerTests

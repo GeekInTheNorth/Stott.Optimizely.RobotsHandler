@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
-
-namespace Stott.Optimizely.RobotsHandler.Services;
+namespace Stott.Optimizely.RobotsHandler.Robots;
 
 public interface IRobotsContentService
 {

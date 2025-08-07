@@ -1,4 +1,4 @@
-﻿namespace Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+﻿namespace Stott.Optimizely.RobotsHandler.Sites;
 
 public sealed class SiteHostViewModel
 {

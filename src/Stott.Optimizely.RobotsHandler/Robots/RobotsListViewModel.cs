@@ -1,8 +1,6 @@
-﻿namespace Stott.Optimizely.RobotsHandler.Presentation.ViewModels;
+﻿namespace Stott.Optimizely.RobotsHandler.Robots;
 
 using System.Collections.Generic;
-
-using Stott.Optimizely.RobotsHandler.Services;
 
 public class RobotsListViewModel
 {
