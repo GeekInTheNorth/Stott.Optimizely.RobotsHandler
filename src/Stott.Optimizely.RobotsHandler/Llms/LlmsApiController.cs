@@ -11,7 +11,7 @@ namespace Stott.Optimizely.RobotsHandler.Llms;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
-public class LlmsApiController : BaseApiController
+public sealed class LlmsApiController : BaseApiController
 {
     private readonly ILlmsContentService _service;
 
