@@ -9,7 +9,7 @@ using Stott.Optimizely.RobotsHandler.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Llms;
 
-public class DefaultLlmsContentRepository : ILlmsContentRepository
+public sealed class DefaultLlmsContentRepository : ILlmsContentRepository
 {
     private readonly DynamicDataStore store;
 
