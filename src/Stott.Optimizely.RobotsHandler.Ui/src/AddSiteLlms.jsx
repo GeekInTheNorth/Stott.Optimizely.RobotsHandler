@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios';
-import { Button, Modal } from 'react-bootstrap'
+import { Alert, Button, Modal } from 'react-bootstrap'
 
 function AddSiteLlms(props) {
 
-    const [showModal, setShowModal] = useState(false)
-    const [siteCollection, setSiteCollection] = useState([])
-    const [hostCollection, setHostCollection] = useState([])
+    const [showModal, setShowModal] = useState(false);
+    const [siteCollection, setSiteCollection] = useState([]);
+    const [hostCollection, setHostCollection] = useState([]);
     const [siteId, setSiteId] = useState(null);
     const [siteName, setSiteName] = useState(null);
     const [siteLlmsContent, setSiteLlmsContent] = useState('');
     const [hostName, setHostName] = useState('');
+    const [isDefault, setIsDefault] = useState(true)
 
     const handleCloseModal = () => {
         setShowModal(false);
@@ -101,7 +102,9 @@ Optional details go here
     }
 
     const handleHostSelection = (event) => {
-        setHostName(event.target.value ?? '');
+        let selectedHost = event.target.value ?? '';
+        setHostName(selectedHost);
+        setIsDefault(selectedHost === '');
     }
 
     const handleSiteLlmsContentChange = (event) => {
@@ -174,6 +177,9 @@ Optional details go here
                         <label>Host</label>
                         <select className='form-control form-select' name='SpecificHost' value={hostName} onChange={handleHostSelection}>{renderAvailableHosts()}</select>
                     </div>
+                    <Alert variant='primary' show={isDefault} className='my-2 p-2'>
+                        Please note that LLMS content for a host of 'Default' will be used where LLMS content has not been set for a specific host.
+                    </Alert>
                     <div className='mb-3'>
                         <label>LLMS.txt Content</label>
                         <textarea className='form-control large-text-area' name='LlmsContent' cols='60' rows='10' onChange={handleSiteLlmsContentChange} value={siteLlmsContent}>
