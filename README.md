@@ -46,6 +46,16 @@ Examples:
 | - | noindex,nofollow,noimageindex | noindex,nofollow,noimageindex |
 | - | - | _meta robots tag is removed_ |
 
+## LLMS.txt Management
+
+_Introduced within version 5.0.0_
+
+Llms.txt content is a new standard in making website context and content easy to understand to Large Language Models (AI).  This standard uses [markdown](https://www.markdownguide.org/basic-syntax/) as it is both easy to understand for both humans and AI.  You can learn more about llms.txt [here](https://llmstxt.org/).
+
+Llms.txt content can be managed on a per site and host definition basis.  A host of "default" applies to all unspecified hosts within a site, while specific host definitions will only apply to the specific host.  If Llms.txt content has not been defined, then a request to `/llms.txt` will result in a 404 response.
+
+![Stott Robots Handler, Llms.txt management](/StottRobotsList3.png)
+
 ## Installation
 
 Install the `Stott.Optimizely.RobotsHandler` package into your website.
