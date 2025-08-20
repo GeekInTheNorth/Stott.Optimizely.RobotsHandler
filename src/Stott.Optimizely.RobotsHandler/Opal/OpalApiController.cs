@@ -46,7 +46,7 @@ public sealed class OpalApiController : BaseApiController
                             Required = false
                         }
                     },
-                    Endpoint = "/tools/robot-txt-configurations/",
+                    Endpoint = "/stott.robotshandler/opal/tools/robot-txt-configurations/",
                     HttpMethod = "POST"
                 }
             }
