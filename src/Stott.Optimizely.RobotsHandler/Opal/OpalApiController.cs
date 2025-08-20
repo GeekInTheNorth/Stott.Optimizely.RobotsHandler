@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +12,8 @@ using Stott.Optimizely.RobotsHandler.Robots;
 
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
+[ApiExplorerSettings(IgnoreApi = true)]
+[AllowAnonymous]
 public sealed class OpalApiController : BaseApiController
 {
     private readonly IRobotsContentService _service;
@@ -25,8 +28,9 @@ public sealed class OpalApiController : BaseApiController
         _logger = logger;
     }
 
-    [HttpGet("/stott.robotshandler/opal/discovery/")]
-    public static IActionResult Discovery()
+    [HttpGet]
+    [Route("/stott.robotshandler/opal/discovery/")]
+    public IActionResult Discovery()
     {
         var model = new FunctionsRoot
         {
@@ -55,7 +59,8 @@ public sealed class OpalApiController : BaseApiController
         return CreateSafeJsonResult(model);
     }
 
-    [HttpPost("/stott.robotshandler/opal/tools/robot-txt-configurations/")]
+    [HttpPost]
+    [Route("/stott.robotshandler/opal/tools/robot-txt-configurations/")]
     public IActionResult GetRobotTxtConfigurations(ToolRequest<GetRobotTextConfigurationsQuery> model)
     {
         try
