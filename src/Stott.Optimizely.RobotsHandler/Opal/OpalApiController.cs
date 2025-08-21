@@ -50,7 +50,7 @@ public sealed class OpalApiController : BaseApiController
                             Required = false
                         }
                     },
-                    Endpoint = "/stott.robotshandler/opal/tools/robot-txt-configurations/",
+                    Endpoint = "/tools/robot-txt-configurations/",
                     HttpMethod = "POST"
                 }
             }
@@ -61,6 +61,7 @@ public sealed class OpalApiController : BaseApiController
 
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/robot-txt-configurations/")]
+    [Route("/stott.robotshandler/opal/discovery/tools/robot-txt-configurations/")]
     public IActionResult GetRobotTxtConfigurations(ToolRequest<GetRobotTextConfigurationsQuery> model)
     {
         try
