@@ -10,6 +10,7 @@ function TokenManagement(props) {
     const [selectedToken, setSelectedToken] = useState(null);
     const [formData, setFormData] = useState({
         id: '',
+        name: '',
         scope: 'Read',
         token: ''
     });
@@ -55,6 +56,7 @@ function TokenManagement(props) {
     const handleAddToken = () => {
         setFormData({
             id: '',
+            name: '',
             scope: 'Read',
             token: generateRandomToken()
         });
@@ -65,6 +67,7 @@ function TokenManagement(props) {
         setSelectedToken(token);
         setFormData({
             id: token.id,
+            name: token.name || '',
             scope: token.scope,
             token: token.token
         });
@@ -77,16 +80,26 @@ function TokenManagement(props) {
     };
 
     const handleSaveToken = async () => {
+        // Validate required fields
+        if (!formData.name || formData.name.trim() === '') {
+            handleShowFailureToast('Validation Error', 'Token Name is required.');
+            return;
+        }
+
         try {
-            if (showAddModal) {
-                // Add new token
-                await axios.post(import.meta.env.VITE_APP_OPALTOKEN_SAVE, formData);
-                handleShowSuccessToast('Success', 'Token created successfully.');
-            } else {
-                // Update existing token
-                await axios.put(`/api/tokens/${formData.id}`, formData);
-                handleShowSuccessToast('Success', 'Token updated successfully.');
+            let params = new URLSearchParams();
+            
+            params.append('scope', formData.scope);
+            params.append('name', formData.name);
+            params.append('token', formData.token);
+
+            if (showEditModal)
+            {
+                params.append('id', selectedToken.id);
             }
+
+            await axios.post(import.meta.env.VITE_APP_OPALTOKEN_SAVE, params);
+            handleShowSuccessToast('Success', 'Token updated successfully.');
             
             setShowAddModal(false);
             setShowEditModal(false);
@@ -118,31 +131,14 @@ function TokenManagement(props) {
     const renderTokensList = () => {
         return tokens.map((token, index) => (
             <tr key={index}>
-                <td>{token.id}</td>
+                <td>{token.name || token.id}</td>
+                <td>{token.scope}</td>
                 <td>
-                    <Badge bg={token.scope === 'Read' ? 'info' : 'warning'}>
-                        {token.scope}
-                    </Badge>
+                    <code className="text-muted">{token.token?.substring(0, 8)}...</code>
                 </td>
                 <td>
-                    <code className="text-muted">{token.token.substring(0, 8)}...</code>
-                </td>
-                <td>
-                    <Button 
-                        variant='outline-primary' 
-                        size='sm' 
-                        className='me-2'
-                        onClick={() => handleEditToken(token)}
-                    >
-                        Edit
-                    </Button>
-                    <Button 
-                        variant='outline-danger' 
-                        size='sm'
-                        onClick={() => handleDeleteToken(token)}
-                    >
-                        Delete
-                    </Button>
+                    <Button variant='outline-primary' size='sm' className='me-2' onClick={() => handleEditToken(token)}>Edit</Button>
+                    <Button variant='outline-danger' size='sm'onClick={() => handleDeleteToken(token)}>Delete</Button>
                 </td>
             </tr>
         ));
@@ -166,7 +162,7 @@ function TokenManagement(props) {
                 <table className='table table-striped'>
                     <thead>
                         <tr>
-                            <th className='table-header-fix'>ID</th>
+                            <th className='table-header-fix'>Name</th>
                             <th className='table-header-fix'>Scope</th>
                             <th className='table-header-fix'>Token</th>
                             <th className='table-header-fix'>Actions</th>
@@ -187,45 +183,24 @@ function TokenManagement(props) {
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
+                        {/* Hidden ID field - will be set by API */}
+                        <input type="hidden" name="id" value={formData.id} />
+                        
                         <Form.Group className='mb-3'>
-                            <Form.Label>ID</Form.Label>
-                            <Form.Control
-                                type='text'
-                                value={formData.id}
-                                onChange={(e) => setFormData(prev => ({ ...prev, id: e.target.value }))}
-                                placeholder='Enter token ID'
-                            />
+                            <Form.Label>Token Name *</Form.Label>
+                            <Form.Control type='text' value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} placeholder='Enter a descriptive name for this token' required />
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label>Scope</Form.Label>
-                            <Form.Select
-                                value={formData.scope}
-                                onChange={(e) => setFormData(prev => ({ ...prev, scope: e.target.value }))}
-                            >
-                                {scopeOptions.map((option, index) => (
-                                    <option key={index} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
+                            <Form.Select value={formData.scope} onChange={(e) => setFormData(prev => ({ ...prev, scope: e.target.value }))}>
+                                {scopeOptions.map((option, index) => ( <option key={index} value={option.value}>{option.label}</option> ))}
                             </Form.Select>
                         </Form.Group>
                         <Form.Group className='mb-3'>
                             <Form.Label>Token</Form.Label>
                             <div className='d-flex'>
-                                <Form.Control
-                                    type='text'
-                                    value={formData.token}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, token: e.target.value }))}
-                                    placeholder='Token value'
-                                    readOnly
-                                />
-                                <Button 
-                                    variant='outline-secondary' 
-                                    className='ms-2'
-                                    onClick={handleRegenerateToken}
-                                >
-                                    Regenerate
-                                </Button>
+                                <Form.Control type='text' value={formData.token} onChange={(e) => setFormData(prev => ({ ...prev, token: e.target.value }))} placeholder='Token value' readOnly />
+                                <Button variant='outline-secondary' className='ms-2' onClick={handleRegenerateToken}>Regenerate</Button>
                             </div>
                             <Form.Text className='text-muted'>
                                 Token is automatically generated. Click &quot;Regenerate&quot; to create a new random token.
@@ -237,9 +212,7 @@ function TokenManagement(props) {
                     <Button variant='primary' onClick={handleSaveToken}>
                         {showAddModal ? 'Create Token' : 'Save Changes'}
                     </Button>
-                    <Button variant='secondary' onClick={() => { setShowAddModal(false); setShowEditModal(false); }}>
-                        Cancel
-                    </Button>
+                    <Button variant='secondary' onClick={() => { setShowAddModal(false); setShowEditModal(false); }}>Cancel</Button>
                 </Modal.Footer>
             </Modal>
 
@@ -249,15 +222,11 @@ function TokenManagement(props) {
                     <Modal.Title>Confirm Delete</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    Are you sure you want to delete the token &quot;{selectedToken?.id}&quot;? This action cannot be undone.
+                    Are you sure you want to delete the token &quot;{selectedToken?.name || selectedToken?.id}&quot;? This action cannot be undone.
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant='danger' onClick={handleDeleteConfirm}>
-                        Delete
-                    </Button>
-                    <Button variant='secondary' onClick={() => setShowDeleteModal(false)}>
-                        Cancel
-                    </Button>
+                    <Button variant='danger' onClick={handleDeleteConfirm}>Delete</Button>
+                    <Button variant='secondary' onClick={() => setShowDeleteModal(false)}>Cancel</Button>
                 </Modal.Footer>
             </Modal>
         </Container>

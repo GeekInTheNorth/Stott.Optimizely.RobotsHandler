@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 
 using Microsoft.AspNetCore.Authorization;
@@ -15,10 +13,13 @@ namespace Stott.Optimizely.RobotsHandler.Opal;
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
 public class OpalTokenController : BaseApiController
 {
+    private readonly IOpalTokenRepository _repository;
+
     private readonly ILogger<OpalTokenController> _logger;
 
-    public OpalTokenController(ILogger<OpalTokenController> logger)
+    public OpalTokenController(IOpalTokenRepository repository, ILogger<OpalTokenController> logger)
     {
+        _repository = repository;
         _logger = logger;
     }
 
@@ -26,13 +27,17 @@ public class OpalTokenController : BaseApiController
     [Route("/stott.robotshandler/api/opal-tokens/[action]")]
     public IActionResult List()
     {
-        return CreateSafeJsonResult(new List<object>());
+        var tokens = _repository.List();
+
+        return CreateSafeJsonResult(tokens);
     }
 
     [HttpPost]
     [Route("/stott.robotshandler/api/opal-tokens/[action]")]
-    public IActionResult Save()
+    public IActionResult Save(TokenModel model)
     {
+        _repository.Save(model);
+
         return new OkResult();
     }
 
@@ -52,7 +57,7 @@ public class OpalTokenController : BaseApiController
                 };
             }
 
-            // _service.Delete(id);
+            _repository.Delete(id);
 
             return new OkResult();
         }
