@@ -66,7 +66,7 @@ public sealed class OpalApiController : BaseApiController
     [Route("/stott.robotshandler/opal/tools/robot-txt-configurations/")]
     [Route("/stott.robotshandler/opal/discovery/tools/robot-txt-configurations/")]
     [OpalAuthorization(OpalAuthorizationLevel.Read)]
-    public IActionResult GetRobotTxtConfigurations(ToolRequest<GetRobotTextConfigurationsQuery> model)
+    public IActionResult GetRobotTxtConfigurations([FromBody]ToolRequest<GetRobotTextConfigurationsQuery> model)
     {
         try
         {
