@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +22,7 @@ public sealed class OpalApiController : BaseApiController
     private readonly ILogger<OpalApiController> _logger;
 
     public OpalApiController(
-        IRobotsContentService service, 
+        IRobotsContentService service,
         ILogger<OpalApiController> logger)
     {
         _service = service;
@@ -30,8 +31,10 @@ public sealed class OpalApiController : BaseApiController
 
     [HttpGet]
     [Route("/stott.robotshandler/opal/discovery/")]
+    [OpalAuthorization(OpalAuthorizationLevel.Read)]
     public IActionResult Discovery()
     {
+        var authorizationLevel = HttpContext.Items[RobotsConstants.OpalAuthorizationLevelKey] as OpalAuthorizationLevel? ?? OpalAuthorizationLevel.None;
         var model = new FunctionsRoot
         {
             Functions = new List<Function>
@@ -62,6 +65,7 @@ public sealed class OpalApiController : BaseApiController
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/robot-txt-configurations/")]
     [Route("/stott.robotshandler/opal/discovery/tools/robot-txt-configurations/")]
+    [OpalAuthorization(OpalAuthorizationLevel.Read)]
     public IActionResult GetRobotTxtConfigurations(ToolRequest<GetRobotTextConfigurationsQuery> model)
     {
         try
