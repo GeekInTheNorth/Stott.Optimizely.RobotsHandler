@@ -29,6 +29,12 @@ public class OpalTokenController : BaseApiController
     {
         var tokens = _repository.List();
 
+        foreach(var token in tokens)
+        {
+            // update token.Token so that only the first 6 characters of the token and an ellipse are returned
+            token.Token = token.Token.Length > 6 ? token.Token[..6] + "..." : token.Token;
+        }
+
         return CreateSafeJsonResult(tokens);
     }
 
@@ -42,7 +48,7 @@ public class OpalTokenController : BaseApiController
     }
 
     [HttpDelete]
-    [Route("/stott.robotshandler/api/opal-tokens/[action]")]
+    [Route("/stott.robotshandler/api/opal-tokens/[action]/{id}")]
     public IActionResult Delete(Guid id)
     {
         try

@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
-import { Alert, Container, Row, Button, Modal, Form, Badge } from 'react-bootstrap';
+import { Alert, Container, Row, Button, Modal, Form } from 'react-bootstrap';
 
 function TokenManagement(props) {
+    const { showToastNotificationEvent } = props;
     const [tokens, setTokens] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedToken, setSelectedToken] = useState(null);
+    const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
         id: '',
         name: '',
@@ -20,17 +22,13 @@ function TokenManagement(props) {
         { value: 'Write', label: 'Write' }
     ];
 
-    useEffect(() => {
-        loadTokens();
-    }, []);
+    const handleShowFailureToast = useCallback((title, description) => 
+        showToastNotificationEvent && showToastNotificationEvent(false, title, description), [showToastNotificationEvent]);
 
-    const handleShowFailureToast = (title, description) => 
-        props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description);
+    const handleShowSuccessToast = useCallback((title, description) => 
+        showToastNotificationEvent && showToastNotificationEvent(true, title, description), [showToastNotificationEvent]);
 
-    const handleShowSuccessToast = (title, description) => 
-        props.showToastNotificationEvent && props.showToastNotificationEvent(true, title, description);
-
-    const loadTokens = async () => {
+    const loadTokens = useCallback(async () => {
         try {
             // This would be replaced with your actual API endpoint
             const response = await axios.get(import.meta.env.VITE_APP_OPALTOKEN_LIST);
@@ -42,7 +40,7 @@ function TokenManagement(props) {
         } catch (error) {
             handleShowFailureToast('Failure', 'Failed to retrieve tokens data.');
         }
-    };
+    }, [handleShowFailureToast]);
 
     const generateRandomToken = () => {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -61,17 +59,6 @@ function TokenManagement(props) {
             token: generateRandomToken()
         });
         setShowAddModal(true);
-    };
-
-    const handleEditToken = (token) => {
-        setSelectedToken(token);
-        setFormData({
-            id: token.id,
-            name: token.name || '',
-            scope: token.scope,
-            token: token.token
-        });
-        setShowEditModal(true);
     };
 
     const handleDeleteToken = (token) => {
@@ -93,16 +80,10 @@ function TokenManagement(props) {
             params.append('name', formData.name);
             params.append('token', formData.token);
 
-            if (showEditModal)
-            {
-                params.append('id', selectedToken.id);
-            }
-
             await axios.post(import.meta.env.VITE_APP_OPALTOKEN_SAVE, params);
-            handleShowSuccessToast('Success', 'Token updated successfully.');
+            handleShowSuccessToast('Success', 'Token created successfully.');
             
             setShowAddModal(false);
-            setShowEditModal(false);
             loadTokens();
         } catch (error) {
             handleShowFailureToast('Failure', 'Failed to save token.');
@@ -111,7 +92,7 @@ function TokenManagement(props) {
 
     const handleDeleteConfirm = async () => {
         try {
-            let url = ''.concat(import.meta.env.VITE_APP_ROBOTS_DELETE, selectedToken.id, '/');
+            let url = ''.concat(import.meta.env.VITE_APP_OPALTOKEN_DELETE, selectedToken.id, '/');
             await axios.delete(url);
             handleShowSuccessToast('Success', 'Token deleted successfully.');
             setShowDeleteModal(false);
@@ -134,15 +115,22 @@ function TokenManagement(props) {
                 <td>{token.name || token.id}</td>
                 <td>{token.scope}</td>
                 <td>
-                    <code className="text-muted">{token.token?.substring(0, 8)}...</code>
+                    <code className="text-muted">{token.token}</code>
                 </td>
                 <td>
-                    <Button variant='outline-primary' size='sm' className='me-2' onClick={() => handleEditToken(token)}>Edit</Button>
                     <Button variant='outline-danger' size='sm'onClick={() => handleDeleteToken(token)}>Delete</Button>
                 </td>
             </tr>
         ));
     };
+
+    useEffect(() => {
+        if (!isMounted)
+        {
+            loadTokens();
+            setIsMounted(true);
+        }
+    }, [isMounted, loadTokens]);
 
     return (
         <Container className='mt-3'>
@@ -174,11 +162,11 @@ function TokenManagement(props) {
                 </table>
             </Row>
 
-            {/* Add/Edit Modal */}
-            <Modal show={showAddModal || showEditModal} size='lg'>
-                <Modal.Header closeButton onClick={() => { setShowAddModal(false); setShowEditModal(false); }}>
+            {/* Create Modal */}
+            <Modal show={showAddModal} size='lg'>
+                <Modal.Header closeButton onClick={() => { setShowAddModal(false); }}>
                     <Modal.Title>
-                        {showAddModal ? 'Create New Token' : 'Edit Token'}
+                        Create New Token
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -210,9 +198,9 @@ function TokenManagement(props) {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant='primary' onClick={handleSaveToken}>
-                        {showAddModal ? 'Create Token' : 'Save Changes'}
+                        Create Token
                     </Button>
-                    <Button variant='secondary' onClick={() => { setShowAddModal(false); setShowEditModal(false); }}>Cancel</Button>
+                    <Button variant='secondary' onClick={() => { setShowAddModal(false); }}>Cancel</Button>
                 </Modal.Footer>
             </Modal>
 
@@ -234,3 +222,7 @@ function TokenManagement(props) {
 }
 
 export default TokenManagement;
+
+TokenManagement.propTypes = {
+    showToastNotificationEvent: PropTypes.func
+};
