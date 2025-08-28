@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { Alert, Container, Row, Button, Modal, Form } from 'react-bootstrap';
+import { Container, Button, Modal, Form } from 'react-bootstrap';
 
 function TokenManagement(props) {
     const { showToastNotificationEvent } = props;
@@ -134,19 +134,19 @@ function TokenManagement(props) {
 
     return (
         <Container className='mt-3'>
-            <Row className='mb-2'>
-                <div className='col-xl-9 col-lg-9 col-sm-12 col-xs-12 p-0'>
-                    <Alert variant='primary' className='p-3'>
-                        Manage API tokens for accessing the Robots Handler functionality. Each token has a specific scope that determines its permissions.
-                    </Alert>
-                </div>
-                <div className='col-xl-3 col-lg-3 col-sm-12 col-xs-12 p-0 text-end'>
-                    <Button variant='primary' onClick={handleAddToken} className='text-nowrap p-3'>
-                        Add Token
-                    </Button>
-                </div>
-            </Row>
-            <Row>
+            <div className='mb-2'>
+                <h2>Opal Token Management</h2>
+                <p>Manage authorization bearer tokens for accessing the Robots Handler functionality. Each token can have a read or read/write scope that determines the endpoints they grant access to. These endpoints have been optimized for compatability with Opal.</p>
+                <p>Please note that <strong>token values</strong> are only visible during initial creation and cannot be retrieved later.</p>
+                <h3 className='h5'>Available API Endpoints:</h3>
+                <ul className="list-unstyled">
+                    <li><strong>Discovery API:</strong> /stott.robotshandler/opal/discovery/</li>
+                    <li><strong>Get Robots API:</strong> /stott.robotshandler/opal/tools/get-robot-txt-configurations/</li>
+                    <li><strong>Save Robots API:</strong> /stott.robotshandler/opal/tools/save-robot-txt-configurations/</li>
+                </ul>
+                <Button variant='primary' onClick={handleAddToken} className='text-nowrap'>Add Token</Button>
+            </div>
+            <div>
                 <table className='table table-striped'>
                     <thead>
                         <tr>
@@ -160,7 +160,7 @@ function TokenManagement(props) {
                         {renderTokensList()}
                     </tbody>
                 </table>
-            </Row>
+            </div>
 
             {/* Create Modal */}
             <Modal show={showAddModal} size='lg'>
