@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,87 +12,26 @@ using Stott.Optimizely.RobotsHandler.Robots;
 
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
-[ApiExplorerSettings(IgnoreApi = true)]
 [AllowAnonymous]
-public sealed class OpalApiController : BaseApiController
+public sealed class OpalRobotsApiController : BaseApiController
 {
     private readonly IRobotsContentService _service;
 
-    private readonly ILogger<OpalApiController> _logger;
+    private readonly ILogger<OpalRobotsApiController> _logger;
 
-    public OpalApiController(
+    public OpalRobotsApiController(
         IRobotsContentService service,
-        ILogger<OpalApiController> logger)
+        ILogger<OpalRobotsApiController> logger)
     {
         _service = service;
         _logger = logger;
-    }
-
-    [HttpGet]
-    [Route("/stott.robotshandler/opal/discovery/")]
-    public IActionResult Discovery()
-    {
-        var authorizationLevel = HttpContext.Items[RobotsConstants.OpalAuthorizationLevelKey] as OpalAuthorizationLevel? ?? OpalAuthorizationLevel.None;
-        var model = new FunctionsRoot { Functions = new List<Function>() };
-
-        model.Functions.Add(new Function
-        {
-            Name = "getrobottxtconfigurations",
-            Description = "Get a collection of robot.txt configurations optionally filtered by host name.",
-            Parameters = new List<FunctionParameter>
-            {
-                new FunctionParameter
-                {
-                    Name = "hostName",
-                    Type = "string",
-                    Description = "The host name to filter the robot.txt configurations by.",
-                    Required = false
-                }
-            },
-            Endpoint = "/tools/get-robot-txt-configurations/",
-            HttpMethod = "POST"
-        });
-
-        model.Functions.Add(new Function
-        {
-            Name = "saverobottxtconfigurations",
-            Description = "Saves robots content for a specific Id or Host Name. Where an update is being performed for a host name and a specific configuration does not exist, one will be created.",
-            Parameters = new List<FunctionParameter>
-            {
-                new FunctionParameter
-                {
-                    Name = "robotsId",
-                    Type = "Guid",
-                    Description = "The Id of the robots.txt configuration that is to be updated.",
-                    Required = false
-                },
-                new FunctionParameter
-                {
-                    Name = "hostName",
-                    Type = "string",
-                    Description = "The host name of of the robots.txt configuration that is to be updated.",
-                    Required = false
-                },
-                new FunctionParameter
-                {
-                    Name = "RobotsTxtContent",
-                    Type = "string",
-                    Description = "The robots.txt content to be saved.  This should be a valid robots.txt content and must be provided.",
-                    Required = true
-                }
-            },
-            Endpoint = "/tools/save-robot-txt-configuration/",
-            HttpMethod = "POST"
-        });
-
-        return CreateSafeJsonResult(model);
     }
 
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/get-robot-txt-configurations/")]
     [Route("/stott.robotshandler/opal/discovery/tools/get-robot-txt-configurations/")]
     [OpalAuthorization(OpalAuthorizationLevel.Read)]
-    public IActionResult GetRobotTxtConfigurations([FromBody]ToolRequest<GetRobotTextConfigurationsQuery> model)
+    public IActionResult GetRobotTxtConfigurations([FromBody] ToolRequest<GetConfigurationsQuery> model)
     {
         try
         {
@@ -101,16 +39,25 @@ public sealed class OpalApiController : BaseApiController
             if (!string.IsNullOrWhiteSpace(model?.Parameters?.HostName))
             {
                 var hostName = model.Parameters.HostName.Trim();
-                var specificConfiguration = 
+                var specificConfiguration =
                     configurations.FirstOrDefault(x => string.Equals(x.SpecificHost, hostName, StringComparison.OrdinalIgnoreCase)) ??
                     configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase)));
+
+                if (specificConfiguration is null)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        Message = $"Could not locate a robots.txt config that matched the host name of {model.Parameters.HostName}."
+                    });
+                }
 
                 return CreateSafeJsonResult(ToOpalModel(specificConfiguration));
             }
 
             return CreateSafeJsonResult(ToOpalModels(configurations));
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "An error was encountered while processing the robot-txt-configurations tool.");
             throw;
@@ -127,7 +74,7 @@ public sealed class OpalApiController : BaseApiController
         {
             var configurations = _service.GetAll();
             var hostName = model.Parameters?.HostName?.Trim() ?? string.Empty;
-            
+
             if (string.IsNullOrWhiteSpace(model.Parameters?.RobotsTxtContent))
             {
                 return Json(new
@@ -213,7 +160,7 @@ public sealed class OpalApiController : BaseApiController
             yield break;
         }
 
-        foreach(var siteModel in siteModels)
+        foreach (var siteModel in siteModels)
         {
             yield return ToOpalModel(siteModel);
         }
