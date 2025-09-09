@@ -39,8 +39,9 @@ public class OpalTokenRepository : IOpalTokenRepository
         };
 
         recordToSave.Name = saveModel.Name;
-        recordToSave.Scope = saveModel.Scope ?? "read";
         recordToSave.Token = saveModel.Token;
+        recordToSave.RobotsScope = saveModel.RobotsScope;
+        recordToSave.LlmsScope = saveModel.LlmsScope;
 
         store.Save(recordToSave);
     }
@@ -56,7 +57,8 @@ public class OpalTokenRepository : IOpalTokenRepository
         {
             Id = entity.Id.ExternalId,
             Name = entity.Name,
-            Scope = entity.Scope,
+            RobotsScope = entity.RobotsScope,
+            LlmsScope = entity.LlmsScope,
             Token = entity.Token
         };
     }

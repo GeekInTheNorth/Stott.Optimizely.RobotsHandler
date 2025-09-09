@@ -28,7 +28,7 @@ public sealed class OpalLlmsApiController : BaseApiController
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/get-llms-txt-configurations/")]
     [Route("/stott.robotshandler/opal/discovery/tools/get-llms-txt-configurations/")]
-    [OpalAuthorization(OpalAuthorizationLevel.Read)]
+    [OpalAuthorization(OpalScopeType.Llms, OpalAuthorizationLevel.Read)]
     public IActionResult GetRobotTxtConfigurations([FromBody] ToolRequest<GetConfigurationsQuery> model)
     {
         try
@@ -65,7 +65,7 @@ public sealed class OpalLlmsApiController : BaseApiController
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/save-llms-txt-configuration/")]
     [Route("/stott.robotshandler/opal/discovery/tools/save-llms-txt-configuration/")]
-    [OpalAuthorization(OpalAuthorizationLevel.Write)]
+    [OpalAuthorization(OpalScopeType.Llms, OpalAuthorizationLevel.Write)]
     public IActionResult SaveLlmsTxtConfigurations([FromBody] ToolRequest<SaveLlmsTextConfigurationsCommand> model)
     {
         try

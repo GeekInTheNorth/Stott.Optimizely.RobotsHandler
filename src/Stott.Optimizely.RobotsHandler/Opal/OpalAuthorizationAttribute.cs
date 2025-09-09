@@ -18,8 +18,11 @@ public sealed class OpalAuthorizationAttribute : Attribute, IActionFilter
 {
     public OpalAuthorizationLevel AuthorizationLevel { get; set; } = OpalAuthorizationLevel.None;
 
-    public OpalAuthorizationAttribute(OpalAuthorizationLevel authorizationLevel)
+    public OpalScopeType ScopeType { get; set; } = OpalScopeType.Robots;
+
+    public OpalAuthorizationAttribute(OpalScopeType scopeType, OpalAuthorizationLevel authorizationLevel)
     {
+        ScopeType = scopeType;
         AuthorizationLevel = authorizationLevel;
     }
 
@@ -54,7 +57,7 @@ public sealed class OpalAuthorizationAttribute : Attribute, IActionFilter
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
-    private static OpalAuthorizationLevel GetAuthorization(HttpRequest request)
+    private OpalAuthorizationLevel GetAuthorization(HttpRequest request)
     {
         try
         {
@@ -76,7 +79,13 @@ public sealed class OpalAuthorizationAttribute : Attribute, IActionFilter
                 return OpalAuthorizationLevel.None;
             }
 
-            return string.Equals(tokenConfiguration.Scope, "Write") ? OpalAuthorizationLevel.Write : OpalAuthorizationLevel.Read;
+            var scope = ScopeType == OpalScopeType.Robots ? tokenConfiguration.RobotsScope : tokenConfiguration.LlmsScope;
+            if (Enum.TryParse<OpalAuthorizationLevel>(scope, true, out var parsedLevel))
+            {
+                return parsedLevel;
+            }
+
+            return OpalAuthorizationLevel.None;
         }
         catch (Exception)
         {

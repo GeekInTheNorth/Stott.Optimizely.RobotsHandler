@@ -30,7 +30,7 @@ public sealed class OpalRobotsApiController : BaseApiController
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/get-robot-txt-configurations/")]
     [Route("/stott.robotshandler/opal/discovery/tools/get-robot-txt-configurations/")]
-    [OpalAuthorization(OpalAuthorizationLevel.Read)]
+    [OpalAuthorization(OpalScopeType.Robots, OpalAuthorizationLevel.Read)]
     public IActionResult GetRobotTxtConfigurations([FromBody] ToolRequest<GetConfigurationsQuery> model)
     {
         try
@@ -67,7 +67,7 @@ public sealed class OpalRobotsApiController : BaseApiController
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/save-robot-txt-configuration/")]
     [Route("/stott.robotshandler/opal/discovery/tools/save-robot-txt-configuration/")]
-    [OpalAuthorization(OpalAuthorizationLevel.Write)]
+    [OpalAuthorization(OpalScopeType.Robots, OpalAuthorizationLevel.Write)]
     public IActionResult SaveRobotTxtConfigurations([FromBody] ToolRequest<SaveRobotTextConfigurationsCommand> model)
     {
         try

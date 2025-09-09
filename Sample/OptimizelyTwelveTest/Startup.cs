@@ -67,7 +67,7 @@ public class Startup
         {
             authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
             {
-                policy.RequireRole("RobotAdmins");
+                policy.RequireRole("RobotAdmins","Everyone");
             });
         });
 

@@ -10,7 +10,9 @@ public class OpalTokenEntity : IDynamicData
 
     public string Name { get; set; }
 
-    public string Scope { get; set; }
+    public string RobotsScope { get; set; }
+
+    public string LlmsScope { get; set; }
 
     public string Token { get; set; }
 }

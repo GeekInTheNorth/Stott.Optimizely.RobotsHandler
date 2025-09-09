@@ -6,7 +6,7 @@
 # Variables - Change these as needed
 @baseUrl = https://localhost:44344
 @apiPath = /stott.robotshandler/opal
-@token = d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+@token = GvgVS1R23Z7VwkuAcB3haSWdTNDeVYcD
 @testHostNameOne = localhost:44344
 @testHostNameTwo = localhost:44347
 
@@ -43,10 +43,10 @@ Authorization: Bearer {{token}}
 ###
 
 ### Get Robot Txt Configurations - Filter by localhost
-POST https://localhost:44344/stott.robotshandler/opal/tools/get-robot-txt-configurations/
+POST {{baseUrl}}{{apiPath}}/tools/get-robot-txt-configurations/
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+Authorization: Bearer {{token}}
 
 {
   "parameters": {
@@ -57,10 +57,10 @@ Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
 ###
 
 ### Get Robot Txt Configurations - Discovery route
-POST https://localhost:44344/stott.robotshandler/opal/discovery/tools/get-robot-txt-configurations/
+POST {{baseUrl}}{{apiPath}}/tools/get-robot-txt-configurations/
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+Authorization: Bearer {{token}}
 
 {
   "parameters": {
@@ -71,10 +71,10 @@ Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
 ###
 
 ### Save Robot Txt Configuration - By RobotsId
-POST https://localhost:44344/stott.robotshandler/opal/tools/save-robot-txt-configuration/
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+Authorization: Bearer {{token}}
 
 {
   "parameters": {
@@ -86,10 +86,10 @@ Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
 ###
 
 ### Save Robot Txt Configuration - By HostName
-POST https://localhost:44344/stott.robotshandler/opal/tools/save-robot-txt-configuration/
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+Authorization: Bearer {{token}}
 
 {
   "parameters": {
@@ -101,10 +101,10 @@ Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
 ###
 
 ### Save Robot Txt Configuration - Discovery route
-POST https://localhost:44344/stott.robotshandler/opal/discovery/tools/save-robot-txt-configuration/
+POST {{baseUrl}}{{apiPath}}/discovery/tools/save-robot-txt-configuration/
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+Authorization: Bearer {{token}}
 
 {
   "parameters": {
@@ -114,10 +114,10 @@ Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
 }
 
 ### Error Test - Save without robotsTxtContent
-POST https://localhost:44344/stott.robotshandler/opal/tools/save-robot-txt-configuration/
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+Authorization: Bearer {{token}}
 
 {
   "parameters": {
@@ -128,10 +128,10 @@ Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
 ###
 
 ### Error Test - Save with invalid RobotsId
-POST https://localhost:44344/stott.robotshandler/opal/tools/save-robot-txt-configuration/
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+Authorization: Bearer {{token}}
 
 {
   "parameters": {
@@ -143,10 +143,10 @@ Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
 ###
 
 ### Error Test - Save without RobotsId or HostName
-POST https://localhost:44344/stott.robotshandler/opal/tools/save-robot-txt-configuration/
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
 Accept: application/json
 Content-Type: application/json
-Authorization: Bearer d5DLwPqCwCXPGqKlJdOQkmIfYEmyNXDo
+Authorization: Bearer {{token}}
 
 {
   "parameters": {

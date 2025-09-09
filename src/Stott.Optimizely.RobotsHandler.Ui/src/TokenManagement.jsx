@@ -2,22 +2,27 @@ import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { Container, Button, Modal, Form } from 'react-bootstrap';
+import { apiEndpoints } from './apiEndpointsData';
 
 function TokenManagement(props) {
     const { showToastNotificationEvent } = props;
     const [tokens, setTokens] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showApiInfoModal, setShowApiInfoModal] = useState(false);
+    const [selectedApiInfo, setSelectedApiInfo] = useState(null);
     const [selectedToken, setSelectedToken] = useState(null);
     const [isMounted, setIsMounted] = useState(false);
     const [formData, setFormData] = useState({
         id: '',
         name: '',
-        scope: 'Read',
+        robotsScope: 'None',
+        llmsScope: 'None',
         token: ''
     });
 
     const scopeOptions = [
+        { value: 'None', label: 'None' },
         { value: 'Read', label: 'Read' },
         { value: 'Write', label: 'Write' }
     ];
@@ -27,6 +32,11 @@ function TokenManagement(props) {
 
     const handleShowSuccessToast = useCallback((title, description) => 
         showToastNotificationEvent && showToastNotificationEvent(true, title, description), [showToastNotificationEvent]);
+
+    const handleShowApiInfo = (apiKey) => {
+        setSelectedApiInfo(apiEndpoints[apiKey]);
+        setShowApiInfoModal(true);
+    };
 
     const loadTokens = useCallback(async () => {
         try {
@@ -55,7 +65,8 @@ function TokenManagement(props) {
         setFormData({
             id: '',
             name: '',
-            scope: 'Read',
+            robotsScope: 'None',
+            llmsScope: 'None',
             token: generateRandomToken()
         });
         setShowAddModal(true);
@@ -75,8 +86,9 @@ function TokenManagement(props) {
 
         try {
             let params = new URLSearchParams();
-            
-            params.append('scope', formData.scope);
+
+            params.append('robotsScope', formData.robotsScope);
+            params.append('llmsScope', formData.llmsScope);
             params.append('name', formData.name);
             params.append('token', formData.token);
 
@@ -113,7 +125,8 @@ function TokenManagement(props) {
         return tokens.map((token, index) => (
             <tr key={index}>
                 <td>{token.name || token.id}</td>
-                <td>{token.scope}</td>
+                <td>{token.robotsScope}</td>
+                <td>{token.llmsScope}</td>
                 <td>
                     <code className="text-muted">{token.token}</code>
                 </td>
@@ -140,9 +153,26 @@ function TokenManagement(props) {
                 <p>Please note that <strong>token values</strong> are only visible during initial creation and cannot be retrieved later.</p>
                 <h3 className='h5'>Available API Endpoints:</h3>
                 <ul className="list-unstyled">
-                    <li><strong>Discovery API:</strong> /stott.robotshandler/opal/discovery/</li>
-                    <li><strong>Get Robots API:</strong> /stott.robotshandler/opal/tools/get-robot-txt-configurations/</li>
-                    <li><strong>Save Robots API:</strong> /stott.robotshandler/opal/tools/save-robot-txt-configurations/</li>
+                    <li className="d-flex align-items-center mb-1">
+                        <span><strong>Discovery API:</strong> /stott.robotshandler/opal/discovery/</span>
+                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('discovery')} title="View API Details">&#9432;</Button>
+                    </li>
+                    <li className="d-flex align-items-center mb-1">
+                        <span><strong>Get robots.txt API:</strong> /stott.robotshandler/opal/tools/get-robot-txt-configurations/</span>
+                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('getRobots')} title="View API Details">&#9432;</Button>
+                    </li>
+                    <li className="d-flex align-items-center mb-1">
+                        <span><strong>Save robots.txt API:</strong> /stott.robotshandler/opal/tools/save-robot-txt-configuration/</span>
+                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('saveRobots')} title="View API Details">&#9432;</Button>
+                    </li>
+                    <li className="d-flex align-items-center mb-1">
+                        <span><strong>Get llms.txt API:</strong> /stott.robotshandler/opal/tools/get-llms-txt-configurations/</span>
+                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('getLlms')} title="View API Details">&#9432;</Button>
+                    </li>
+                    <li className="d-flex align-items-center mb-1">
+                        <span><strong>Save llms.txt API:</strong> /stott.robotshandler/opal/tools/save-llms-txt-configuration/</span>
+                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('saveLlms')} title="View API Details">&#9432;</Button>
+                    </li>
                 </ul>
                 <Button variant='primary' onClick={handleAddToken} className='text-nowrap'>Add Token</Button>
             </div>
@@ -151,7 +181,8 @@ function TokenManagement(props) {
                     <thead>
                         <tr>
                             <th className='table-header-fix'>Name</th>
-                            <th className='table-header-fix'>Scope</th>
+                            <th className='table-header-fix'>Robots Scope</th>
+                            <th className='table-header-fix'>LLMS Scope</th>
                             <th className='table-header-fix'>Token</th>
                             <th className='table-header-fix'>Actions</th>
                         </tr>
@@ -179,8 +210,14 @@ function TokenManagement(props) {
                             <Form.Control type='text' value={formData.name} onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))} placeholder='Enter a descriptive name for this token' required />
                         </Form.Group>
                         <Form.Group className='mb-3'>
-                            <Form.Label>Scope</Form.Label>
-                            <Form.Select value={formData.scope} onChange={(e) => setFormData(prev => ({ ...prev, scope: e.target.value }))}>
+                            <Form.Label>Robots Scope</Form.Label>
+                            <Form.Select value={formData.robotsScope} onChange={(e) => setFormData(prev => ({ ...prev, robotsScope: e.target.value }))}>
+                                {scopeOptions.map((option, index) => ( <option key={index} value={option.value}>{option.label}</option> ))}
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group className='mb-3'>
+                            <Form.Label>LLMS Scope</Form.Label>
+                            <Form.Select value={formData.llmsScope} onChange={(e) => setFormData(prev => ({ ...prev, llmsScope: e.target.value }))}>
                                 {scopeOptions.map((option, index) => ( <option key={index} value={option.value}>{option.label}</option> ))}
                             </Form.Select>
                         </Form.Group>
@@ -215,6 +252,53 @@ function TokenManagement(props) {
                 <Modal.Footer>
                     <Button variant='danger' onClick={handleDeleteConfirm}>Delete</Button>
                     <Button variant='secondary' onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* API Information Modal */}
+            <Modal show={showApiInfoModal} onHide={() => setShowApiInfoModal(false)} size="lg">
+                <Modal.Header closeButton>
+                    <Modal.Title>API Information: {selectedApiInfo?.name}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {selectedApiInfo && (
+                        <div>
+                            <div className="mb-3">
+                                <h6><strong>HTTP Method:</strong></h6>
+                                <span className={`badge ${selectedApiInfo.httpMethod === 'GET' ? 'bg-success' : 'bg-primary'}`}>
+                                    {selectedApiInfo.httpMethod}
+                                </span>
+                            </div>
+                            
+                            <div className="mb-3">
+                                <h6><strong>URL:</strong></h6>
+                                <code className="d-block p-2 bg-light border rounded">{selectedApiInfo.url}</code>
+                            </div>
+
+                            <div className="mb-3">
+                                <h6><strong>Request JSON:</strong></h6>
+                                <pre className="bg-light border rounded p-2 small overflow-auto" style={{maxHeight: '200px'}}>
+                                    <code>{selectedApiInfo.requestJson}</code>
+                                </pre>
+                            </div>
+
+                            <div className="mb-3">
+                                <h6><strong>Response JSON:</strong></h6>
+                                <pre className="bg-light border rounded p-2 small overflow-auto" style={{maxHeight: '300px'}}>
+                                    <code>{selectedApiInfo.responseJson}</code>
+                                </pre>
+                            </div>
+
+                            {selectedApiInfo.showAuthorization && (
+                                <div className="alert alert-info">
+                                    <strong>Note:</strong> Remember to include the <code>Authorization: Bearer YOUR_TOKEN</code> header when making requests to this endpoint.
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant='secondary' onClick={() => setShowApiInfoModal(false)}>Close</Button>
                 </Modal.Footer>
             </Modal>
         </Container>

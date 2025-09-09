@@ -31,8 +31,11 @@ public class OpalTokenController : BaseApiController
 
         foreach(var token in tokens)
         {
-            // update token.Token so that only the first 6 characters of the token and an ellipse are returned
-            token.Token = token.Token.Length > 6 ? token.Token[..6] + "..." : token.Token;
+            if (!string.IsNullOrWhiteSpace(token.Token))
+            {
+                // update token.Token so that only the first 6 characters of the token and an ellipse are returned
+                token.Token = token.Token.Length > 6 ? token.Token[..6] + "..." : token.Token;
+            }
         }
 
         return CreateSafeJsonResult(tokens);
