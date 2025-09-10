@@ -7,103 +7,36 @@
 export const apiEndpoints = {
     discovery: {
         name: 'Discovery API',
-        httpMethod: 'GET',
-        url: '/stott.robotshandler/opal/discovery/',
-        showAuthorization: false,
+        description: 'Fetches a list of available API functions, their parameters, and endpoints.',
+        endpoint: 'GET: /stott.robotshandler/opal/discovery/',
         requestJson: 'No request body required',
         responseJson: `{
   "functions": [
     {
-      "name": "getrobottxtconfigurations",
-      "description": "Get a collection of robot.txt configurations optionally filtered by host name.",
+      "name": "string",
+      "description": "string",
       "parameters": [
         {
-          "name": "hostName",
+          "name": "string",
           "type": "string",
-          "description": "The host name to filter the robot.txt configurations by.",
-          "required": false
+          "description": "string",
+          "required": boolean
         }
       ],
-      "endpoint": "/tools/get-robot-txt-configurations/",
-      "httpMethod": "POST"
-    },
-    {
-      "name": "saverobottxtconfigurations",
-      "description": "Saves robots.txt content for a specific Id or Host Name. Where an update is being performed for a host name and a specific configuration does not exist, one will be created.",
-      "parameters": [
-        {
-          "name": "robotsId",
-          "type": "Guid",
-          "description": "The Id of the robots.txt configuration that is to be updated.",
-          "required": false
-        },
-        {
-          "name": "hostName",
-          "type": "string",
-          "description": "The host name of of the robots.txt configuration that is to be updated.",
-          "required": false
-        },
-        {
-          "name": "RobotsTxtContent",
-          "type": "string",
-          "description": "The robots.txt content to be saved. This should be a valid robots.txt content and must be provided.",
-          "required": true
-        }
-      ],
-      "endpoint": "/tools/save-robot-txt-configuration/",
-      "httpMethod": "POST"
-    },
-    {
-      "name": "getllmstxtconfigurations",
-      "description": "Get a collection of llms.txt configurations optionally filtered by host name.",
-      "parameters": [
-        {
-          "name": "hostName",
-          "type": "string",
-          "description": "The host name to filter the llms.txt configurations by.",
-          "required": false
-        }
-      ],
-      "endpoint": "/tools/get-llms-txt-configurations/",
-      "httpMethod": "POST"
-    },
-    {
-      "name": "savellmstxtconfigurations",
-      "description": "Saves llms.txt content for a specific Id or Host Name. Where an update is being performed for a host name and a specific configuration does not exist, one will be created.",
-      "parameters": [
-        {
-          "name": "llmsId",
-          "type": "Guid",
-          "description": "The Id of the llms.txt configuration that is to be updated.",
-          "required": false
-        },
-        {
-          "name": "hostName",
-          "type": "string",
-          "description": "The host name of of the llms.txt configuration that is to be updated.",
-          "required": false
-        },
-        {
-          "name": "LlmsTxtContent",
-          "type": "string",
-          "description": "The llms.txt content to be saved. This should be a valid llms.txt content and must be provided.",
-          "required": true
-        }
-      ],
-      "endpoint": "/tools/save-llms-txt-configuration/",
-      "httpMethod": "POST"
+      "endpoint": "/relative/url/",
+      "http_method": "POST"
     }
   ]
 }`
     },
     getRobots: {
         name: 'Get robots.txt API',
-        httpMethod: 'POST',
-        url: '/stott.robotshandler/opal/tools/get-robot-txt-configurations/',
-        showAuthorization: true,
+        description: 'Fetches a list of robots.txt configurations filtered by an optional hostName.  This API requires a bearer token with at least "Read" permission for robots.txt content.',
+        endpoint: `POST: /stott.robotshandler/opal/tools/get-robot-txt-configurations/
+Authorization: bearer token-value`,
         requestJson: `{
   "parameters": {
-    "hostName": "example.com" // Optional filter
+    "hostName": "example.com"
   }
 }`,
         responseJson: `[
@@ -118,18 +51,18 @@ export const apiEndpoints = {
     },
     saveRobots: {
         name: 'Save robots.txt API',
-        httpMethod: 'POST',
-        url: '/stott.robotshandler/opal/tools/save-robot-txt-configuration/',
-        showAuthorization: true,
+        description: 'Saves a single robots.txt configuration based on robotsId or hostName.  This API requires a bearer token with "Write" permission for robots.txt content',
+        endpoint: `POST: /stott.robotshandler/opal/tools/save-robot-txt-configuration/
+Authorization: bearer token-value`,
         requestJson: `{
   "parameters": {
-    "robotsId": "guid", // OR use hostName instead
-    "hostName": "example.com", // OR use robotsId instead
+    "robotsId": "guid",
+    "hostName": "example.com",
     "robotsTxtContent": "User-agent: *\\nDisallow: /admin/\\n\\nSitemap: https://example.com/sitemap.xml"
   }
 }`,
         responseJson: `{
-  "success": true,
+  "success": boolean,
   "message": "string",
   "data": {
     "id": "guid",
@@ -142,12 +75,12 @@ export const apiEndpoints = {
     },
     getLlms: {
         name: 'Get llms.txt API',
-        httpMethod: 'POST',
-        url: '/stott.robotshandler/opal/tools/get-llms-txt-configurations/',
-        showAuthorization: true,
+        description: 'Fetches a list of llms.txt configurations filtered by an optional hostName.  This API requires a bearer token with at least "Read" permission for llms.txt content.',
+        endpoint: `POST: /stott.robotshandler/opal/tools/get-llms-txt-configurations/
+Authorization: bearer token-value`,
         requestJson: `{
   "parameters": {
-    "hostName": "example.com" // Optional filter
+    "hostName": "example.com"
   }
 }`,
         responseJson: `[
@@ -162,18 +95,18 @@ export const apiEndpoints = {
     },
     saveLlms: {
         name: 'Save llms.txt API',
-        httpMethod: 'POST',
-        url: '/stott.robotshandler/opal/tools/save-llms-txt-configuration/',
-        showAuthorization: true,
+        description: 'Saves a single llms.txt configuration based on llmsId or hostName.  This API requires a bearer token with "Write" permission for llms.txt content',
+        endpoint: `POST: /stott.robotshandler/opal/tools/save-llms-txt-configuration/
+Authorization: bearer token-value`,
         requestJson: `{
   "parameters": {
-    "llmsId": "guid", // OR use hostName instead
-    "hostName": "example.com", // OR use llmsId instead
+    "llmsId": "guid",
+    "hostName": "example.com",
     "llmsTxtContent": "# LLMS.TXT\\n\\nmodel-name: GPT-4\\nmodel-version: 2024-03\\ntraining-data-cutoff: 2023-04"
   }
 }`,
         responseJson: `{
-  "success": true,
+  "success": boolean,
   "message": "string",
   "data": {
     "id": "guid",

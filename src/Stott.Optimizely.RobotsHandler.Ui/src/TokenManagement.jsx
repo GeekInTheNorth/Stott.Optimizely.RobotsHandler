@@ -148,30 +148,30 @@ function TokenManagement(props) {
     return (
         <Container className='mt-3'>
             <div className='mb-2'>
-                <h2>Opal Token Management</h2>
-                <p>Manage authorization bearer tokens for accessing the Robots Handler functionality. Each token can have a read or read/write scope that determines the endpoints they grant access to. These endpoints have been optimized for compatability with Opal.</p>
+                <h2>API Token Management</h2>
+                <p>Manage authorization bearer tokens for accessing the Robots Handler functionality. Each token can have a read or read/write scope that determines the endpoints they grant access to. These endpoints have been optimized for compatability with <strong>Optimizely Opal</strong> but can be used in headless solutions.</p>
                 <p>Please note that <strong>token values</strong> are only visible during initial creation and cannot be retrieved later.</p>
                 <h3 className='h5'>Available API Endpoints:</h3>
                 <ul className="list-unstyled">
                     <li className="d-flex align-items-center mb-1">
-                        <span><strong>Discovery API:</strong> /stott.robotshandler/opal/discovery/</span>
-                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('discovery')} title="View API Details">&#9432;</Button>
+                        <span className='apiName'>Discovery API:</span>
+                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('discovery')} title="View API Details">API Details</Button>
                     </li>
                     <li className="d-flex align-items-center mb-1">
-                        <span><strong>Get robots.txt API:</strong> /stott.robotshandler/opal/tools/get-robot-txt-configurations/</span>
-                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('getRobots')} title="View API Details">&#9432;</Button>
+                        <span className='apiName'>Get robots.txt API:</span>
+                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('getRobots')} title="View API Details">API Details</Button>
                     </li>
                     <li className="d-flex align-items-center mb-1">
-                        <span><strong>Save robots.txt API:</strong> /stott.robotshandler/opal/tools/save-robot-txt-configuration/</span>
-                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('saveRobots')} title="View API Details">&#9432;</Button>
+                        <span className='apiName'>Save robots.txt API:</span>
+                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('saveRobots')} title="View API Details">API Details</Button>
                     </li>
                     <li className="d-flex align-items-center mb-1">
-                        <span><strong>Get llms.txt API:</strong> /stott.robotshandler/opal/tools/get-llms-txt-configurations/</span>
-                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('getLlms')} title="View API Details">&#9432;</Button>
+                        <span className='apiName'>Get llms.txt API:</span>
+                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('getLlms')} title="View API Details">API Details</Button>
                     </li>
                     <li className="d-flex align-items-center mb-1">
-                        <span><strong>Save llms.txt API:</strong> /stott.robotshandler/opal/tools/save-llms-txt-configuration/</span>
-                        <Button variant="link" size="lg" className="p-0 ms-2 text-decoration-none" onClick={() => handleShowApiInfo('saveLlms')} title="View API Details">&#9432;</Button>
+                        <span className='apiName'>Save llms.txt API:</span>
+                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('saveLlms')} title="View API Details">API Details</Button>
                     </li>
                 </ul>
                 <Button variant='primary' onClick={handleAddToken} className='text-nowrap'>Add Token</Button>
@@ -262,38 +262,34 @@ function TokenManagement(props) {
                 </Modal.Header>
                 <Modal.Body>
                     {selectedApiInfo && (
-                        <div>
+                        <div className='apiDescription'>
                             <div className="mb-3">
-                                <h6><strong>HTTP Method:</strong></h6>
-                                <span className={`badge ${selectedApiInfo.httpMethod === 'GET' ? 'bg-success' : 'bg-primary'}`}>
-                                    {selectedApiInfo.httpMethod}
+                                <h6><strong>Purpose:</strong></h6>
+                                <span>
+                                    {selectedApiInfo.description}
                                 </span>
                             </div>
-                            
+
                             <div className="mb-3">
-                                <h6><strong>URL:</strong></h6>
-                                <code className="d-block p-2 bg-light border rounded">{selectedApiInfo.url}</code>
+                                <h6><strong>Endpoint:</strong></h6>
+                                <pre className="bg-light border rounded p-2 small">
+                                    <code>{selectedApiInfo.endpoint}</code>
+                                </pre>
                             </div>
 
                             <div className="mb-3">
                                 <h6><strong>Request JSON:</strong></h6>
-                                <pre className="bg-light border rounded p-2 small overflow-auto" style={{maxHeight: '200px'}}>
+                                <pre className="bg-light border rounded p-2 small">
                                     <code>{selectedApiInfo.requestJson}</code>
                                 </pre>
                             </div>
 
                             <div className="mb-3">
                                 <h6><strong>Response JSON:</strong></h6>
-                                <pre className="bg-light border rounded p-2 small overflow-auto" style={{maxHeight: '300px'}}>
+                                <pre className="bg-light border rounded p-2 small">
                                     <code>{selectedApiInfo.responseJson}</code>
                                 </pre>
                             </div>
-
-                            {selectedApiInfo.showAuthorization && (
-                                <div className="alert alert-info">
-                                    <strong>Note:</strong> Remember to include the <code>Authorization: Bearer YOUR_TOKEN</code> header when making requests to this endpoint.
-                                </div>
-                            )}
                         </div>
                     )}
                 </Modal.Body>

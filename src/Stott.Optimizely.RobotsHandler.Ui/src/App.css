@@ -10,3 +10,13 @@
 .large-text-area {
   min-height: calc(100vh - 500px) !important;
 }
+
+.apiName {
+  min-width: 160px;
+  font-weight: bold;
+}
+
+div.apiDescription pre {
+  max-height: 200px;
+  overflow: auto;
+}

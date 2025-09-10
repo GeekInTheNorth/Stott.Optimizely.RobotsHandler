@@ -32,8 +32,8 @@ function NavigationContainer(props) {
                 setContainerTitle('Environment Robots');
                 setShowEnvironmentRobots(true);
                 break;
-            case 'opal-tools':
-                setContainerTitle('Opal Tools');
+            case 'api-tokens':
+                setContainerTitle('API Tokens');
                 setShowOpalTools(true);
                 break;
             default:
