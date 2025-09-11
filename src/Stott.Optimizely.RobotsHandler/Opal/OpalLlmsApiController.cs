@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Llms;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
 [AllowAnonymous]
-public sealed class OpalLlmsApiController : BaseApiController
+public sealed class OpalLlmsApiController : OpalBaseApiController
 {
     private readonly ILlmsContentService _service;
 
@@ -50,10 +48,10 @@ public sealed class OpalLlmsApiController : BaseApiController
                     });
                 }
 
-                return CreateSafeJsonResult(ToOpalModel(specificConfiguration));
+                return CreateSafeJsonResult(ConvertToModel(specificConfiguration, hostName, x => x.LlmsContent));
             }
 
-            return CreateSafeJsonResult(ToOpalModels(configurations));
+            return CreateSafeJsonResult(ConvertToModels(configurations, x => x.LlmsContent));
         }
         catch (Exception ex)
         {
@@ -149,30 +147,5 @@ public sealed class OpalLlmsApiController : BaseApiController
             _logger.LogError(ex, "An error was encountered while attempting to save llms.txt content tool.");
             throw;
         }
-    }
-
-    private static IEnumerable<SiteLlmsOpalModel> ToOpalModels(IEnumerable<SiteLlmsViewModel> siteModels)
-    {
-        if (siteModels is null)
-        {
-            yield break;
-        }
-
-        foreach (var siteModel in siteModels)
-        {
-            yield return ToOpalModel(siteModel);
-        }
-    }
-
-    private static SiteLlmsOpalModel ToOpalModel(SiteLlmsViewModel siteModel)
-    {
-        return new SiteLlmsOpalModel
-        {
-            Id = siteModel.Id,
-            SiteName = siteModel.SiteName,
-            IsDefaultForSite = siteModel.IsForWholeSite,
-            SpecificHost = siteModel.SpecificHost,
-            LlmsContent = siteModel.LlmsContent
-        };
     }
 }

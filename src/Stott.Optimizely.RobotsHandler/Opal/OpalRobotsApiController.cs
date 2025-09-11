@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
 using Stott.Optimizely.RobotsHandler.Robots;
 
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
 [AllowAnonymous]
-public sealed class OpalRobotsApiController : BaseApiController
+public sealed class OpalRobotsApiController : OpalBaseApiController
 {
     private readonly IRobotsContentService _service;
 
@@ -52,10 +50,10 @@ public sealed class OpalRobotsApiController : BaseApiController
                     });
                 }
 
-                return CreateSafeJsonResult(ToOpalModel(specificConfiguration));
+                return CreateSafeJsonResult(ConvertToModel(specificConfiguration, hostName, x => x.RobotsContent));
             }
 
-            return CreateSafeJsonResult(ToOpalModels(configurations));
+            return CreateSafeJsonResult(ConvertToModels(configurations, x => x.RobotsContent));
         }
         catch (Exception ex)
         {
@@ -151,30 +149,5 @@ public sealed class OpalRobotsApiController : BaseApiController
             _logger.LogError(ex, "An error was encountered while processing the robot-txt-configurations tool.");
             throw;
         }
-    }
-
-    private static IEnumerable<SiteRobotsOpalModel> ToOpalModels(IEnumerable<SiteRobotsViewModel> siteModels)
-    {
-        if (siteModels is null)
-        {
-            yield break;
-        }
-
-        foreach (var siteModel in siteModels)
-        {
-            yield return ToOpalModel(siteModel);
-        }
-    }
-
-    private static SiteRobotsOpalModel ToOpalModel(SiteRobotsViewModel siteModel)
-    {
-        return new SiteRobotsOpalModel
-        {
-            Id = siteModel.Id,
-            SiteName = siteModel.SiteName,
-            IsDefaultForSite = siteModel.IsForWholeSite,
-            SpecificHost = siteModel.SpecificHost,
-            RobotsContent = siteModel.RobotsContent
-        };
     }
 }

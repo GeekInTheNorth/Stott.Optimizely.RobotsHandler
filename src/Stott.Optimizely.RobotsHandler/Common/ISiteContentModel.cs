@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Sites;
 
-namespace Stott.Optimizely.RobotsHandler.Robots;
+namespace Stott.Optimizely.RobotsHandler.Common;
 
-public sealed class SiteRobotsViewModel : ISiteContentViewModel
+public interface ISiteContentViewModel
 {
     public Guid Id { get; set; }
 
@@ -19,8 +18,4 @@ public sealed class SiteRobotsViewModel : ISiteContentViewModel
     public bool IsForWholeSite { get; set; }
 
     public string SpecificHost { get; set; }
-
-    public string RobotsContent { get; set; }
-
-    public bool CanDelete { get; set; }
 }
