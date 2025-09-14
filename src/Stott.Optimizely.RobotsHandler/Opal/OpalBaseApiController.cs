@@ -2,13 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using EPiServer.Web;
+
 using Stott.Optimizely.RobotsHandler.Common;
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
 public abstract class OpalBaseApiController : BaseApiController
 {
+    private readonly ISiteDefinitionResolver _siteDefinitionResolver;
+
+    protected OpalBaseApiController(ISiteDefinitionResolver siteDefinitionResolver)
+    {
+        _siteDefinitionResolver = siteDefinitionResolver;
+    }
+
     protected static IEnumerable<OpalSiteContentModel> ConvertToModels<TContent>(IList<TContent> siteModels, Func<TContent, string> contentSelector)
         where TContent : ISiteContentViewModel
     {
@@ -61,6 +71,26 @@ public abstract class OpalBaseApiController : BaseApiController
             SiteName = viewModel.SiteName,
             Content = contentSelector(viewModel)
         };
+    }
+
+    protected TModel GetEmptySiteModel<TModel>(string hostName)
+        where TModel : ISiteContentViewModel
+    {
+        var siteDefinition = _siteDefinitionResolver.GetByHostname(hostName, false, out var matchedHost);
+        if (siteDefinition is null)
+        {
+            return default;
+        }
+
+        var model = Activator.CreateInstance<TModel>();
+        model.Id = Guid.Empty;
+        model.SiteId = siteDefinition.Id;
+        model.IsForWholeSite = false;
+        model.SpecificHost = hostName;
+        model.SiteName = siteDefinition.Name;
+        model.AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList();
+
+        return model;
     }
 
     private static IList<string> GetSpecificHosts<TContent>(IList<TContent> models)

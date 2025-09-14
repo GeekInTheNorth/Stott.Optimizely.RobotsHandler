@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 
+using EPiServer.Web;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,7 +21,8 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
 
     public OpalRobotsApiController(
         IRobotsContentService service,
-        ILogger<OpalRobotsApiController> logger)
+        ISiteDefinitionResolver siteDefinitionResolver,
+        ILogger<OpalRobotsApiController> logger) : base(siteDefinitionResolver)
     {
         _service = service;
         _logger = logger;
@@ -116,7 +119,8 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
             {
                 var specificConfiguration =
                     configurations.FirstOrDefault(x => string.Equals(x.SpecificHost, hostName, StringComparison.OrdinalIgnoreCase)) ??
-                    configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase)));
+                    configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase))) ??
+                    GetEmptySiteModel<SiteRobotsViewModel>(hostName);
 
                 var isSpecificHost = !specificConfiguration.IsForWholeSite && string.Equals(hostName, specificConfiguration.SpecificHost, StringComparison.OrdinalIgnoreCase);
 

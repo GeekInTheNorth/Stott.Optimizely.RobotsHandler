@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 
+using EPiServer.Web;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,7 +19,10 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
 
     private readonly ILogger<OpalLlmsApiController> _logger;
 
-    public OpalLlmsApiController(ILlmsContentService service, ILogger<OpalLlmsApiController> logger)
+    public OpalLlmsApiController(
+        ILlmsContentService service,
+        ISiteDefinitionResolver siteDefinitionResolver,
+        ILogger<OpalLlmsApiController> logger) : base(siteDefinitionResolver)
     {
         _service = service;
         _logger = logger;
@@ -114,10 +119,19 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
             {
                 var specificConfiguration =
                     configurations.FirstOrDefault(x => string.Equals(x.SpecificHost, hostName, StringComparison.OrdinalIgnoreCase)) ??
-                    configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase)));
+                    configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase))) ??
+                    GetEmptySiteModel<SiteLlmsViewModel>(hostName);
+
+                if (specificConfiguration is null)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        Message = $"Could not locate a site that matched the host name of {model.Parameters.HostName}."
+                    });
+                }
 
                 var isSpecificHost = !specificConfiguration.IsForWholeSite && string.Equals(hostName, specificConfiguration.SpecificHost, StringComparison.OrdinalIgnoreCase);
-
                 var saveModel = new SaveLlmsModel
                 {
                     Id = isSpecificHost ? specificConfiguration.Id : Guid.Empty,
