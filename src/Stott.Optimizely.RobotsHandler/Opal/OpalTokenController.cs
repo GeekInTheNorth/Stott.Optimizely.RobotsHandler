@@ -28,8 +28,12 @@ public class OpalTokenController : BaseApiController
     public IActionResult List()
     {
         var tokens = _repository.List();
+        if (tokens is null)
+        {
+            return CreateSafeJsonResult(Array.Empty<TokenModel>());
+        }
 
-        foreach(var token in tokens)
+        foreach (var token in tokens)
         {
             if (!string.IsNullOrWhiteSpace(token.Token))
             {

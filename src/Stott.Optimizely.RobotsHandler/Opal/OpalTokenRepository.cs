@@ -13,9 +13,9 @@ public class OpalTokenRepository : IOpalTokenRepository
 {
     private readonly DynamicDataStore store;
 
-    public OpalTokenRepository()
+    public OpalTokenRepository(DynamicDataStoreFactory dataStoreFactory)
     {
-        store = DynamicDataStoreFactory.Instance.CreateStore(typeof(OpalTokenEntity));
+        store = dataStoreFactory.CreateStore(typeof(OpalTokenEntity));
     }
 
     public void Delete(Guid id)

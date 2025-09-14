@@ -32,7 +32,7 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
     [Route("/stott.robotshandler/opal/tools/get-llms-txt-configurations/")]
     [Route("/stott.robotshandler/opal/discovery/tools/get-llms-txt-configurations/")]
     [OpalAuthorization(OpalScopeType.Llms, OpalAuthorizationLevel.Read)]
-    public IActionResult GetRobotTxtConfigurations([FromBody] ToolRequest<GetConfigurationsQuery> model)
+    public IActionResult GetLlmsTxtConfigurations([FromBody] ToolRequest<GetConfigurationsQuery> model)
     {
         try
         {
