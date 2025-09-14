@@ -6,7 +6,7 @@
 # Variables - Change these as needed
 @baseUrl = https://localhost:44344
 @apiPath = /stott.robotshandler/opal
-@token = GvgVS1R23Z7VwkuAcB3haSWdTNDeVYcD
+@token = put-bearer-token-here
 @testHostNameOne = localhost:44344
 @testHostNameTwo = localhost:44347
 
