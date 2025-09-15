@@ -60,7 +60,7 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error was encountered while processing the robot-txt-configurations tool.");
+            _logger.LogError(ex, "An error was encountered while processing the llms-txt-configurations tool.");
             throw;
         }
     }
