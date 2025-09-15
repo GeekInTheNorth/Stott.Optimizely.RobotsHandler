@@ -266,7 +266,7 @@ public sealed class OpalLlmsApiControllerTests
             x => x.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("An error was encountered while processing the robot-txt-configurations tool.")),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("An error was encountered while processing the llms-txt-configurations tool.")),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
