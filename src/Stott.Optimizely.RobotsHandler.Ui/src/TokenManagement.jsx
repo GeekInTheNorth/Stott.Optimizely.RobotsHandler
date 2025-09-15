@@ -38,6 +38,28 @@ function TokenManagement(props) {
         setShowApiInfoModal(true);
     };
 
+    const handleCopyEndpointUrl = async (apiKey) => {
+        try {
+            const apiInfo = apiEndpoints[apiKey];
+            const endpointText = apiInfo.endpoint;
+            const lines = endpointText.split('\n');
+            const endpointLine = lines.find(line => line.includes('/stott.robotshandler'));
+            
+            if (endpointLine) {
+                const pathMatch = endpointLine.match(/\/stott\.robotshandler[^\s]*/);
+                if (pathMatch) {
+                    const currentDomain = window.location.origin;
+                    const fullUrl = currentDomain + pathMatch[0];
+                    
+                    await navigator.clipboard.writeText(fullUrl);
+                    handleShowSuccessToast('Success', 'Endpoint URL copied to clipboard!');
+                }
+            }
+        } catch (error) {
+            handleShowFailureToast('Error', 'Failed to copy URL to clipboard.');
+        }
+    };
+
     const loadTokens = useCallback(async () => {
         try {
             // This would be replaced with your actual API endpoint
@@ -155,23 +177,28 @@ function TokenManagement(props) {
                 <ul className="list-unstyled">
                     <li className="d-flex align-items-center mb-1">
                         <span className='apiName'>Discovery API:</span>
-                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('discovery')} title="View API Details">API Details</Button>
+                        <Button variant="outline-primary" size="sm" className="p-1 me-1" onClick={() => handleShowApiInfo('discovery')} title="View API Details">API Details</Button>
+                        <Button variant="outline-secondary" size="sm" className="p-1" onClick={() => handleCopyEndpointUrl('discovery')} title="Copy endpoint URL to clipboard">Copy URL</Button>
                     </li>
                     <li className="d-flex align-items-center mb-1">
                         <span className='apiName'>Get robots.txt API:</span>
-                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('getRobots')} title="View API Details">API Details</Button>
+                        <Button variant="outline-primary" size="sm" className="p-1 me-1" onClick={() => handleShowApiInfo('getRobots')} title="View API Details">API Details</Button>
+                        <Button variant="outline-secondary" size="sm" className="p-1" onClick={() => handleCopyEndpointUrl('getRobots')} title="Copy endpoint URL to clipboard">Copy URL</Button>
                     </li>
                     <li className="d-flex align-items-center mb-1">
                         <span className='apiName'>Save robots.txt API:</span>
-                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('saveRobots')} title="View API Details">API Details</Button>
+                        <Button variant="outline-primary" size="sm" className="p-1 me-1" onClick={() => handleShowApiInfo('saveRobots')} title="View API Details">API Details</Button>
+                        <Button variant="outline-secondary" size="sm" className="p-1" onClick={() => handleCopyEndpointUrl('saveRobots')} title="Copy endpoint URL to clipboard">Copy URL</Button>
                     </li>
                     <li className="d-flex align-items-center mb-1">
                         <span className='apiName'>Get llms.txt API:</span>
-                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('getLlms')} title="View API Details">API Details</Button>
+                        <Button variant="outline-primary" size="sm" className="p-1 me-1" onClick={() => handleShowApiInfo('getLlms')} title="View API Details">API Details</Button>
+                        <Button variant="outline-secondary" size="sm" className="p-1" onClick={() => handleCopyEndpointUrl('getLlms')} title="Copy endpoint URL to clipboard">Copy URL</Button>
                     </li>
                     <li className="d-flex align-items-center mb-1">
                         <span className='apiName'>Save llms.txt API:</span>
-                        <Button variant="outline-primary" size="sm" className="p-1" onClick={() => handleShowApiInfo('saveLlms')} title="View API Details">API Details</Button>
+                        <Button variant="outline-primary" size="sm" className="p-1 me-1" onClick={() => handleShowApiInfo('saveLlms')} title="View API Details">API Details</Button>
+                        <Button variant="outline-secondary" size="sm" className="p-1" onClick={() => handleCopyEndpointUrl('saveLlms')} title="Copy endpoint URL to clipboard">Copy URL</Button>
                     </li>
                 </ul>
                 <Button variant='primary' onClick={handleAddToken} className='text-nowrap'>Add Token</Button>
