@@ -4,10 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EPiServer.CMS" Version="12.29.1" />
-    <PackageReference Include="EPiServer.Find.Cms" Version="16.2.0" />
+    <PackageReference Include="EPiServer.CMS" Version="12.32.4" />
+    <PackageReference Include="EPiServer.Find.Cms" Version="16.4.1" />
     <PackageReference Include="MediatR" Version="12.3.0" />
-    <PackageReference Include="Stott.Security.Optimizely" Version="2.6.0" />
+    <PackageReference Include="Stott.Security.Optimizely" Version="3.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
