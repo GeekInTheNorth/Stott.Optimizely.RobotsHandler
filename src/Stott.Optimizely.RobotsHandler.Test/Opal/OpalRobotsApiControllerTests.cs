@@ -9,57 +9,57 @@ using Moq;
 
 using NUnit.Framework;
 
-using Stott.Optimizely.RobotsHandler.Llms;
 using Stott.Optimizely.RobotsHandler.Opal;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
+using Stott.Optimizely.RobotsHandler.Robots;
 using Stott.Optimizely.RobotsHandler.Sites;
 using Stott.Optimizely.RobotsHandler.Test.TestCases;
 
 namespace Stott.Optimizely.RobotsHandler.Test.Opal;
 
 [TestFixture]
-public sealed class OpalLlmsApiControllerTests
+public sealed class OpalRobotsApiControllerTests
 {
-    private Mock<ILlmsContentService> _mockService;
+    private Mock<IRobotsContentService> _mockService;
 
-    private Mock<ILogger<OpalLlmsApiController>> _logger;
+    private Mock<ILogger<OpalRobotsApiController>> _logger;
 
-    private OpalLlmsApiController _controller;
+    private OpalRobotsApiController _controller;
 
     private JsonSerializerOptions _serializationOptions;
 
     [SetUp]
     public void Setup()
     {
-        _mockService = new Mock<ILlmsContentService>();
-        _logger = new Mock<ILogger<OpalLlmsApiController>>();
+        _mockService = new Mock<IRobotsContentService>();
+        _logger = new Mock<ILogger<OpalRobotsApiController>>();
 
         _serializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         };
 
-        _controller = new OpalLlmsApiController(_mockService.Object, null, _logger.Object);
+        _controller = new OpalRobotsApiController(_mockService.Object, null, _logger.Object);
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_WhenCalled_InvokesGetAllOnService()
+    public void GetRobotTxtConfigurations_WhenCalled_InvokesGetAllOnService()
     {
         // Act
-        _controller.GetLlmsTxtConfigurations(new ToolRequest<GetConfigurationsQuery>());
+        _controller.GetRobotTxtConfigurations(new ToolRequest<GetConfigurationsQuery>());
 
         // Assert
         _mockService.Verify(s => s.GetAll(), Times.Once);
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenThereAreNoConfigurations_ThenAnEmptyArrayIsReturned()
+    public void GetRobotTxtConfigurations_GivenThereAreNoConfigurations_ThenAnEmptyArrayIsReturned()
     {
         // Arrange
-        _mockService.Setup(s => s.GetAll()).Returns(new List<SiteLlmsViewModel>());
+        _mockService.Setup(s => s.GetAll()).Returns(new List<SiteRobotsViewModel>());
 
         // Act
-        var result = _controller.GetLlmsTxtConfigurations(new ToolRequest<GetConfigurationsQuery>()) as ContentResult;
+        var result = _controller.GetRobotTxtConfigurations(new ToolRequest<GetConfigurationsQuery>()) as ContentResult;
 
         // Assert
         Assert.That(result, Is.Not.Null);
@@ -68,13 +68,13 @@ public sealed class OpalLlmsApiControllerTests
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenThereAreConfigurations_ThenContentModelsAreReturned()
+    public void GetRobotTxtConfigurations_GivenThereAreConfigurations_ThenContentModelsAreReturned()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
 
         // Act
-        var response = _controller.GetLlmsTxtConfigurations(new ToolRequest<GetConfigurationsQuery>()) as ContentResult;
+        var response = _controller.GetRobotTxtConfigurations(new ToolRequest<GetConfigurationsQuery>()) as ContentResult;
         var contentString = response?.Content ?? string.Empty;
         var content = JsonSerializer.Deserialize<List<OpalSiteContentModel>>(contentString, _serializationOptions);
 
@@ -83,7 +83,7 @@ public sealed class OpalLlmsApiControllerTests
         Assert.That(content, Has.Count.EqualTo(3));
         Assert.That(content[0].SiteName, Is.EqualTo("Test One"));
         Assert.That(content[0].SpecificHost, Is.EqualTo("specific.test"));
-        Assert.That(content[0].Content, Is.EqualTo("User-agent: *\nDisallow: /"));
+        Assert.That(content[0].Content, Is.EqualTo("User-agent: *\nDisallow: /admin"));
         Assert.That(content[1].SiteName, Is.EqualTo("Test Two"));
         Assert.That(content[1].SpecificHost, Is.EqualTo("available3.test"));
         Assert.That(content[1].Content, Is.EqualTo("User-agent: *\nDisallow: /private"));
@@ -93,7 +93,7 @@ public sealed class OpalLlmsApiControllerTests
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenAHostNameHasBeenProvided_AndTheHostNameDoesNotMatch_ThenANegativeResultIsReturned()
+    public void GetRobotTxtConfigurations_GivenAHostNameHasBeenProvided_AndTheHostNameDoesNotMatch_ThenANegativeResultIsReturned()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
@@ -107,17 +107,17 @@ public sealed class OpalLlmsApiControllerTests
         };
 
         // Act 
-        var response = _controller.GetLlmsTxtConfigurations(model) as JsonResult;
+        var response = _controller.GetRobotTxtConfigurations(model) as JsonResult;
         var contentString = response?.Value ?? string.Empty;
 
         // Assert
         Assert.That(contentString, Is.Not.Null);
         Assert.That(((dynamic)contentString).Success, Is.False);
-        Assert.That(((dynamic)contentString).Message, Is.EqualTo("Could not locate a llms.txt config that matched the host name of nonexistent.test."));
+        Assert.That(((dynamic)contentString).Message, Is.EqualTo("Could not locate a robots.txt config that matched the host name of nonexistent.test."));
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenHostNameMatchesSpecificHost_ThenSpecificConfigurationIsReturned()
+    public void GetRobotTxtConfigurations_GivenHostNameMatchesSpecificHost_ThenSpecificConfigurationIsReturned()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
@@ -131,7 +131,7 @@ public sealed class OpalLlmsApiControllerTests
         };
 
         // Act
-        var response = _controller.GetLlmsTxtConfigurations(model) as ContentResult;
+        var response = _controller.GetRobotTxtConfigurations(model) as ContentResult;
         var contentString = response?.Content ?? string.Empty;
         var content = JsonSerializer.Deserialize<OpalSiteContentModel>(contentString, _serializationOptions);
 
@@ -139,11 +139,11 @@ public sealed class OpalLlmsApiControllerTests
         Assert.That(content, Is.Not.Null);
         Assert.That(content.SiteName, Is.EqualTo("Test One"));
         Assert.That(content.SpecificHost, Is.EqualTo("specific.test"));
-        Assert.That(content.Content, Is.EqualTo("User-agent: *\nDisallow: /"));
+        Assert.That(content.Content, Is.EqualTo("User-agent: *\nDisallow: /admin"));
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenHostNameMatchesAvailableHost_ThenMatchingConfigurationIsReturned()
+    public void GetRobotTxtConfigurations_GivenHostNameMatchesAvailableHost_ThenMatchingConfigurationIsReturned()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
@@ -157,7 +157,7 @@ public sealed class OpalLlmsApiControllerTests
         };
 
         // Act
-        var response = _controller.GetLlmsTxtConfigurations(model) as ContentResult;
+        var response = _controller.GetRobotTxtConfigurations(model) as ContentResult;
         var contentString = response?.Content ?? string.Empty;
         var content = JsonSerializer.Deserialize<OpalSiteContentModel>(contentString, _serializationOptions);
 
@@ -169,7 +169,7 @@ public sealed class OpalLlmsApiControllerTests
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenHostNameHasWhitespace_ThenItIsTrimmed()
+    public void GetRobotTxtConfigurations_GivenHostNameHasWhitespace_ThenItIsTrimmed()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
@@ -183,7 +183,7 @@ public sealed class OpalLlmsApiControllerTests
         };
 
         // Act
-        var response = _controller.GetLlmsTxtConfigurations(model) as ContentResult;
+        var response = _controller.GetRobotTxtConfigurations(model) as ContentResult;
         var contentString = response?.Content ?? string.Empty;
         var content = JsonSerializer.Deserialize<OpalSiteContentModel>(contentString, _serializationOptions);
 
@@ -194,7 +194,7 @@ public sealed class OpalLlmsApiControllerTests
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenHostNameIsCaseDifferent_ThenMatchIsFoundIgnoringCase()
+    public void GetRobotTxtConfigurations_GivenHostNameIsCaseDifferent_ThenMatchIsFoundIgnoringCase()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
@@ -208,7 +208,7 @@ public sealed class OpalLlmsApiControllerTests
         };
 
         // Act
-        var response = _controller.GetLlmsTxtConfigurations(model) as ContentResult;
+        var response = _controller.GetRobotTxtConfigurations(model) as ContentResult;
         var contentString = response?.Content ?? string.Empty;
         var content = JsonSerializer.Deserialize<OpalSiteContentModel>(contentString, _serializationOptions);
 
@@ -218,13 +218,13 @@ public sealed class OpalLlmsApiControllerTests
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenNullModel_ThenAllConfigurationsAreReturned()
+    public void GetRobotTxtConfigurations_GivenNullModel_ThenAllConfigurationsAreReturned()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
 
         // Act
-        var response = _controller.GetLlmsTxtConfigurations(null) as ContentResult;
+        var response = _controller.GetRobotTxtConfigurations(null) as ContentResult;
         var contentString = response?.Content ?? string.Empty;
         var content = JsonSerializer.Deserialize<List<OpalSiteContentModel>>(contentString, _serializationOptions);
 
@@ -234,7 +234,7 @@ public sealed class OpalLlmsApiControllerTests
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_GivenModelWithNullParameters_ThenAllConfigurationsAreReturned()
+    public void GetRobotTxtConfigurations_GivenModelWithNullParameters_ThenAllConfigurationsAreReturned()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
@@ -245,7 +245,7 @@ public sealed class OpalLlmsApiControllerTests
         };
 
         // Act
-        var response = _controller.GetLlmsTxtConfigurations(model) as ContentResult;
+        var response = _controller.GetRobotTxtConfigurations(model) as ContentResult;
         var contentString = response?.Content ?? string.Empty;
         var content = JsonSerializer.Deserialize<List<OpalSiteContentModel>>(contentString, _serializationOptions);
 
@@ -255,13 +255,13 @@ public sealed class OpalLlmsApiControllerTests
     }
 
     [Test]
-    public void GetLlmsTxtConfigurations_WhenExceptionOccurs_ThenExceptionIsRethrown()
+    public void GetRobotTxtConfigurations_WhenExceptionOccurs_ThenExceptionIsRethrown()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Throws(new Exception("Test exception"));
 
         // Act & Assert
-        Assert.Throws<Exception>(() => _controller.GetLlmsTxtConfigurations(new ToolRequest<GetConfigurationsQuery>()));
+        Assert.Throws<Exception>(() => _controller.GetRobotTxtConfigurations(new ToolRequest<GetConfigurationsQuery>()));
         _logger.Verify(
             x => x.Log(
                 LogLevel.Error,
@@ -273,289 +273,258 @@ public sealed class OpalLlmsApiControllerTests
     }
 
     [Test]
-    public void SaveLlmsTxtConfigurations_GivenValidLlmsId_ThenConfigurationIsUpdated()
+    public void SaveRobotTxtConfigurations_GivenValidRobotsId_ThenConfigurationIsUpdated()
     {
         // Arrange
         var existingConfig = CreateDummyData()[0];
-        var llmsId = existingConfig.Id;
-        var newContent = "User-agent: GPT\nDisallow: /admin";
+        var robotsId = existingConfig.Id;
+        var newContent = "User-agent: Googlebot\nDisallow: /admin";
 
-        _mockService.Setup(s => s.GetAll()).Returns(new List<SiteLlmsViewModel> { existingConfig });
+        _mockService.Setup(s => s.GetAll()).Returns(new List<SiteRobotsViewModel> { existingConfig });
 
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
         {
-            Parameters = new SaveLlmsTextConfigurationsCommand
+            Parameters = new SaveRobotTextConfigurationsCommand
             {
-                LlmsId = llmsId.ToString(),
-                LlmsTxtContent = newContent
+                RobotsId = robotsId.ToString(),
+                RobotsTxtContent = newContent
             }
         };
 
         // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
+        var response = _controller.SaveRobotTxtConfigurations(model) as JsonResult;
         var result = response?.Value;
 
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(((dynamic)result).Success, Is.True);
-        Assert.That(((dynamic)result).Message, Is.EqualTo("Llms.txt content was saved."));
-        _mockService.Verify(s => s.Save(It.Is<SaveLlmsModel>(m => 
-            m.Id == llmsId && 
-            m.LlmsContent == newContent &&
+        Assert.That(((dynamic)result).Message, Is.EqualTo("Robots content was saved."));
+        _mockService.Verify(s => s.Save(It.Is<SaveRobotsModel>(m => 
+            m.Id == robotsId && 
+            m.RobotsContent == newContent &&
             m.SiteName == existingConfig.SiteName &&
             m.SiteId == existingConfig.SiteId &&
             m.SpecificHost == existingConfig.SpecificHost)), Times.Once);
     }
 
     [Test]
-    public void SaveLlmsTxtConfigurations_GivenInvalidLlmsId_ThenErrorIsReturned()
+    [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.InvalidGuidStrings))]
+    public void SaveRobotTxtConfigurations_GivenInvalidRobotsId_ThenErrorIsReturned(string invalidId)
     {
         // Arrange
-        var invalidId = Guid.NewGuid();
         _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
 
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
         {
-            Parameters = new SaveLlmsTextConfigurationsCommand
+            Parameters = new SaveRobotTextConfigurationsCommand
             {
-                LlmsId = invalidId.ToString(),
-                LlmsTxtContent = "Some content"
+                RobotsId = invalidId,
+                RobotsTxtContent = "Some content"
             }
         };
 
         // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
+        var response = _controller.SaveRobotTxtConfigurations(model) as JsonResult;
         var result = response?.Value;
 
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(((dynamic)result).Success, Is.False);
-        Assert.That(((dynamic)result).Message, Is.EqualTo($"Could not locate a llms.txt config that matched the Id of {invalidId}."));
-        _mockService.Verify(s => s.Save(It.IsAny<SaveLlmsModel>()), Times.Never);
-    }
-
-    [Test]
-    public void SaveLlmsTxtConfigurations_GivenEmptyLlmsId_AndValidHostName_ThenNewConfigurationIsCreated()
-    {
-        // Arrange
-        var existingConfigs = CreateDummyData();
-        var hostName = "available3.test";
-        var newContent = "User-agent: GPT\nDisallow: /private";
-
-        _mockService.Setup(s => s.GetAll()).Returns(existingConfigs);
-
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
-        {
-            Parameters = new SaveLlmsTextConfigurationsCommand
-            {
-                LlmsId = Guid.Empty.ToString(),
-                HostName = hostName,
-                LlmsTxtContent = newContent
-            }
-        };
-
-        // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
-        var result = response?.Value;
-
-        // Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(((dynamic)result).Success, Is.True);
-        Assert.That(((dynamic)result).Message, Is.EqualTo("Llms.txt content was created for the specific host name."));
-        _mockService.Verify(s => s.Save(It.Is<SaveLlmsModel>(m => 
-            m.Id == Guid.Empty && 
-            m.SpecificHost == hostName &&
-            m.LlmsContent == newContent)), Times.Once);
-    }
-
-    [Test]
-    public void SaveLlmsTxtConfigurations_GivenHostNameMatchingSpecificHost_ThenExistingConfigurationIsUpdated()
-    {
-        // Arrange
-        var existingConfigs = CreateDummyData();
-        var hostName = "specific.test"; // This matches the SpecificHost of the first config
-        var newContent = "User-agent: GPT\nDisallow: /updated";
-
-        _mockService.Setup(s => s.GetAll()).Returns(existingConfigs);
-
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
-        {
-            Parameters = new SaveLlmsTextConfigurationsCommand
-            {
-                HostName = hostName,
-                LlmsTxtContent = newContent
-            }
-        };
-
-        // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
-        var result = response?.Value;
-
-        // Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(((dynamic)result).Success, Is.True);
-        Assert.That(((dynamic)result).Message, Is.EqualTo("Llms.txt content was updated for the specific host name."));
-        _mockService.Verify(s => s.Save(It.Is<SaveLlmsModel>(m => 
-            m.Id == existingConfigs[0].Id && 
-            m.SpecificHost == hostName &&
-            m.LlmsContent == newContent)), Times.Once);
-    }
-
-    [Test]
-    [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.EmptyStrings))]
-    public void SaveLlmsTxtConfigurations_GivenNullEmptyOrWhitespaceLlmsTxtContent_ThenErrorIsReturned(string llmsTxtContent)
-    {
-        // Arrange
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
-        {
-            Parameters = new SaveLlmsTextConfigurationsCommand
-            {
-                LlmsId = Guid.NewGuid().ToString(),
-                LlmsTxtContent = llmsTxtContent
-            }
-        };
-
-        // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
-        var result = response?.Value;
-
-        // Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(((dynamic)result).Success, Is.False);
-        Assert.That(((dynamic)result).Message, Is.EqualTo("Llms.txt content was not provided."));
+        _mockService.Verify(s => s.Save(It.IsAny<SaveRobotsModel>()), Times.Never);
     }
 
     [Test]
     [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.InvalidGuidStrings))]
-    public void SaveLlmsTxtConfigurations_GivenInvalidGuidFormat_ThenHostNamePathIsUsed(string invalidId)
+    public void SaveRobotTxtConfigurations_GivenEmptyRobotsIdAndValidHostName_ThenNewConfigurationIsCreated(string invalidId)
     {
         // Arrange
-        var existingConfigs = CreateDummyData();
         var hostName = "available3.test";
-        var newContent = "User-agent: GPT\nDisallow: /private";
+        var newContent = "User-agent: Googlebot\nDisallow: /private";
 
-        _mockService.Setup(s => s.GetAll()).Returns(existingConfigs);
+        _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
 
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
         {
-            Parameters = new SaveLlmsTextConfigurationsCommand
+            Parameters = new SaveRobotTextConfigurationsCommand
             {
-                LlmsId = invalidId,
+                RobotsId = invalidId,
                 HostName = hostName,
-                LlmsTxtContent = newContent
+                RobotsTxtContent = newContent
             }
         };
 
         // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
+        var response = _controller.SaveRobotTxtConfigurations(model) as JsonResult;
         var result = response?.Value;
 
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(((dynamic)result).Success, Is.True);
-        _mockService.Verify(s => s.Save(It.IsAny<SaveLlmsModel>()), Times.Once);
+        Assert.That(((dynamic)result).Message, Is.EqualTo("Robots content was created for the specific host name."));
+        _mockService.Verify(s => s.Save(It.Is<SaveRobotsModel>(m => 
+            m.Id == Guid.Empty && 
+            m.SpecificHost == hostName &&
+            m.RobotsContent == newContent)), Times.Once);
     }
 
     [Test]
-    public void SaveLlmsTxtConfigurations_GivenHostNameWithWhitespace_ThenItIsTrimmed()
+    public void SaveRobotTxtConfigurations_GivenHostNameMatchingSpecificHost_ThenExistingConfigurationIsUpdated()
     {
         // Arrange
         var existingConfigs = CreateDummyData();
-        var hostName = "  available3.test  ";
-        var newContent = "User-agent: GPT\nDisallow: /private";
+        var hostName = "specific.test"; // This matches the SpecificHost of the first config
+        var newContent = "User-agent: Googlebot\nDisallow: /updated";
 
         _mockService.Setup(s => s.GetAll()).Returns(existingConfigs);
 
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
         {
-            Parameters = new SaveLlmsTextConfigurationsCommand
+            Parameters = new SaveRobotTextConfigurationsCommand
             {
                 HostName = hostName,
-                LlmsTxtContent = newContent
+                RobotsTxtContent = newContent
             }
         };
 
         // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
+        var response = _controller.SaveRobotTxtConfigurations(model) as JsonResult;
+        var result = response?.Value;
 
         // Assert
-        _mockService.Verify(s => s.Save(It.Is<SaveLlmsModel>(m => m.SpecificHost == "available3.test")), Times.Once);
+        Assert.That(result, Is.Not.Null);
+        Assert.That(((dynamic)result).Success, Is.True);
+        Assert.That(((dynamic)result).Message, Is.EqualTo("Robots content was updated for the specific host name."));
+        _mockService.Verify(s => s.Save(It.Is<SaveRobotsModel>(m => 
+            m.Id == existingConfigs[0].Id && 
+            m.SpecificHost == hostName &&
+            m.RobotsContent == newContent)), Times.Once);
     }
 
     [Test]
-    public void SaveLlmsTxtConfigurations_GivenNoLlmsIdAndNoHostName_ThenErrorIsReturned()
+    [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.EmptyStrings))]
+    public void SaveRobotTxtConfigurations_GivenNullOrEmptyRobotsTxtContent_ThenErrorIsReturned(string invalidContent)
     {
         // Arrange
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
         {
-            Parameters = new SaveLlmsTextConfigurationsCommand
+            Parameters = new SaveRobotTextConfigurationsCommand
             {
-                LlmsTxtContent = "Some content"
+                RobotsId = Guid.NewGuid().ToString(),
+                RobotsTxtContent = invalidContent
             }
         };
 
         // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
+        var response = _controller.SaveRobotTxtConfigurations(model) as JsonResult;
         var result = response?.Value;
 
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(((dynamic)result).Success, Is.False);
-        Assert.That(((dynamic)result).Message, Is.EqualTo("Could not perform this update to an llms.txt configuration"));
-        _mockService.Verify(s => s.Save(It.IsAny<SaveLlmsModel>()), Times.Never);
+        Assert.That(((dynamic)result).Message, Is.EqualTo("Robots.txt content was not provided."));
+        _mockService.Verify(s => s.Save(It.IsAny<SaveRobotsModel>()), Times.Never);
     }
 
     [Test]
-    public void SaveLlmsTxtConfigurations_GivenNullParameters_ThenErrorIsReturned()
+    public void SaveRobotTxtConfigurations_GivenHostNameWithWhitespace_ThenItIsTrimmed()
     {
         // Arrange
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
+        var hostName = "  available3.test  ";
+        var newContent = "User-agent: Googlebot\nDisallow: /private";
+
+        _mockService.Setup(s => s.GetAll()).Returns(CreateDummyData());
+
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
+        {
+            Parameters = new SaveRobotTextConfigurationsCommand
+            {
+                HostName = hostName,
+                RobotsTxtContent = newContent
+            }
+        };
+
+        // Act
+        var response = _controller.SaveRobotTxtConfigurations(model) as JsonResult;
+
+        // Assert
+        _mockService.Verify(s => s.Save(It.Is<SaveRobotsModel>(m => 
+            m.SpecificHost == "available3.test")), Times.Once);
+    }
+
+    [Test]
+    public void SaveRobotTxtConfigurations_GivenNoRobotsIdAndNoHostName_ThenErrorIsReturned()
+    {
+        // Arrange
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
+        {
+            Parameters = new SaveRobotTextConfigurationsCommand
+            {
+                RobotsTxtContent = "Some content"
+            }
+        };
+
+        // Act
+        var response = _controller.SaveRobotTxtConfigurations(model) as JsonResult;
+        var result = response?.Value;
+
+        // Assert
+        Assert.That(result, Is.Not.Null);
+        Assert.That(((dynamic)result).Success, Is.False);
+        Assert.That(((dynamic)result).Message, Is.EqualTo("Could not perform this update to a robots.txt configuration"));
+        _mockService.Verify(s => s.Save(It.IsAny<SaveRobotsModel>()), Times.Never);
+    }
+
+    [Test]
+    public void SaveRobotTxtConfigurations_GivenNullParameters_ThenErrorIsReturned()
+    {
+        // Arrange
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
         {
             Parameters = null
         };
 
         // Act
-        var response = _controller.SaveLlmsTxtConfigurations(model) as JsonResult;
+        var response = _controller.SaveRobotTxtConfigurations(model) as JsonResult;
         var result = response?.Value;
 
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(((dynamic)result).Success, Is.False);
-        Assert.That(((dynamic)result).Message, Is.EqualTo("Llms.txt content was not provided."));
+        Assert.That(((dynamic)result).Message, Is.EqualTo("Robots.txt content was not provided."));
     }
 
     [Test]
-    public void SaveLlmsTxtConfigurations_WhenExceptionOccurs_ThenExceptionIsRethrown()
+    public void SaveRobotTxtConfigurations_WhenExceptionOccurs_ThenExceptionIsRethrown()
     {
         // Arrange
         _mockService.Setup(s => s.GetAll()).Throws(new Exception("Test exception"));
 
-        var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
+        var model = new ToolRequest<SaveRobotTextConfigurationsCommand>
         {
-            Parameters = new SaveLlmsTextConfigurationsCommand
+            Parameters = new SaveRobotTextConfigurationsCommand
             {
-                LlmsId = Guid.NewGuid().ToString(),
-                LlmsTxtContent = "Some content"
+                RobotsId = Guid.NewGuid().ToString(),
+                RobotsTxtContent = "Some content"
             }
         };
 
         // Act & Assert
-        Assert.Throws<Exception>(() => _controller.SaveLlmsTxtConfigurations(model));
+        Assert.Throws<Exception>(() => _controller.SaveRobotTxtConfigurations(model));
         _logger.Verify(
             x => x.Log(
                 LogLevel.Error,
                 It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("An error was encountered while attempting to save llms.txt content tool.")),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("An error was encountered while processing the robot-txt-configurations tool.")),
                 It.IsAny<Exception>(),
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
     }
 
-    private static List<SiteLlmsViewModel> CreateDummyData()
+    private static List<SiteRobotsViewModel> CreateDummyData()
     {
-        return new List<SiteLlmsViewModel>
+        return new List<SiteRobotsViewModel>
         {
-            new SiteLlmsViewModel
+            new SiteRobotsViewModel
             {
                 Id = Guid.NewGuid(),
                 SiteName = "Test One",
@@ -565,10 +534,10 @@ public sealed class OpalLlmsApiControllerTests
                     new SiteHostViewModel { HostName = "available1.test" },
                     new SiteHostViewModel { HostName = "available2.test" }
                 },
-                LlmsContent = "User-agent: *\nDisallow: /",
+                RobotsContent = "User-agent: *\nDisallow: /admin",
                 IsForWholeSite = false
             },
-            new SiteLlmsViewModel
+            new SiteRobotsViewModel
             {
                 Id = Guid.NewGuid(),
                 SiteName = "Test Two",
@@ -578,7 +547,7 @@ public sealed class OpalLlmsApiControllerTests
                     new SiteHostViewModel { HostName = "available3.test" },
                     new SiteHostViewModel { HostName = "available4.test" }
                 },
-                LlmsContent = "User-agent: *\nDisallow: /private",
+                RobotsContent = "User-agent: *\nDisallow: /private",
                 IsForWholeSite = true
             }
         };

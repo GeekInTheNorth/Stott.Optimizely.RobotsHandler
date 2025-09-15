@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-using Stott.Optimizely.RobotsHandler.Common;
-
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
 /// <summary>
@@ -34,8 +32,6 @@ public sealed class OpalAuthorizationAttribute : Attribute, IActionFilter
     public void OnActionExecuting(ActionExecutingContext context)
     {
         var authorizationLevel = GetAuthorization(context.HttpContext.Request);
-        context.HttpContext.Items[RobotsConstants.OpalAuthorizationLevelKey] = authorizationLevel;
-
         if (authorizationLevel < AuthorizationLevel)
         {
             context.Result = new ContentResult
