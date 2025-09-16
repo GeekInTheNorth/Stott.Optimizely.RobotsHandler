@@ -10,4 +10,6 @@ public interface IOpalTokenRepository
     void Save(TokenModel saveModel);
 
     void Delete(Guid id);
+
+    TokenModel GetByToken(string token);
 }

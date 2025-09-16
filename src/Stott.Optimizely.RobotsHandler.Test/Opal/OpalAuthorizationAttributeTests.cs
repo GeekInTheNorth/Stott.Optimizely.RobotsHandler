@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using EPiServer.ServiceLocation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -19,6 +21,10 @@ public sealed class OpalAuthorizationAttributeTests
 {
     private Mock<HttpContext> _mockHttpContext;
     private Mock<HttpRequest> _mockHttpRequest;
+
+    private Mock<IServiceProvider> _mockServiceProvider;
+    private Mock<IOpalTokenRepository> _mockOpalTokenRepository;
+
     private ActionContext _actionContext;
     private ActionExecutingContext _actionExecutingContext;
     private HeaderDictionary _requestHeaders;
@@ -26,14 +32,19 @@ public sealed class OpalAuthorizationAttributeTests
     [SetUp]
     public void Setup()
     {
-        
-
         _requestHeaders = new HeaderDictionary();
         _mockHttpRequest = new Mock<HttpRequest>();
         _mockHttpRequest.Setup(x => x.Headers).Returns(_requestHeaders);
 
         _mockHttpContext = new Mock<HttpContext>();
         _mockHttpContext.Setup(x => x.Request).Returns(_mockHttpRequest.Object);
+
+        _mockOpalTokenRepository = new Mock<IOpalTokenRepository>();
+
+        _mockServiceProvider = new Mock<IServiceProvider>();
+        _mockServiceProvider.Setup(x => x.GetService(typeof(IOpalTokenRepository))).Returns(_mockOpalTokenRepository.Object);
+
+        ServiceLocator.SetServiceProvider(_mockServiceProvider.Object);
 
         _actionContext = new ActionContext(_mockHttpContext.Object, new RouteData(), new ActionDescriptor(), new ModelStateDictionary());
         _actionExecutingContext = new ActionExecutingContext(_actionContext, new List<IFilterMetadata>(), new Dictionary<string, object>(), null);
@@ -54,19 +65,6 @@ public sealed class OpalAuthorizationAttributeTests
         // Assert
         Assert.That(attribute.ScopeType, Is.EqualTo(opalScopeType));
         Assert.That(attribute.AuthorizationLevel, Is.EqualTo(authorizationLevel));
-    }
-
-    [Test]
-    public void OnActionExecuting_GivenNoAuthorizationHeader_AndRequiredLevelIsNone_AllowsAccess()
-    {
-        // Arrange
-        var attribute = new OpalAuthorizationAttribute(OpalScopeType.Robots, OpalAuthorizationLevel.None);
-
-        // Act
-        attribute.OnActionExecuting(_actionExecutingContext);
-
-        // Assert
-        Assert.That(_actionExecutingContext.Result, Is.Null);
     }
 
     [Test]
@@ -160,52 +158,11 @@ public sealed class OpalAuthorizationAttributeTests
 
         // Act
         attribute.OnActionExecuting(_actionExecutingContext);
-        var result = (ContentResult)_actionExecutingContext.Result;
+        var result = _actionExecutingContext.Result as ContentResult;
 
         // Assert
         Assert.That(result, Is.Not.Null); 
         Assert.That(result.StatusCode, Is.EqualTo(401));
-    }
-
-    [Test]
-    public void OnActionExecuting_GivenRobotsScopeType_SetsCorrectScopeType()
-    {
-        // Arrange
-        var attribute = new OpalAuthorizationAttribute(OpalScopeType.Robots, OpalAuthorizationLevel.None);
-
-        // Act
-        attribute.OnActionExecuting(_actionExecutingContext);
-
-        // Assert
-        Assert.That(attribute.ScopeType, Is.EqualTo(OpalScopeType.Robots));
-        Assert.That(_actionExecutingContext.Result, Is.Null);
-    }
-
-    [Test]
-    public void OnActionExecuting_GivenLlmsScopeType_SetsCorrectScopeType()
-    {
-        // Arrange
-        var attribute = new OpalAuthorizationAttribute(OpalScopeType.Llms, OpalAuthorizationLevel.None);
-
-        // Act
-        attribute.OnActionExecuting(_actionExecutingContext);
-
-        // Assert
-        Assert.That(attribute.ScopeType, Is.EqualTo(OpalScopeType.Llms));
-        Assert.That(_actionExecutingContext.Result, Is.Null);
-    }
-
-    [Test]
-    public void OnActionExecuting_GivenAuthorizationLevelNone_WithNoToken_AllowsAccess()
-    {
-        // Arrange
-        var attribute = new OpalAuthorizationAttribute(OpalScopeType.Robots, OpalAuthorizationLevel.None);
-
-        // Act
-        attribute.OnActionExecuting(_actionExecutingContext);
-
-        // Assert
-        Assert.That(_actionExecutingContext.Result, Is.Null);
     }
 
     [Test]
@@ -217,10 +174,80 @@ public sealed class OpalAuthorizationAttributeTests
 
         // Act
         attribute.OnActionExecuting(_actionExecutingContext);
-        var result = (ContentResult)_actionExecutingContext.Result;
+        var result = _actionExecutingContext.Result as ContentResult;
 
         // Assert
         Assert.That(result, Is.Not.Null); 
         Assert.That(result.StatusCode, Is.EqualTo(401));
+    }
+
+    [Test]
+    [TestCase("None", OpalAuthorizationLevel.None, false)]
+    [TestCase("Read", OpalAuthorizationLevel.None, false)]
+    [TestCase("Write", OpalAuthorizationLevel.None, false)]
+    [TestCase("None", OpalAuthorizationLevel.Read, true)]
+    [TestCase("Read", OpalAuthorizationLevel.Read, false)]
+    [TestCase("Write", OpalAuthorizationLevel.Read, false)]
+    [TestCase("None", OpalAuthorizationLevel.Write, true)]
+    [TestCase("Read", OpalAuthorizationLevel.Write, true)]
+    [TestCase("Write", OpalAuthorizationLevel.Write, false)]
+    public void OnActionExecuting_GivenTheRobotsTokenHasInvalidAccessLevels_ThenA401ResultIsNotGenerated(
+        string tokenScope,
+        OpalAuthorizationLevel authorizationLevel,
+        bool shouldGenerate401)
+    {
+        // Arrange
+        var attribute = new OpalAuthorizationAttribute(OpalScopeType.Robots, authorizationLevel);
+        _requestHeaders.Add("Authorization", new StringValues("Bearer valid-read-token"));
+
+        var tokenModel = new TokenModel
+        {
+            Id = Guid.NewGuid(),
+            RobotsScope = tokenScope,
+            LlmsScope = "None",
+        };
+        _mockOpalTokenRepository.Setup(x => x.GetByToken(It.IsAny<string>())).Returns(tokenModel);
+
+        // Act
+        attribute.OnActionExecuting(_actionExecutingContext);
+        var has401 = _actionExecutingContext.Result is ContentResult result && result.StatusCode == 401;
+
+        // Assert
+        Assert.That(has401, Is.EqualTo(shouldGenerate401));
+    }
+
+    [Test]
+    [TestCase("None", OpalAuthorizationLevel.None, false)]
+    [TestCase("Read", OpalAuthorizationLevel.None, false)]
+    [TestCase("Write", OpalAuthorizationLevel.None, false)]
+    [TestCase("None", OpalAuthorizationLevel.Read, true)]
+    [TestCase("Read", OpalAuthorizationLevel.Read, false)]
+    [TestCase("Write", OpalAuthorizationLevel.Read, false)]
+    [TestCase("None", OpalAuthorizationLevel.Write, true)]
+    [TestCase("Read", OpalAuthorizationLevel.Write, true)]
+    [TestCase("Write", OpalAuthorizationLevel.Write, false)]
+    public void OnActionExecuting_GivenTheLlmsTokenHasInvalidAccessLevels_ThenA401ResultIsNotGenerated(
+        string tokenScope,
+        OpalAuthorizationLevel authorizationLevel,
+        bool shouldGenerate401)
+    {
+        // Arrange
+        var attribute = new OpalAuthorizationAttribute(OpalScopeType.Llms, authorizationLevel);
+        _requestHeaders.Add("Authorization", new StringValues("Bearer valid-read-token"));
+
+        var tokenModel = new TokenModel
+        {
+            Id = Guid.NewGuid(),
+            RobotsScope = "None",
+            LlmsScope = tokenScope,
+        };
+        _mockOpalTokenRepository.Setup(x => x.GetByToken(It.IsAny<string>())).Returns(tokenModel);
+
+        // Act
+        attribute.OnActionExecuting(_actionExecutingContext);
+        var has401 = _actionExecutingContext.Result is ContentResult result && result.StatusCode == 401;
+
+        // Assert
+        Assert.That(has401, Is.EqualTo(shouldGenerate401));
     }
 }

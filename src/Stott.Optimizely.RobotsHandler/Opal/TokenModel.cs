@@ -13,4 +13,9 @@ public class TokenModel
     public string LlmsScope { get; set; }
 
     public string Token { get; set; }
+
+    /// <summary>
+    /// When the token was created - used as salt for deterministic hashing
+    /// </summary>
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 }

@@ -34,6 +34,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<ILlmsContentService, DefaultLlmsContentService>();
         serviceCollection.AddScoped<IEnvironmentRobotsService, EnvironmentRobotsService>();
         serviceCollection.AddScoped<IEnvironmentRobotsRepository, EnvironmentRobotsRepository>();
+        serviceCollection.AddScoped<ITokenHashService, TokenHashService>();
         serviceCollection.AddScoped<IOpalTokenRepository, OpalTokenRepository>();
         serviceCollection.AddScoped(provider => new Lazy<IEnvironmentRobotsRepository>(() => provider.GetRequiredService<IEnvironmentRobotsRepository>()));
         serviceCollection.AddScoped<IStaticFileResolver, StaticFileResolver>();

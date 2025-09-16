@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.Json;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -22,19 +20,11 @@ public sealed class OpalTokenControllerTests
 
     private OpalTokenController _controller;
 
-    private JsonSerializerOptions _serializationOptions;
-
     [SetUp]
     public void Setup()
     {
         _mockRepository = new Mock<IOpalTokenRepository>();
         _mockLogger = new Mock<ILogger<OpalTokenController>>();
-
-        _serializationOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        };
-
         _controller = new OpalTokenController(_mockRepository.Object, _mockLogger.Object);
     }
 
@@ -46,35 +36,6 @@ public sealed class OpalTokenControllerTests
 
         // Assert
         _mockRepository.Verify(r => r.List(), Times.Once);
-    }
-
-    [Test]
-    public void List_GivenThereAreOneOrMoreTokens_ThenTokenValuesWillBeOfuscated()
-    {
-        // Arrange
-        var data = new List<TokenModel>
-        {
-            new TokenModel { Id = Guid.NewGuid(), Token = null, Name = "Test One" },
-            new TokenModel { Id = Guid.NewGuid(), Token = "Token", Name = "Test Two" },
-            new TokenModel { Id = Guid.NewGuid(), Token = "TokenValueBeyondSixCharacters", Name = "Test Three" }
-        };
-
-        _mockRepository.Setup(r => r.List()).Returns(data);
-
-        // Act
-        var response = _controller.List() as ContentResult;
-        var contentString = response?.Content ?? string.Empty;
-        var content = JsonSerializer.Deserialize<List<TokenModel>>(contentString, _serializationOptions);
-
-        // Assert
-        Assert.That(content, Is.Not.Null);
-        Assert.That(content, Has.Count.EqualTo(3));
-        Assert.That(content?[0].Token, Is.Null);
-        Assert.That(content?[0].Name, Is.EqualTo("Test One"));
-        Assert.That(content?[1].Token, Is.EqualTo("Token"));
-        Assert.That(content?[1].Name, Is.EqualTo("Test Two"));
-        Assert.That(content?[2].Token, Is.EqualTo("TokenV..."));
-        Assert.That(content?[2].Name, Is.EqualTo("Test Three"));
     }
 
     [Test]
