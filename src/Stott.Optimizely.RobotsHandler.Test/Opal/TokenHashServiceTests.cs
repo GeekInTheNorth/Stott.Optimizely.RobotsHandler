@@ -16,15 +16,15 @@ public sealed class TokenHashServiceTests
     }
 
     [Test]
-    public void HashToken_WithCreatedDate_ReturnsConsistentHash()
+    public void HashToken_WithTheSameSalt_ReturnsConsistentHash()
     {
         // Arrange
         var token = "test-token-123";
-        var createdDate = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
+        var tokenSalt = Guid.NewGuid().ToString();
 
         // Act
-        var hash1 = _tokenHashService.HashToken(token, createdDate);
-        var hash2 = _tokenHashService.HashToken(token, createdDate);
+        var hash1 = _tokenHashService.HashToken(token, tokenSalt);
+        var hash2 = _tokenHashService.HashToken(token, tokenSalt);
 
         // Assert
         Assert.That(hash1, Is.EqualTo(hash2), "Same token and date should produce identical hashes");
@@ -32,16 +32,16 @@ public sealed class TokenHashServiceTests
     }
 
     [Test]
-    public void HashToken_WithDifferentDates_ReturnsDifferentHashes()
+    public void HashToken_WithSalts_ReturnsDifferentHashes()
     {
         // Arrange
         var token = "test-token-123";
-        var date1 = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
-        var date2 = new DateTime(2024, 1, 15, 10, 30, 46, DateTimeKind.Utc); // 1 second difference
+        var saltOne = Guid.NewGuid().ToString();
+        var saltTwo = Guid.NewGuid().ToString();
 
         // Act
-        var hash1 = _tokenHashService.HashToken(token, date1);
-        var hash2 = _tokenHashService.HashToken(token, date2);
+        var hash1 = _tokenHashService.HashToken(token, saltOne);
+        var hash2 = _tokenHashService.HashToken(token, saltTwo);
 
         // Assert
         Assert.That(hash1, Is.Not.EqualTo(hash2), "Different dates should produce different hashes");
@@ -52,11 +52,11 @@ public sealed class TokenHashServiceTests
     {
         // Arrange
         var token = "test-token-123";
-        var createdDate = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
-        var hash = _tokenHashService.HashToken(token, createdDate);
+        var tokenSalt = Guid.NewGuid().ToString();
+        var hash = _tokenHashService.HashToken(token, tokenSalt);
 
         // Act
-        var isValid = _tokenHashService.VerifyToken(token, hash, createdDate);
+        var isValid = _tokenHashService.VerifyToken(token, hash, tokenSalt);
 
         // Assert
         Assert.That(isValid, Is.True, "Correct token and date should verify successfully");
@@ -68,11 +68,11 @@ public sealed class TokenHashServiceTests
         // Arrange
         var originalToken = "test-token-123";
         var wrongToken = "wrong-token-456";
-        var createdDate = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
-        var hash = _tokenHashService.HashToken(originalToken, createdDate);
+        var tokenSalt = Guid.NewGuid().ToString();
+        var hash = _tokenHashService.HashToken(originalToken, tokenSalt);
 
         // Act
-        var isValid = _tokenHashService.VerifyToken(wrongToken, hash, createdDate);
+        var isValid = _tokenHashService.VerifyToken(wrongToken, hash, tokenSalt);
 
         // Assert
         Assert.That(isValid, Is.False, "Wrong token should fail verification");
@@ -83,12 +83,12 @@ public sealed class TokenHashServiceTests
     {
         // Arrange
         var token = "test-token-123";
-        var correctDate = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
-        var wrongDate = new DateTime(2024, 1, 15, 10, 30, 46, DateTimeKind.Utc);
-        var hash = _tokenHashService.HashToken(token, correctDate);
+        var correctSalt = Guid.NewGuid().ToString();
+        var incorrectSalt = Guid.NewGuid().ToString();
+        var hash = _tokenHashService.HashToken(token, correctSalt);
 
         // Act
-        var isValid = _tokenHashService.VerifyToken(token, hash, wrongDate);
+        var isValid = _tokenHashService.VerifyToken(token, hash, incorrectSalt);
 
         // Assert
         Assert.That(isValid, Is.False, "Wrong date should fail verification");
@@ -98,39 +98,23 @@ public sealed class TokenHashServiceTests
     public void HashToken_WithNullOrEmptyToken_ThrowsArgumentException()
     {
         // Arrange
-        var createdDate = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
+        var tokenSalt = Guid.NewGuid().ToString();
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _tokenHashService.HashToken(null, createdDate));
-        Assert.Throws<ArgumentException>(() => _tokenHashService.HashToken("", createdDate));
+        Assert.Throws<ArgumentException>(() => _tokenHashService.HashToken(null, tokenSalt));
+        Assert.Throws<ArgumentException>(() => _tokenHashService.HashToken(string.Empty, tokenSalt));
     }
 
     [Test]
     public void VerifyToken_WithNullOrEmptyInputs_ReturnsFalse()
     {
         // Arrange
-        var createdDate = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
+        var tokenSalt = Guid.NewGuid().ToString();
 
         // Act & Assert
-        Assert.That(_tokenHashService.VerifyToken(null, "hash", createdDate), Is.False);
-        Assert.That(_tokenHashService.VerifyToken("token", null, createdDate), Is.False);
-        Assert.That(_tokenHashService.VerifyToken("", "hash", createdDate), Is.False);
-        Assert.That(_tokenHashService.VerifyToken("token", "", createdDate), Is.False);
-    }
-
-    [Test]
-    public void HashToken_WithTimezoneVariations_ProducesConsistentResults()
-    {
-        // Arrange
-        var token = "test-token-123";
-        var utcDate = new DateTime(2024, 1, 15, 10, 30, 45, DateTimeKind.Utc);
-        var localDate = utcDate.ToLocalTime();
-
-        // Act
-        var utcHash = _tokenHashService.HashToken(token, utcDate);
-        var localHash = _tokenHashService.HashToken(token, localDate);
-
-        // Assert
-        Assert.That(utcHash, Is.EqualTo(localHash), "UTC and local times representing the same moment should produce identical hashes");
+        Assert.That(_tokenHashService.VerifyToken(null, "hash", tokenSalt), Is.False);
+        Assert.That(_tokenHashService.VerifyToken("token", null, tokenSalt), Is.False);
+        Assert.That(_tokenHashService.VerifyToken("", "hash", tokenSalt), Is.False);
+        Assert.That(_tokenHashService.VerifyToken("token", "", tokenSalt), Is.False);
     }
 }
