@@ -27,31 +27,70 @@ public class OpalTokenController : BaseApiController
     [Route("/stott.robotshandler/api/opal-tokens/[action]")]
     public IActionResult List()
     {
-        var tokens = _repository.List();
-        if (tokens is null)
+        try
         {
-            return CreateSafeJsonResult(Array.Empty<TokenModel>());
-        }
-
-        foreach (var token in tokens)
-        {
-            if (!string.IsNullOrWhiteSpace(token.Token))
+            var tokens = _repository.List();
+            if (tokens is null)
             {
-                // update token.Token so that only the first 6 characters of the token and an ellipse are returned
-                token.Token = token.Token.Length > 6 ? token.Token[..6] + "..." : token.Token;
+                return CreateSafeJsonResult(Array.Empty<TokenModel>());
             }
-        }
 
-        return CreateSafeJsonResult(tokens);
+            return CreateSafeJsonResult(tokens);
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Failed to retrieve token list.");
+            return new ContentResult
+            {
+                StatusCode = (int)HttpStatusCode.InternalServerError,
+                Content = "Failed to retrieve tokens.",
+                ContentType = "text/plain"
+            };
+        }
     }
 
     [HttpPost]
     [Route("/stott.robotshandler/api/opal-tokens/[action]")]
     public IActionResult Save(TokenModel model)
     {
-        _repository.Save(model);
+        try
+        {
+            // Validate input
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Content = "Token name is required.",
+                    ContentType = "text/plain"
+                };
+            }
 
-        return new OkResult();
+            // For new tokens, ensure a token value is provided
+            if (model.Id == Guid.Empty && string.IsNullOrWhiteSpace(model.Token))
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Content = "Token value is required for new tokens.",
+                    ContentType = "text/plain"
+                };
+            }
+
+            _repository.Save(model);
+
+            return new OkResult();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Failed to save token.");
+            return new ContentResult
+            {
+                StatusCode = (int)HttpStatusCode.InternalServerError,
+                Content = "Failed to save token.",
+                ContentType = "text/plain"
+            };
+        }
     }
 
     [HttpDelete]
@@ -76,11 +115,11 @@ public class OpalTokenController : BaseApiController
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to delete this token.");
+            _logger.LogError(exception, "Failed to delete token with ID: {TokenId}", id);
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
-                Content = exception.Message,
+                Content = "Failed to delete token.",
                 ContentType = "text/plain"
             };
         }

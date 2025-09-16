@@ -122,6 +122,15 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
                     configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase))) ??
                     GetEmptySiteModel<SiteRobotsViewModel>(hostName);
 
+                if (specificConfiguration is null)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        Message = $"Could not locate a site that matched the host name of {model.Parameters.HostName}."
+                    });
+                }
+
                 var isSpecificHost = !specificConfiguration.IsForWholeSite && string.Equals(hostName, specificConfiguration.SpecificHost, StringComparison.OrdinalIgnoreCase);
 
                 var saveModel = new SaveRobotsModel

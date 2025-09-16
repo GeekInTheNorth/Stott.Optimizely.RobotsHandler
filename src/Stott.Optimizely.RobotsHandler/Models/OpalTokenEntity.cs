@@ -1,4 +1,5 @@
-﻿using EPiServer.Data;
+﻿using System;
+using EPiServer.Data;
 using EPiServer.Data.Dynamic;
 
 namespace Stott.Optimizely.RobotsHandler.Models;
@@ -14,5 +15,9 @@ public class OpalTokenEntity : IDynamicData
 
     public string LlmsScope { get; set; }
 
-    public string Token { get; set; }
+    public string TokenHash { get; set; }
+
+    public string DisplayToken { get; set; }
+
+    public string TokenSalt { get; set; }
 }

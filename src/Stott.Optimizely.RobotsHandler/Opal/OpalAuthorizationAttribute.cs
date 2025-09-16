@@ -12,6 +12,7 @@ namespace Stott.Optimizely.RobotsHandler.Opal;
 /// <summary>
 /// Attribute to validate the Opal Bearer Token against the configured tokens in the system
 /// </summary>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public sealed class OpalAuthorizationAttribute : Attribute, IActionFilter
 {
     public OpalAuthorizationLevel AuthorizationLevel { get; set; } = OpalAuthorizationLevel.None;
@@ -57,6 +58,11 @@ public sealed class OpalAuthorizationAttribute : Attribute, IActionFilter
     {
         try
         {
+            if (AuthorizationLevel == OpalAuthorizationLevel.None)
+            {
+                return OpalAuthorizationLevel.None;
+            }
+
             if (!request.Headers.TryGetValue("Authorization", out var authorizationHeader))
             {
                 return OpalAuthorizationLevel.None;
@@ -69,7 +75,7 @@ public sealed class OpalAuthorizationAttribute : Attribute, IActionFilter
             }
 
             var tokenRepository = ServiceLocator.Current.GetInstance<IOpalTokenRepository>();
-            var tokenConfiguration = tokenRepository.List().Where(x => x.Token == tokenValue).FirstOrDefault();
+            var tokenConfiguration = tokenRepository.GetByToken(tokenValue);
             if (tokenConfiguration is null)
             {
                 return OpalAuthorizationLevel.None;
