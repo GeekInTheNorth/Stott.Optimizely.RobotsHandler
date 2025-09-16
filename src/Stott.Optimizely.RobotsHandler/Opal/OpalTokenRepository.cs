@@ -34,6 +34,11 @@ public class OpalTokenRepository : IOpalTokenRepository
 
     public void Save(TokenModel saveModel)
     {
+        if (saveModel is null)
+        {
+            return;
+        }
+
         var recordToSave = Get(saveModel.Id);
         recordToSave ??= new OpalTokenEntity
         {
@@ -48,7 +53,7 @@ public class OpalTokenRepository : IOpalTokenRepository
         if (!string.IsNullOrWhiteSpace(saveModel.Token))
         {
             recordToSave.TokenHash = _hashService.HashToken(saveModel.Token, recordToSave.TokenSalt);
-            recordToSave.DisplayToken = $"{saveModel.Token[..4]}...";
+            recordToSave.DisplayToken = saveModel.Token.Length > 4 ? $"{saveModel.Token[..4]}..." : saveModel.Token;
         }
 
         store.Save(recordToSave);

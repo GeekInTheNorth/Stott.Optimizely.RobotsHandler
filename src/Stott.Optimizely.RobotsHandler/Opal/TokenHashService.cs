@@ -29,8 +29,10 @@ internal sealed class TokenHashService : ITokenHashService
 
     public bool VerifyToken(string token, string hash, string saltValue)
     {
-        if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(hash))
+        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(hash))
+        {
             return false;
+        }
 
         try
         {
