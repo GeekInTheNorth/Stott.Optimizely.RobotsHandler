@@ -19,5 +19,5 @@ public class OpalTokenEntity : IDynamicData
 
     public string DisplayToken { get; set; }
 
-    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+    public string TokenSalt { get; set; }
 }

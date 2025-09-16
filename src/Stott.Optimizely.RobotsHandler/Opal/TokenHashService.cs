@@ -12,7 +12,7 @@ internal sealed class TokenHashService : ITokenHashService
     private const int HashSize = 32;
     private const int Iterations = 100000; // PBKDF2 iterations for security
 
-    public string HashToken(string token, DateTime createdDate)
+    public string HashToken(string token, string saltValue)
     {
         if (string.IsNullOrWhiteSpace(token))
         {
@@ -20,22 +20,21 @@ internal sealed class TokenHashService : ITokenHashService
         }
 
         // Hash the token with the date-based salt using PBKDF2
-        var salt = GenerateDateBasedSalt(createdDate);
-        using (var pbkdf2 = new Rfc2898DeriveBytes(token, salt, Iterations, HashAlgorithmName.SHA256))
+        using (var pbkdf2 = new Rfc2898DeriveBytes(token, ToByteArray(saltValue), Iterations, HashAlgorithmName.SHA256))
         {
             var hash = pbkdf2.GetBytes(HashSize);
             return Convert.ToBase64String(hash);
         }
     }
 
-    public bool VerifyToken(string token, string hash, DateTime createdDate)
+    public bool VerifyToken(string token, string hash, string saltValue)
     {
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(hash))
             return false;
 
         try
         {
-            var expectedHash = HashToken(token, createdDate);
+            var expectedHash = HashToken(token, saltValue);
             
             // Constant-time comparison to prevent timing attacks
             if (expectedHash.Length != hash.Length)
@@ -55,11 +54,8 @@ internal sealed class TokenHashService : ITokenHashService
         }
     }
 
-    private static byte[] GenerateDateBasedSalt(DateTime createdDate)
+    private static byte[] ToByteArray(string saltValue)
     {
-        // Convert the created date to a consistent string format (UTC to avoid timezone issues)
-        var dateString = createdDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
-        
-        return Encoding.UTF8.GetBytes(dateString);
+        return Encoding.UTF8.GetBytes(saltValue);
     }
 }

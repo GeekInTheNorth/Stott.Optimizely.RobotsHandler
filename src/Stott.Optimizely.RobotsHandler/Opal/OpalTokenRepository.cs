@@ -38,7 +38,7 @@ public class OpalTokenRepository : IOpalTokenRepository
         recordToSave ??= new OpalTokenEntity
         {
             Id = Identity.NewIdentity(Guid.NewGuid()),
-            CreatedDate = DateTime.UtcNow
+            TokenSalt = Guid.NewGuid().ToString().Replace("-", string.Empty)
         };
 
         recordToSave.Name = saveModel.Name;
@@ -47,7 +47,7 @@ public class OpalTokenRepository : IOpalTokenRepository
 
         if (!string.IsNullOrWhiteSpace(saveModel.Token))
         {
-            recordToSave.TokenHash = _hashService.HashToken(saveModel.Token, recordToSave.CreatedDate);
+            recordToSave.TokenHash = _hashService.HashToken(saveModel.Token, recordToSave.TokenSalt);
             recordToSave.DisplayToken = $"{saveModel.Token[..4]}...";
         }
 
@@ -60,7 +60,7 @@ public class OpalTokenRepository : IOpalTokenRepository
             return null;
 
         var allTokens = store.Find<OpalTokenEntity>(new Dictionary<string, object>()).ToList();
-        var matchingHashedToken = allTokens.FirstOrDefault(t => !string.IsNullOrWhiteSpace(t.TokenHash) && _hashService.VerifyToken(token, t.TokenHash, t.CreatedDate));
+        var matchingHashedToken = allTokens.FirstOrDefault(t => !string.IsNullOrWhiteSpace(t.TokenHash) && _hashService.VerifyToken(token, t.TokenHash, t.TokenSalt));
 
         return ToModel(matchingHashedToken);
     }
