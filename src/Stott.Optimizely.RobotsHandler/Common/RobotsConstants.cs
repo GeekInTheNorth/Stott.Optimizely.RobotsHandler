@@ -4,6 +4,8 @@ public static class RobotsConstants
 {
     public const string AuthorizationPolicy = "Stott:RobotsHandler:Policy";
 
+    public const string OpalAuthorizationLevelKey = "StottRobots:Opal:AuthLevel";
+
     public static class EnvironmentNames
     {
         public const string Integration = "Integration";

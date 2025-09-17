@@ -1,0 +1,70 @@
+###
+# Opal Discovery API Tests
+# Tests for the /stott.robotshandler/opal/discovery/ endpoint
+###
+
+# Variables - Change these as needed
+@baseUrl = https://localhost:44344
+@apiPath = /stott.robotshandler/opal
+
+# Test 1: Basic Discovery API call (IIS Express)
+GET {{baseUrl}}{{apiPath}}/discovery/
+Accept: application/json
+Content-Type: application/json
+
+###
+
+# Test 2: Discovery API with query parameters (should still work even if not used)
+GET {{baseUrl}}{{apiPath}}/discovery/?test=true
+Accept: application/json
+Content-Type: application/json
+
+###
+
+# Test 3: Discovery API with different Accept headers
+GET {{baseUrl}}{{apiPath}}/discovery/
+Accept: */*
+Content-Type: application/json
+
+###
+
+# Test 4: Discovery API without Content-Type header
+GET {{baseUrl}}{{apiPath}}/discovery/
+Accept: application/json
+
+###
+
+# Expected Response Structure:
+# The API should return a JSON object with the following structure:
+# {
+#   "functions": [
+#     {
+#       "name": "getrobottxtconfigurations",
+#       "description": "Get a collection of robot.txt configurations optionally filtered by host name.",
+#       "parameters": [...],
+#       "endpoint": "/tools/get-robot-txt-configurations/",
+#       "httpMethod": "POST"
+#     },
+#     {
+#       "name": "saverobottxtconfigurations", 
+#       "description": "Saves robots.txt content for a specific Id or Host Name...",
+#       "parameters": [...],
+#       "endpoint": "/tools/save-robot-txt-configuration/",
+#       "httpMethod": "POST"
+#     },
+#     {
+#       "name": "getllmstxtconfigurations",
+#       "description": "Get a collection of llms.txt configurations optionally filtered by host name.",
+#       "parameters": [...],
+#       "endpoint": "/tools/get-llms-txt-configurations/",
+#       "httpMethod": "POST"
+#     },
+#     {
+#       "name": "savellmstxtconfigurations",
+#       "description": "Saves llms.txt content for a specific Id or Host Name...",
+#       "parameters": [...],
+#       "endpoint": "/tools/save-llms-txt-configuration/",
+#       "httpMethod": "POST"
+#     }
+#   ]
+# }

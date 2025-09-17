@@ -1,0 +1,198 @@
+###
+# Opal Robots API Tests
+# Tests for the OpalRobotsApiController endpoints
+###
+
+# Variables - Change these as needed
+@baseUrl = https://localhost:44344
+@apiPath = /stott.robotshandler/opal
+@token = put-bearer-token-here
+@testHostNameOne = localhost:44344
+@testHostNameTwo = localhost:44347
+
+# For production testing, uncomment these instead:
+# @baseUrl = https://test-cms.stott.pro
+# @testHostNameOne = test-cms.stott.pro
+
+###
+
+### Get Robot Txt Configurations - All configurations
+POST {{baseUrl}}{{apiPath}}/tools/get-robot-txt-configurations/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {}
+}
+
+###
+
+### Get Robot Txt Configurations - Filter by hostname
+POST {{baseUrl}}{{apiPath}}/tools/get-robot-txt-configurations/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostNameOne}}"
+  }
+}
+
+###
+
+### Get Robot Txt Configurations - Filter by localhost
+POST {{baseUrl}}{{apiPath}}/tools/get-robot-txt-configurations/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "localhost"
+  }
+}
+
+###
+
+### Get Robot Txt Configurations - Discovery route
+POST {{baseUrl}}{{apiPath}}/tools/get-robot-txt-configurations/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": ""
+  }
+}
+
+###
+
+### Save Robot Txt Configuration - By RobotsId
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "robotsId": "3cd8ebcd-3733-4774-8c67-8bd28b440ca7",
+    "robotsTxtContent": "User-agent: *\nDisallow: /admin/\nDisallow: /private/\n\nSitemap: https://example.com/sitemap.xml"
+  }
+}
+
+###
+
+### Save Robot Txt Configuration - By HostName
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostNameTwo}}",
+    "robotsTxtContent": "User-agent: *\nDisallow: /admin/\nDisallow: /temp/\nAllow: /public/\n\nSitemap: https://newsite.example.com/sitemap.xml"
+  }
+}
+
+###
+
+### Save Robot Txt Configuration - Discovery route
+POST {{baseUrl}}{{apiPath}}/discovery/tools/save-robot-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostNameOne}}",
+    "robotsTxtContent": "User-agent: *\nDisallow: /test/\nDisallow: /debug/\nDisallow: /discovery-route/\n\nSitemap: https://test.example.com/sitemap.xml"
+  }
+}
+
+### Error Test - Save without robotsTxtContent
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostNameOne}}"
+  }
+}
+
+###
+
+### Error Test - Save with invalid RobotsId
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "robotsId": "99999999-9999-9999-9999-999999999999",
+    "robotsTxtContent": "User-agent: *\nDisallow: /test/"
+  }
+}
+
+###
+
+### Error Test - Save without RobotsId or HostName
+POST {{baseUrl}}{{apiPath}}/tools/save-robot-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "robotsTxtContent": "User-agent: *\nDisallow: /test/"
+  }
+}
+
+###
+
+# Expected Response Formats:
+#
+# GET configurations (all):
+# [
+#   {
+#     "id": "guid",
+#     "siteName": "string",
+#     "isDefaultForSite": boolean,
+#     "specificHost": "string",
+#     "robotsContent": "string"
+#   }
+# ]
+#
+# GET configurations (single):
+# {
+#   "id": "guid",
+#   "siteName": "string", 
+#   "isDefaultForSite": boolean,
+#   "specificHost": "string",
+#   "robotsContent": "string"
+# }
+#
+# SAVE configurations (success):
+# {
+#   "success": true,
+#   "message": "string",
+#   "data": {
+#     "id": "guid",
+#     "siteId": "guid",
+#     "siteName": "string",
+#     "specificHost": "string",
+#     "robotsContent": "string"
+#   }
+# }
+#
+# SAVE configurations (error):
+# {
+#   "success": false,
+#   "message": "error description"
+# }

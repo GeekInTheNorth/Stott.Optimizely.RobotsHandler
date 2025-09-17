@@ -56,6 +56,36 @@ Llms.txt content can be managed on a per site and host definition basis.  A host
 
 ![Stott Robots Handler, Llms.txt management](/StottRobotsList3.png)
 
+## Opal Tools and Headless Support
+
+_Introduced within version 6.0.0_
+
+Opal is Optimizely's AI at the centre of it's content marketing suite known as Optimizely One.  By providing tools for Opal, user's can access and manage robots.txt and llms.txt content directly from Opal's chat window.  The APIs used for these Opal Tools also lend themselves to usage within headless solutions.
+
+In order to ensure access to the endpoints of these tools requires a bearer token to be provided.  A new tab has been added into the Robots Handler to allow a CMS Administrator to manage bearer tokens required to access all of the endpoints.  This screen also has the ability to show API details to the user.
+
+![API Tokens Management Screen](/OpalTools1.png)
+
+When creating a new API token, the token itself is randomly generated and visible to the user.  This is the only time at which you can retrieve the token.  Once it is created and the modal has closed, the token value cannot be retrieved again.  The scope for robots.txt and llms.txt management can be managed individually, these scopes are:
+
+- **None**: Grants no access to either the Get or Save endpoints.
+- **Read**: Grants access to the Get endpoints.
+- **Write**: Grants access to the Get and Save endpoints.
+
+![API Tokens Management - New Token Modal](/OpalTools2.png)
+
+To grant access to Opal, navigate to the main [opal interface](https://opal.optimizely.com/) and select the tools interface from the left hand menu.  Switch to the Registries tab and then click on the "Add tool registry" button.
+
+![Opal Tools Registry Screen](/OpalTools4.png)
+
+Copy the Discovery URL from the list of available endpoints in the Stott Robots Handler and enter it into the "Discovery URL" field.  Place your newly generated token into the "Bearer Token (Optional)" field.  Note that while the bearer token is optional in this interface, a bearer token is required for the tools in the Stott Robots Handler.
+
+![Opal Tools Registry Screen](/OpalTools5.png)
+
+With your tools registered, you will then be able to instruct Opal to show you a list of robots.txt and llms.txt configurations and to save new configurations.
+
+![Opal Chat Interface](/OpalTools6.png)
+
 ## Installation
 
 Install the `Stott.Optimizely.RobotsHandler` package into your website.

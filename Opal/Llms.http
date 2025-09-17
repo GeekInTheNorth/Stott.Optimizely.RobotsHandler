@@ -1,0 +1,270 @@
+###
+# Opal LLMS API Tests
+# Tests for the OpalLlmsApiController endpoints
+# LLMS.TXT is used to provide information about Large Language Models and their usage
+###
+
+# Variables - Change these as needed
+@baseUrl = https://localhost:44344
+@apiPath = /stott.robotshandler/opal
+@token = put-bearer-token-here
+@testHostName = localhost:44344
+
+# For production testing, uncomment these instead:
+# @baseUrl = https://test-cms.stott.pro
+# @testHostName = example.com
+
+###
+
+### Get LLMS Txt Configurations - All configurations
+POST {{baseUrl}}{{apiPath}}/tools/get-llms-txt-configurations/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {}
+}
+
+###
+
+### Get LLMS Txt Configurations - Filter by hostname
+POST {{baseUrl}}{{apiPath}}/tools/get-llms-txt-configurations/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostName}}"
+  }
+}
+
+###
+
+### Get LLMS Txt Configurations - Filter by example.com
+POST {{baseUrl}}{{apiPath}}/tools/get-llms-txt-configurations/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "example.com"
+  }
+}
+
+###
+
+### Get LLMS Txt Configurations - Discovery route
+POST {{baseUrl}}{{apiPath}}/discovery/tools/get-llms-txt-configurations/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostName}}"
+  }
+}
+
+###
+
+### Save LLMS Txt Configuration - By LlmsId
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "llmsId": "d994532b-02df-42dd-93ef-18bee7c3346f",
+    "llmsTxtContent": "# LLMS.TXT\n\n# Model Information\nmodel-name: GPT-4\nmodel-version: 2024-03\ntraining-data-cutoff: 2023-04\n\n# Usage Guidelines\nallowed-uses: content-generation, code-assistance, research\nrestricted-uses: personal-data-processing, medical-diagnosis\n\n# Contact Information\ncontact: ai-team@example.com\nwebsite: https://example.com/ai-policy"
+  }
+}
+
+###
+
+### Save LLMS Txt Configuration - By HostName
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostName}}",
+    "llmsTxtContent": "# LLMS.TXT - AI Model Information\n\n# Primary Model\nmodel-name: Claude-3\nmodel-version: Opus\ntraining-data-cutoff: 2024-02\n\n# Capabilities\ncapabilities: text-generation, analysis, coding, creative-writing\n\n# Limitations\nlimitations: no-real-time-data, no-internet-access, knowledge-cutoff-applies\n\n# Usage Policy\ncommercial-use: allowed\ndata-retention: 30-days\n\n# Contact\ncontact: support@newsite.example.com"
+  }
+}
+
+###
+
+### Save LLMS Txt Configuration - Discovery route
+POST {{baseUrl}}{{apiPath}}/discovery/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostName}}",
+    "llmsTxtContent": "# LLMS.TXT - Test Environment\nDiscovery Route Example\n# Development Models\nmodel-name: GPT-3.5-Turbo\nmodel-version: test\nenvironment: development\n\n# Test Configuration\npurpose: testing-and-development\ndata-persistence: none\n\n# Restrictions\nproduction-use: forbidden\nexternal-access: blocked\n\n# Contact\ncontact: dev-team@test.example.com"
+  }
+}
+
+###
+
+### Save LLMS Txt Configuration - Minimal llms.txt
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostName}}",
+    "llmsTxtContent": "# LLMS.TXT\nmodel-name: Basic-LLM\ncontact: info@minimal.example.com"
+  }
+}
+
+###
+
+### Save LLMS Txt Configuration - Enterprise llms.txt
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "{{testHostName}}",
+    "llmsTxtContent": "# LLMS.TXT - Enterprise Configuration\n\n# Model Infrastructure\nmodel-provider: OpenAI\nmodel-deployment: azure-openai-service\nmodel-region: east-us\n\n# Security\ndata-encryption: AES-256\nnetwork-isolation: private-endpoint\nauthentication: azure-ad\n\n# Compliance\ncertifications: SOC2-Type2, ISO27001\ndata-residency: US\naudit-logging: enabled\n\n# Governance\ndata-classification: confidential\nretention-policy: 7-years\ndeletion-policy: secure-wipe\n\n# Monitoring\nlogging: comprehensive\nmetrics: performance-security\nalerting: 24x7-soc\n\n# Business Continuity\nbackup: geo-redundant\ndisaster-recovery: rpo-1hour-rto-4hours\n\n# Contact Information\nsecurity-contact: security@enterprise.example.com\ndpo-contact: privacy@enterprise.example.com\nincident-response: incident@enterprise.example.com"
+  }
+}
+
+###
+
+### Error Test - Save without bearer token
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "parameters": {
+    "hostName": "error-test.example.com"
+  }
+}
+
+###
+
+### Error Test - Save with incorrect bearer token
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer wrong-token
+
+{
+  "parameters": {
+    "hostName": "error-test.example.com"
+  }
+}
+
+###
+
+### Error Test - Save without llmsTxtContent
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "hostName": "error-test.example.com"
+  }
+}
+
+###
+
+### Error Test - Save with invalid LlmsId
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "llmsId": "99999999-9999-9999-9999-999999999999",
+    "llmsTxtContent": "# LLMS.TXT\nmodel-name: Test-Model\ncontact: test@example.com"
+  }
+}
+
+###
+
+### Error Test - Save without LlmsId or HostName
+POST {{baseUrl}}{{apiPath}}/tools/save-llms-txt-configuration/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "parameters": {
+    "llmsTxtContent": "# LLMS.TXT\nmodel-name: Orphan-Model\ncontact: orphan@example.com"
+  }
+}
+
+###
+
+# Expected Response Formats:
+#
+# GET configurations (all):
+# [
+#   {
+#     "id": "guid",
+#     "siteName": "string",
+#     "isDefaultForSite": boolean,
+#     "specificHost": "string",
+#     "llmsContent": "string"
+#   }
+# ]
+#
+# GET configurations (single):
+# {
+#   "id": "guid",
+#   "siteName": "string", 
+#   "isDefaultForSite": boolean,
+#   "specificHost": "string",
+#   "llmsContent": "string"
+# }
+#
+# SAVE configurations (success):
+# {
+#   "success": true,
+#   "message": "string",
+#   "data": {
+#     "id": "guid",
+#     "siteId": "guid",
+#     "siteName": "string",
+#     "specificHost": "string",
+#     "llmsContent": "string"
+#   }
+# }
+#
+# SAVE configurations (error):
+# {
+#   "success": false,
+#   "message": "error description"
+# }
+#
+# LLMS.TXT Format Information:
+# LLMS.TXT is a standard for documenting AI model usage and policies.
+# Common fields include:
+# - model-name: Name of the AI model
+# - model-version: Version or variant
+# - training-data-cutoff: Knowledge cutoff date
+# - capabilities: What the model can do
+# - limitations: What the model cannot do
+# - usage-policy: How the model should be used
+# - data-retention: How long data is kept
+# - contact: Contact information for queries
+# - compliance: Regulatory compliance information

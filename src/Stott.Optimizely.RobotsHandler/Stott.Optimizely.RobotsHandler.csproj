@@ -14,10 +14,10 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <NeutralLanguage>en-GB</NeutralLanguage>
         <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-        <AssemblyVersion>5.0.0</AssemblyVersion>
-        <FileVersion>5.0.0</FileVersion>
-        <Version>5.0.0</Version>
-        <PackageReleaseNotes>Add the ability to define llms.txt files.</PackageReleaseNotes>
+        <AssemblyVersion>6.0.0</AssemblyVersion>
+        <FileVersion>6.0.0</FileVersion>
+        <Version>6.0.0</Version>
+        <PackageReleaseNotes>Add support for Opal Tools and Headless solutions.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>

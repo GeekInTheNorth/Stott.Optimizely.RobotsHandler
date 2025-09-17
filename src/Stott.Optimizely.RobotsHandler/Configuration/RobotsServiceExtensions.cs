@@ -11,6 +11,7 @@ using Stott.Optimizely.RobotsHandler.Cache;
 using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Environments;
 using Stott.Optimizely.RobotsHandler.Llms;
+using Stott.Optimizely.RobotsHandler.Opal;
 using Stott.Optimizely.RobotsHandler.Robots;
 using Stott.Security.Optimizely.Features.StaticFile;
 
@@ -33,6 +34,8 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<ILlmsContentService, DefaultLlmsContentService>();
         serviceCollection.AddScoped<IEnvironmentRobotsService, EnvironmentRobotsService>();
         serviceCollection.AddScoped<IEnvironmentRobotsRepository, EnvironmentRobotsRepository>();
+        serviceCollection.AddScoped<ITokenHashService, TokenHashService>();
+        serviceCollection.AddScoped<IOpalTokenRepository, OpalTokenRepository>();
         serviceCollection.AddScoped(provider => new Lazy<IEnvironmentRobotsRepository>(() => provider.GetRequiredService<IEnvironmentRobotsRepository>()));
         serviceCollection.AddScoped<IStaticFileResolver, StaticFileResolver>();
 

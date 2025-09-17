@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Sites;
 
 namespace Stott.Optimizely.RobotsHandler.Robots;
 
-public sealed class SiteRobotsViewModel
+public sealed class SiteRobotsViewModel : ISiteContentViewModel
 {
     public Guid Id { get; set; }
 

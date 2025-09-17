@@ -23,29 +23,30 @@ namespace OptimizelyTwelveTest.ServiceExtensions
             .Add(context =>
             {
                 if (context.HttpContext.Request.Path.StartsWithSegments("/util") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/EPiServer") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/EPiServer.Forms") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/episerver") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/modules") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/Login") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/App_Themes") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/bundles") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/find_v2") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/siteassets") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/globalassets") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/contentassets") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/link") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/sitemap") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/sitemap.xml") ||
-                // context.HttpContext.Request.Path.StartsWithSegments("/stott.robotshandler") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/ClientResources") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/Static") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/localobjectcache") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/api") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/WebResource") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/error") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/manifest.json") ||
-                context.HttpContext.Request.Path.StartsWithSegments("/favicon.ico"))
+                    context.HttpContext.Request.Path.StartsWithSegments("/EPiServer") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/EPiServer.Forms") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/episerver") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/modules") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/Login") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/App_Themes") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/bundles") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/find_v2") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/siteassets") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/globalassets") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/contentassets") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/link") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/sitemap.xml") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/robots.txt") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/llms.txt") ||
+                    // context.HttpContext.Request.Path.StartsWithSegments("/stott.robotshandler") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/ClientResources") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/Static") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/localobjectcache") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/api") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/WebResource") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/error") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/manifest.json") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/favicon.ico"))
                 {
                     context.Result = RuleResult.SkipRemainingRules;
                 }

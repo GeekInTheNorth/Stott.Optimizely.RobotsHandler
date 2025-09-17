@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import ConfigurationList from './ConfigurationList';
 import EnvironmentRobotsSettings from './EnvironmentRobotsSettings';
 import LlmsConfigurationList from './LlmsConfigurationList';
+import TokenManagement from './TokenManagement';
 
 function NavigationContainer(props) {
 
     const [showRobotsList, setShowRobotsList] = useState(false);
     const [showLlmsList, setShowLlmsList] = useState(false);
     const [showEnvironmentRobots, setShowEnvironmentRobots] = useState(false);
+    const [showOpalTools, setShowOpalTools] = useState(false);
     const [containerTitle, setContainerTitle] = useState('Robots.txt Files');
 
     const handleSelect = (key) => {
@@ -15,6 +17,7 @@ function NavigationContainer(props) {
         setShowRobotsList(false);
         setShowLlmsList(false);
         setShowEnvironmentRobots(false);
+        setShowOpalTools(false);
 
         switch(key){
             case 'robots-files':
@@ -28,6 +31,10 @@ function NavigationContainer(props) {
             case 'environment-robots':
                 setContainerTitle('Environment Robots');
                 setShowEnvironmentRobots(true);
+                break;
+            case 'api-tokens':
+                setContainerTitle('API Tokens');
+                setShowOpalTools(true);
                 break;
             default:
                 // No default required
@@ -63,6 +70,7 @@ function NavigationContainer(props) {
                 { showRobotsList ? <ConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></ConfigurationList> : null }
                 { showEnvironmentRobots ? <EnvironmentRobotsSettings showToastNotificationEvent={props.showToastNotificationEvent}></EnvironmentRobotsSettings> : null }
                 { showLlmsList ? <LlmsConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></LlmsConfigurationList> : null }
+                { showOpalTools ? <TokenManagement showToastNotificationEvent={props.showToastNotificationEvent}></TokenManagement> : null }
             </div>
         </>
     )
