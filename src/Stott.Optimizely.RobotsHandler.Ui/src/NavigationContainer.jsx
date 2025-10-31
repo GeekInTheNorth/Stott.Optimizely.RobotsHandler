@@ -3,6 +3,7 @@ import ConfigurationList from './ConfigurationList';
 import EnvironmentRobotsSettings from './EnvironmentRobotsSettings';
 import LlmsConfigurationList from './LlmsConfigurationList';
 import TokenManagement from './TokenManagement';
+import MarkdownMappingList from './MarkdownMappingList';
 
 function NavigationContainer(props) {
 
@@ -10,12 +11,14 @@ function NavigationContainer(props) {
     const [showLlmsList, setShowLlmsList] = useState(false);
     const [showEnvironmentRobots, setShowEnvironmentRobots] = useState(false);
     const [showOpalTools, setShowOpalTools] = useState(false);
+    const [showMarkdownMapping, setShowMarkdownMapping] = useState(false);
     const [containerTitle, setContainerTitle] = useState('Robots.txt Files');
 
     const handleSelect = (key) => {
         setContainerTitle('');
         setShowRobotsList(false);
         setShowLlmsList(false);
+        setShowMarkdownMapping(false);
         setShowEnvironmentRobots(false);
         setShowOpalTools(false);
 
@@ -27,6 +30,10 @@ function NavigationContainer(props) {
             case 'llms-files':
                 setContainerTitle('LLMS.txt Files');
                 setShowLlmsList(true);
+                break;
+            case 'markdown-mapping':
+                setContainerTitle('Markdown Mapping');
+                setShowMarkdownMapping(true);
                 break;
             case 'environment-robots':
                 setContainerTitle('Environment Robots');
@@ -71,6 +78,7 @@ function NavigationContainer(props) {
                 { showEnvironmentRobots ? <EnvironmentRobotsSettings showToastNotificationEvent={props.showToastNotificationEvent}></EnvironmentRobotsSettings> : null }
                 { showLlmsList ? <LlmsConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></LlmsConfigurationList> : null }
                 { showOpalTools ? <TokenManagement showToastNotificationEvent={props.showToastNotificationEvent}></TokenManagement> : null }
+                { showMarkdownMapping ? <MarkdownMappingList showToastNotificationEvent={props.showToastNotificationEvent}></MarkdownMappingList> : null }
             </div>
         </>
     )

@@ -2,6 +2,7 @@
 
 using EPiServer.Web;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using Stott.Optimizely.RobotsHandler.Common;
@@ -9,6 +10,8 @@ using Stott.Optimizely.RobotsHandler.Extensions;
 
 namespace Stott.Optimizely.RobotsHandler.Sites;
 
+[ApiExplorerSettings(IgnoreApi = true)]
+[Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
 public sealed class SiteDefinitionController : BaseApiController
 {
     private readonly ISiteDefinitionRepository _siteRepository;

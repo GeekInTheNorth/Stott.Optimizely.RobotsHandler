@@ -10,7 +10,7 @@
     using System.ComponentModel.DataAnnotations;
 
     [ContentType(
-        DisplayName = "GeneralContentPage", 
+        DisplayName = "General Content Page", 
         GUID = "30479482-2964-4a41-8da4-013e1b5e4a9b", 
         Description = "",
         GroupName = SystemTabNames.Content)]
