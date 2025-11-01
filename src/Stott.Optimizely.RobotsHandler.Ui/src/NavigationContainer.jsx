@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import ConfigurationList from './ConfigurationList';
 import EnvironmentRobotsSettings from './EnvironmentRobotsSettings';
 import LlmsConfigurationList from './LlmsConfigurationList';
@@ -81,7 +82,11 @@ function NavigationContainer(props) {
                 { showMarkdownMapping ? <MarkdownMappingList showToastNotificationEvent={props.showToastNotificationEvent}></MarkdownMappingList> : null }
             </div>
         </>
-    )
+    );
 }
 
-export default NavigationContainer
+NavigationContainer.propTypes = {
+    showToastNotificationEvent: PropTypes.func.isRequired
+};
+
+export default NavigationContainer;

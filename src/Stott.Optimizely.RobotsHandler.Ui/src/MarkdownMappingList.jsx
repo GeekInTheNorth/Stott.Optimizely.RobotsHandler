@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Container, Row, Table } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 
-function MarkdownMappingList(props)
+function MarkdownMappingList({ showToastNotificationEvent })
 {
     const [markdownMappings, setMarkdownMappings] = useState([]);
 
@@ -12,15 +13,15 @@ function MarkdownMappingList(props)
                 const response = await axios.get(import.meta.env.VITE_APP_MARKDOWNMAPPING_LIST);
                 setMarkdownMappings(response.data);
             } catch {
-                handleShowFailureToast('Failure', 'Failed to retrieve markdown mapping data.');
+                showToastNotificationEvent && showToastNotificationEvent(false, 'Failure', 'Failed to retrieve markdown mapping data.');
             }
         };
 
         fetchMarkdownMappings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleShowSuccessToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(true, title, description);
-    const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description);
+    // const handleShowSuccessToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(true, title, description);
 
     return (
         <Container>
@@ -53,5 +54,9 @@ function MarkdownMappingList(props)
         </Container>
     );
 }
+
+MarkdownMappingList.propTypes = {
+    showToastNotificationEvent: PropTypes.func.isRequired
+};
 
 export default MarkdownMappingList;
