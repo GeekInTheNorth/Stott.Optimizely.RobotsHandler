@@ -38,6 +38,15 @@ public sealed class ContentMarkdownMappingService : IContentMarkdownMappingServi
         };
     }
 
+    public ContentMarkdownSettingsDto GetSettings()
+    {
+        return new ContentMarkdownSettingsDto
+        {
+            IsEnabled = false,
+            UserAgents = new List<string> { "GPTBot", "ClaudeBot", "Claude-Web", "anthropic-ai", "Google-Extended", "GoogleOther", "Google-CloudVertexBot" }
+        };
+    }
+
     public IList<ContentMarkdownMappingSummaryDto> List()
     {
         var contentTypes = _repository.List() ?? Enumerable.Empty<ContentType>();

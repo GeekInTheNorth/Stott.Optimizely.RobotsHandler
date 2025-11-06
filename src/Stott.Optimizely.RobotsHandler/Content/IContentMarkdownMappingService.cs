@@ -6,6 +6,8 @@ namespace Stott.Optimizely.RobotsHandler.Content;
 
 public interface IContentMarkdownMappingService
 {
+    ContentMarkdownSettingsDto GetSettings();
+
     IList<ContentMarkdownMappingSummaryDto> List();
 
     ContentMarkdownMappingDto Get(Guid id);

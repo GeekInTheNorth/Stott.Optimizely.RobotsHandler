@@ -5,6 +5,7 @@ import EnvironmentRobotsSettings from './EnvironmentRobotsSettings';
 import LlmsConfigurationList from './LlmsConfigurationList';
 import TokenManagement from './TokenManagement';
 import MarkdownMappingList from './MarkdownMappingList';
+import MarkdownSettings from './MarkdownSettings';
 
 function NavigationContainer(props) {
 
@@ -79,6 +80,7 @@ function NavigationContainer(props) {
                 { showEnvironmentRobots ? <EnvironmentRobotsSettings showToastNotificationEvent={props.showToastNotificationEvent}></EnvironmentRobotsSettings> : null }
                 { showLlmsList ? <LlmsConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></LlmsConfigurationList> : null }
                 { showOpalTools ? <TokenManagement showToastNotificationEvent={props.showToastNotificationEvent}></TokenManagement> : null }
+                { showMarkdownMapping ? <MarkdownSettings showToastNotificationEvent={props.showToastNotificationEvent}></MarkdownSettings> : null }
                 { showMarkdownMapping ? <MarkdownMappingList showToastNotificationEvent={props.showToastNotificationEvent}></MarkdownMappingList> : null }
             </div>
         </>

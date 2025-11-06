@@ -19,6 +19,15 @@ public sealed class ContentMarkdownMappingController : BaseApiController
 
     [HttpGet]
     [Route("/stott.robotshandler/api/markdown/[action]")]
+    public IActionResult Settings()
+    {
+        var model = _service.GetSettings();
+        
+        return CreateSafeJsonResult(model);
+    }
+
+    [HttpGet]
+    [Route("/stott.robotshandler/api/markdown/[action]")]
     public IActionResult List()
     {
         var model = _service.List();
