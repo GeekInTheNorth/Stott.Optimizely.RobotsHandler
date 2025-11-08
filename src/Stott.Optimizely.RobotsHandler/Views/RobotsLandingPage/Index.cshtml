@@ -12,6 +12,7 @@
     <link href="@Model.CssFile" rel="stylesheet">
 </head>
 <body>
+    @Html.AntiForgeryToken()
     @Html.CreatePlatformNavigationMenu()
     <div @Html.ApplyPlatformNavigation()>
         <div id="stott-robots-ui"></div>
