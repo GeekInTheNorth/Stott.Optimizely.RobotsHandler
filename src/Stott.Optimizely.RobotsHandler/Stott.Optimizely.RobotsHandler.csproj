@@ -8,16 +8,16 @@
         <Authors>Mark Stott</Authors>
         <PackageProjectUrl>https://github.com/GeekInTheNorth/Stott.Optimizely.RobotsHandler</PackageProjectUrl>
         <RepositoryUrl>https://github.com/GeekInTheNorth/Stott.Optimizely.RobotsHandler</RepositoryUrl>
-        <Copyright>Mark Stott 2024</Copyright>
+        <Copyright>Mark Stott 2025</Copyright>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         <Description>Provides an Admin interface in Optimizely CMS 12 for managing robots.txt files.  A controller responds to the /robots.txt path and returns the appropriate content specific to the site.</Description>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <NeutralLanguage>en-GB</NeutralLanguage>
         <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-        <AssemblyVersion>6.0.0</AssemblyVersion>
-        <FileVersion>6.0.0</FileVersion>
-        <Version>6.0.0</Version>
-        <PackageReleaseNotes>Add support for Opal Tools and Headless solutions.</PackageReleaseNotes>
+        <AssemblyVersion>6.0.1</AssemblyVersion>
+        <FileVersion>6.0.1</FileVersion>
+        <Version>6.0.1</Version>
+        <PackageReleaseNotes>Fix errors for Optimizely Notification Service.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
