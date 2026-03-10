@@ -1,25 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-
+using EPiServer.Applications;
 using EPiServer.Web;
 
 using NUnit.Framework;
-
+using Stott.Optimizely.RobotsHandler.Applications;
 using Stott.Optimizely.RobotsHandler.Extensions;
 
 namespace Stott.Optimizely.RobotsHandler.Test.Extensions;
 
 [TestFixture]
-public sealed class SiteDefinitionExtensionTests
+public sealed class ApplicationMapperTests
 {
     [Test]
     public void ToHostSummaries_ReturnsDefaultHost_WhenHostDefinitionsIsNull()
     {
         // Arrange
-        IList<HostDefinition> hostDefinitions = null;
+        IList<ApplicationHost> hostDefinitions = null;
 
         // Act
-        var result = hostDefinitions.ToHostSummaries().ToList();
+        var result = ApplicationMapper.CreateHostSummaries(hostDefinitions);
 
         // Assert
         Assert.That(result, Has.Count.EqualTo(1));
@@ -31,10 +32,10 @@ public sealed class SiteDefinitionExtensionTests
     public void ToHostSummaries_ReturnsDefaultHost_WhenHostDefinitionsIsEmpty()
     {
         // Arrange
-        IList<HostDefinition> hostDefinitions = new List<HostDefinition>();
+        IList<ApplicationHost> hostDefinitions = new List<ApplicationHost>();
 
         // Act
-        var result = hostDefinitions.ToHostSummaries().ToList();
+        var result = ApplicationMapper.CreateHostSummaries(hostDefinitions);
 
         // Assert
         Assert.That(result, Has.Count.EqualTo(1));
@@ -46,14 +47,14 @@ public sealed class SiteDefinitionExtensionTests
     public void ToHostSummaries_ReturnsDefaultAndHosts_WhenHostDefinitionsIsNotEmpty()
     {
         // Arrange
-        IList<HostDefinition> hostDefinitions = new List<HostDefinition>
+        IList<ApplicationHost> hostDefinitions = new List<ApplicationHost>
         {
-            new() { Name = "host1.com" },
-            new() { Name = "host2.com" }
+            new ApplicationHost("host1.com"),
+            new ApplicationHost("host2.com")
         };
 
         // Act
-        var result = hostDefinitions.ToHostSummaries().ToList();
+        var result = ApplicationMapper.CreateHostSummaries(hostDefinitions).ToList();
 
         // Assert
         Assert.That(result, Has.Count.EqualTo(3));
@@ -69,14 +70,14 @@ public sealed class SiteDefinitionExtensionTests
     public void ToHostSummaries_ExcludesHostsWithoutUrl()
     {
         // Arrange
-        IList<HostDefinition> hostDefinitions = new List<HostDefinition>
+        IList<ApplicationHost> hostDefinitions = new List<ApplicationHost>
         {
-            new() { Name = "host1.com" },
-            new() { Name = "*" }
+            new ApplicationHost("host1.com"),
+            new ApplicationHost("host2.com")
         };
 
         // Act
-        var result = hostDefinitions.ToHostSummaries().ToList();
+        var result = ApplicationMapper.CreateHostSummaries(hostDefinitions).ToList();
 
         // Assert
         Assert.That(result, Has.Count.EqualTo(2));

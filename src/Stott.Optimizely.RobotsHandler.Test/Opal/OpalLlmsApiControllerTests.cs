@@ -8,11 +8,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 
 using NUnit.Framework;
-
+using Stott.Optimizely.RobotsHandler.Applications;
 using Stott.Optimizely.RobotsHandler.Llms;
 using Stott.Optimizely.RobotsHandler.Opal;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
-using Stott.Optimizely.RobotsHandler.Sites;
 using Stott.Optimizely.RobotsHandler.Test.TestCases;
 
 namespace Stott.Optimizely.RobotsHandler.Test.Opal;
@@ -553,34 +552,32 @@ public sealed class OpalLlmsApiControllerTests
 
     private static List<ApplicationLlmsViewModel> CreateDummyData()
     {
-        return new List<ApplicationLlmsViewModel>
-        {
-            new ApplicationLlmsViewModel
-            {
+        return
+        [
+            new ApplicationLlmsViewModel {
                 Id = Guid.NewGuid(),
                 AppName = "Test One",
                 SpecificHost = "specific.test",
-                AvailableHosts = new List<SiteHostViewModel>
-                {
-                    new SiteHostViewModel { HostName = "available1.test" },
-                    new SiteHostViewModel { HostName = "available2.test" }
-                },
+                AvailableHosts =
+                [
+                    new HostViewModel { HostName = "available1.test", DisplayName = "Site One" },
+                    new HostViewModel { HostName = "available2.test", DisplayName = "Site Two" }
+                ],
                 LlmsContent = "User-agent: *\nDisallow: /",
                 IsForWholeSite = false
             },
-            new ApplicationLlmsViewModel
-            {
+            new ApplicationLlmsViewModel {
                 Id = Guid.NewGuid(),
                 AppName = "Test Two",
                 SpecificHost = null,
-                AvailableHosts = new List<SiteHostViewModel>
-                {
-                    new SiteHostViewModel { HostName = "available3.test" },
-                    new SiteHostViewModel { HostName = "available4.test" }
-                },
+                AvailableHosts =
+                [
+                    new HostViewModel { HostName = "available3.test", DisplayName = "Site Three" },
+                    new HostViewModel { HostName = "available4.test", DisplayName = "Site Four" }
+                ],
                 LlmsContent = "User-agent: *\nDisallow: /private",
                 IsForWholeSite = true
             }
-        };
+        ];
     }
 }

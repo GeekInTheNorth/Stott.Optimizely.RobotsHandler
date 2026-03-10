@@ -98,7 +98,7 @@ public class DefaultLlmsContentService(
         var application = appService.GetApplicationByIdAsync(model.AppId).GetAwaiter().GetResult();
         if (application == null)
         {
-            throw new ArgumentException($"{nameof(model)}.{nameof(model.AppId)} does not correlate to a known site.", nameof(model));
+            throw new ArgumentException($"{nameof(model)}.{nameof(model.AppId)} does not correlate to a known application.", nameof(model));
         }
 
         llmsContentRepository.Save(model);
@@ -136,7 +136,8 @@ public class DefaultLlmsContentService(
         var modelHost = model.SpecificHost ?? string.Empty;
         var entityHost = entity.SpecificHost ?? string.Empty;
 
-        return Equals(model.AppId, entity.AppId) && !Equals(model.Id, entity.Id.ExternalId) &&
+        return string.Equals(model.AppId, entity.AppId, StringComparison.OrdinalIgnoreCase) &&
+               !Guid.Equals(model.Id, entity.Id.ExternalId) &&
                string.Equals(modelHost, entityHost, StringComparison.OrdinalIgnoreCase);
     }
 }

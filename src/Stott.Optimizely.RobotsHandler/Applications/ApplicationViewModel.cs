@@ -8,5 +8,5 @@ public sealed class ApplicationViewModel
 
     public string? AppName { get; set; }
 
-    public List<HostViewModel>? AvailableHosts { get; set; }
+    public List<HostViewModel> AvailableHosts { get; set; } = [];
 }

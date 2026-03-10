@@ -1,8 +1,10 @@
-﻿@using EPiServer.Shell.Navigation
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, EPiServer.Shell.UI
+
 @model Stott.Optimizely.RobotsHandler.Presentation.LandingPage.LandingPageViewModel
 
 @{
-    Layout = "";
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -12,11 +14,9 @@
     <link href="@Model.CssFile" rel="stylesheet">
 </head>
 <body>
+    <platform-navigation />
     @Html.AntiForgeryToken()
-    @Html.CreatePlatformNavigationMenu()
-    <div @Html.ApplyPlatformNavigation()>
-        <div id="stott-robots-ui"></div>
-    </div>
+    <div id="stott-robots-ui"></div>
 
     <script src="@Model.JavaScriptFile" nonce="@Model.Nonce"></script>
 </body>

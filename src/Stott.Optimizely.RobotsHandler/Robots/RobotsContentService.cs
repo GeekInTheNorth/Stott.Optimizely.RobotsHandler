@@ -38,9 +38,9 @@ public sealed class RobotsContentService(
             }
         }
 
-        foreach (var site in sites)
+        foreach (var site in applications)
         {
-            if (!models.Any(x => x.AppId == site.Id && x.IsForWholeSite))
+            if (!models.Any(x => string.Equals(x.AppId, site.AppId, StringComparison.OrdinalIgnoreCase) && x.IsForWholeSite))
             {
                 models.Add(ToModel(site));
             }
@@ -57,30 +57,30 @@ public sealed class RobotsContentService(
             throw new RobotsEntityNotFoundException(id);
         }
 
-        var sites = appService.List();
-        var site = sites.FirstOrDefault(x => x.Id.Equals(robotRecord.SiteId));
-        if (site == null)
+        var applications = appService.GetAllApplicationsAsync().GetAwaiter().GetResult();
+        var application = applications.FirstOrDefault(x => string.Equals(x.AppId, robotRecord.AppId, StringComparison.OrdinalIgnoreCase));
+        if (application == null)
         {
-            throw new RobotsEntityNotFoundException($"Robotes entity with id '{id}' not match a site definition.");
+            throw new RobotsEntityNotFoundException($"Robotes entity with id '{id}' not match an application definition.");
         }
 
-        return ToModel(robotRecord, site);
+        return ToModel(robotRecord, application);
     }
 
-    public SiteRobotsViewModel GetDefault(Guid siteId)
+    public SiteRobotsViewModel GetDefault(string? appId)
     {
-        var site = appService.Get(siteId);
-        if (site == null)
+        var application = appService.GetApplicationByIdAsync(appId).GetAwaiter().GetResult();
+        if (application == null)
         {
-            throw new ArgumentException($"{nameof(siteId)} does not correlate to a known site.", nameof(siteId));
+            throw new ArgumentException($"{nameof(appId)} does not correlate to a known application.", nameof(appId));
         }
 
-        return ToModel(site);
+        return ToModel(application);
     }
 
-    public string GetRobotsContent(Guid siteId, string host)
+    public string? GetRobotsContent(string? appId, string? host)
     {
-        var robots = robotsContentRepository.GetAllForSite(siteId) ?? new List<RobotsEntity>(0);
+        var robots = robotsContentRepository.GetAllForSite(appId) ?? new List<RobotsEntity>(0);
         var matchingRobots = robots.FirstOrDefault(x => string.Equals(x.SpecificHost, host, StringComparison.OrdinalIgnoreCase)) ??
                              robots.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.SpecificHost));
 
@@ -99,10 +99,10 @@ public sealed class RobotsContentService(
             throw new ArgumentException($"{nameof(model)}.{nameof(model.AppId)} must not be null or empty.", nameof(model));
         }
 
-        var existingSite = appService.Get(model.AppId);
-        if (existingSite == null)
+        var application = appService.GetApplicationByIdAsync(model.AppId).GetAwaiter().GetResult();
+        if (application == null)
         {
-            throw new ArgumentException($"{nameof(model)}.{nameof(model.AppId)} does not correlate to a known site.", nameof(model));
+            throw new ArgumentException($"{nameof(model)}.{nameof(model.AppId)} does not correlate to a known application.", nameof(model));
         }
 
         robotsContentRepository.Save(model);
@@ -124,31 +124,31 @@ public sealed class RobotsContentService(
         return existingConfigurations.Any(x => IsConflict(model, x));
     }
 
-    private static SiteRobotsViewModel ToModel(RobotsEntity robotsEntity, SiteDefinition siteDefinition)
+    private static SiteRobotsViewModel ToModel(RobotsEntity robotsEntity, ApplicationViewModel application)
     {
         return new SiteRobotsViewModel
         {
             Id = robotsEntity.Id.ExternalId,
-            AppId = robotsEntity.SiteId,
+            AppId = robotsEntity.AppId,
             IsForWholeSite = robotsEntity.IsForWholeSite || string.IsNullOrWhiteSpace(robotsEntity.SpecificHost),
             SpecificHost = robotsEntity.SpecificHost,
             RobotsContent = robotsEntity.RobotsContent,
-            AppName = siteDefinition.Name,
-            AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList(),
+            AppName = application.AppName,
+            AvailableHosts = application.AvailableHosts,
             CanDelete = true
         };
     }
 
-    private SiteRobotsViewModel ToModel(SiteDefinition siteDefinition)
+    private SiteRobotsViewModel ToModel(ApplicationViewModel application)
     {
         return new SiteRobotsViewModel
         {
             Id = Guid.Empty,
-            AppId = siteDefinition.Id,
+            AppId = application.AppId,
             IsForWholeSite = true,
             RobotsContent = GetDefaultRobotsContent(),
-            AppName = siteDefinition.Name,
-            AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList()
+            AppName = application.AppName,
+            AvailableHosts = application.AvailableHosts
         };
     }
 
@@ -157,7 +157,8 @@ public sealed class RobotsContentService(
         var modelHost = model.SpecificHost ?? string.Empty;
         var entityHost = entity.SpecificHost ?? string.Empty;
 
-        return Equals(model.AppId, entity.SiteId) && !Equals(model.Id, entity.Id.ExternalId) &&
+        return string.Equals(model.AppId, entity.AppId, StringComparison.OrdinalIgnoreCase) && 
+               !Guid.Equals(model.Id, entity.Id.ExternalId) &&
                string.Equals(modelHost, entityHost, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -11,27 +11,17 @@ using Stott.Optimizely.RobotsHandler.Common;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
-public sealed class RobotsApiController : BaseApiController
+public sealed class RobotsApiController(
+    IRobotsContentService service,
+    ILogger<RobotsApiController> logger) : BaseApiController
 {
-    private readonly IRobotsContentService _service;
-
-    private readonly ILogger<RobotsApiController> _logger;
-
-    public RobotsApiController(
-        IRobotsContentService service,
-        ILogger<RobotsApiController> logger)
-    {
-        _service = service;
-        _logger = logger;
-    }
-
     [HttpGet]
     [Route("/stott.robotshandler/api/robots/list/")]
     public IActionResult ApiList()
     {
         var model = new RobotsListViewModel
         {
-            List = _service.GetAll()
+            List = service.GetAll()
         };
 
         return CreateSafeJsonResult(model);
@@ -39,19 +29,19 @@ public sealed class RobotsApiController : BaseApiController
 
     [HttpGet]
     [Route("/stott.robotshandler/api/robots/[action]")]
-    public IActionResult Details(string id, string siteId)
+    public IActionResult Details(string? id, string? appId)
     {
         if (!Guid.TryParse(id, out var robotsId))
         {
             throw new ArgumentException("Id cannot be parsed as a valid GUID.", nameof(id));
         }
 
-        if (!Guid.TryParse(siteId, out var robotsSiteId) || Guid.Empty.Equals(robotsSiteId))
+        if (string.IsNullOrWhiteSpace(appId))
         {
-            throw new ArgumentException("SiteId cannot be parsed as a valid GUID.", nameof(siteId));
+            throw new ArgumentException("AppId has not been provided.", nameof(appId));
         }
 
-        var model = Guid.Empty.Equals(robotsId) ? _service.GetDefault(robotsSiteId) : _service.Get(robotsId);
+        var model = Guid.Empty.Equals(robotsId) ? service.GetDefault(appId) : service.Get(robotsId);
 
         return CreateSafeJsonResult(model);
     }
@@ -62,7 +52,7 @@ public sealed class RobotsApiController : BaseApiController
     {
         try
         {
-            if (_service.DoesConflictExists(formSubmitModel))
+            if (service.DoesConflictExists(formSubmitModel))
             {
                 return new ContentResult
                 {
@@ -71,13 +61,13 @@ public sealed class RobotsApiController : BaseApiController
                     ContentType = "text/plain"
                 };
             }
-            _service.Save(formSubmitModel);
+            service.Save(formSubmitModel);
 
             return new OkResult();
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to save robots.txt content for {siteName}", formSubmitModel.AppName);
+            logger.LogError(exception, "Failed to save robots.txt content for {siteName}", formSubmitModel.AppName);
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
@@ -103,13 +93,13 @@ public sealed class RobotsApiController : BaseApiController
                 };
             }
 
-            _service.Delete(id);
+            service.Delete(id);
 
             return new OkResult();
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to delete this robots configuration.");
+            logger.LogError(exception, "Failed to delete this robots configuration.");
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
