@@ -6,9 +6,9 @@ public interface IEnvironmentRobotsService
 {
     IList<EnvironmentRobotsModel> GetAll();
 
-    EnvironmentRobotsModel Get(string environmentName);
+    EnvironmentRobotsModel? Get(string? environmentName);
 
-    EnvironmentRobotsModel GetCurrent();
+    EnvironmentRobotsModel? GetCurrent();
 
     void Save(EnvironmentRobotsModel model);
 }

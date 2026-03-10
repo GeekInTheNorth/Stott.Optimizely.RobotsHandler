@@ -1,13 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
-
-using EPiServer.Web;
 
 using Moq;
 
 using NUnit.Framework;
 
+using Stott.Optimizely.RobotsHandler.Applications;
 using Stott.Optimizely.RobotsHandler.Models;
 using Stott.Optimizely.RobotsHandler.Robots;
 
@@ -16,11 +15,7 @@ namespace Stott.Optimizely.RobotsHandler.Test.Robots;
 [TestFixture]
 public sealed class RobotsContentServiceTests
 {
-    private Mock<HostDefinition> _mockHostDefinition;
-
-    private Mock<SiteDefinition> _mockSiteDefinition;
-
-    private Mock<ISiteDefinitionRepository> _mockSiteDefinitionRepository;
+    private Mock<IApplicationDefinitionService> _mockAppService;
 
     private Mock<IRobotsContentRepository> _mockRobotsContentRepository;
 
@@ -29,29 +24,24 @@ public sealed class RobotsContentServiceTests
     [SetUp]
     public void SetUp()
     {
-        _mockHostDefinition = new Mock<HostDefinition>();
-
-        _mockSiteDefinition = new Mock<SiteDefinition>();
-        _mockSiteDefinition.Setup(x => x.Hosts).Returns(new List<HostDefinition> { _mockHostDefinition.Object });
-
-        _mockSiteDefinitionRepository = new Mock<ISiteDefinitionRepository>();
-        _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(new List<SiteDefinition> { _mockSiteDefinition.Object });
+        _mockAppService = new Mock<IApplicationDefinitionService>();
+        _mockAppService.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync([]);
 
         _mockRobotsContentRepository = new Mock<IRobotsContentRepository>();
 
-        _robotsContentService = new RobotsContentService(_mockSiteDefinitionRepository.Object, _mockRobotsContentRepository.Object);
+        _robotsContentService = new RobotsContentService(_mockAppService.Object, _mockRobotsContentRepository.Object);
     }
 
     [Test]
     public void GetRobotsContent_siteId_ReturnsDefaultRobotsForAValidSiteWhenRobotsContentDoesNotExist()
     {
         // Arrange
-        var siteId = Guid.NewGuid();
+        var appId = Guid.NewGuid().ToString();
         _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((RobotsEntity)null);
-        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity>(0));
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([]);
 
         // Act
-        var robotsContent = _robotsContentService.GetRobotsContent(siteId, null);
+        var robotsContent = _robotsContentService.GetRobotsContent(appId, null);
 
         // Assert
         Assert.That(robotsContent, Is.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
@@ -61,13 +51,13 @@ public sealed class RobotsContentServiceTests
     public void GetRobotsContent_siteId_ReturnsRobotsContentForASpecificHostWhenRobotsContentExists()
     {
         // Arrange
-        var siteId = Guid.NewGuid();
+        var appId = Guid.NewGuid().ToString();
         var robotsContent = GetSavedRobots();
-        var robotsEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = "www.example.com", RobotsContent = robotsContent };
-        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { robotsEntity });
+        var robotsEntity = new RobotsEntity { AppId = appId, SpecificHost = "www.example.com", RobotsContent = robotsContent };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([robotsEntity]);
 
         // Act
-        var result = _robotsContentService.GetRobotsContent(siteId, "www.example.com");
+        var result = _robotsContentService.GetRobotsContent(appId, "www.example.com");
 
         // Assert
         Assert.That(result, Is.EqualTo(robotsContent));
@@ -77,13 +67,13 @@ public sealed class RobotsContentServiceTests
     public void GetRobotsContent_siteId_ReturnsDefaultRobotsForASiteWhenRobotsContentExistsButNoSpecificHostIsProvided()
     {
         // Arrange
-        var siteId = Guid.NewGuid();
+        var appId = Guid.NewGuid().ToString();
         var robotsContent = GetSavedRobots();
-        var robotsEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = string.Empty, RobotsContent = robotsContent };
-        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { robotsEntity });
+        var robotsEntity = new RobotsEntity { AppId = appId, SpecificHost = string.Empty, RobotsContent = robotsContent };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([robotsEntity]);
 
         // Act
-        var result = _robotsContentService.GetRobotsContent(siteId, null);
+        var result = _robotsContentService.GetRobotsContent(appId, null);
 
         // Assert
         Assert.That(result, Is.EqualTo(robotsContent));
@@ -93,13 +83,13 @@ public sealed class RobotsContentServiceTests
     public void GetRobotsContent_siteId_ReturnsDefaultRobotsForASiteWhenRobotsContentExistsButNoMatchingSpecificHostIsProvided()
     {
         // Arrange
-        var siteId = Guid.NewGuid();
+        var appId = Guid.NewGuid().ToString();
         var robotsContent = GetSavedRobots();
-        var robotsEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = "www.example.com", RobotsContent = robotsContent };
-        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { robotsEntity });
+        var robotsEntity = new RobotsEntity { AppId = appId, SpecificHost = "www.example.com", RobotsContent = robotsContent };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([robotsEntity]);
 
         // Act
-        var result = _robotsContentService.GetRobotsContent(siteId, "www.non-matching.com");
+        var result = _robotsContentService.GetRobotsContent(appId, "www.non-matching.com");
 
         // Assert
         Assert.That(result, Is.EqualTo(_robotsContentService.GetDefaultRobotsContent()));
@@ -109,14 +99,14 @@ public sealed class RobotsContentServiceTests
     public void GetRobotsContent_siteId_ReturnsMatchingHostWhenBothDefaultAndDefinedHostExist()
     {
         // Arrange
-        var siteId = Guid.NewGuid();
+        var appId = Guid.NewGuid().ToString();
         var robotsContent = GetSavedRobots();
-        var hostDefinedEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = "www.example.com", RobotsContent = "Defined Robots" };
-        var defaultEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, RobotsContent = "Default Robots" };
-        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { hostDefinedEntity, defaultEntity });
+        var hostDefinedEntity = new RobotsEntity { AppId = appId, SpecificHost = "www.example.com", RobotsContent = "Defined Robots" };
+        var defaultEntity = new RobotsEntity { AppId = appId, RobotsContent = "Default Robots" };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([hostDefinedEntity, defaultEntity]);
 
         // Act
-        var result = _robotsContentService.GetRobotsContent(siteId, "www.example.com");
+        var result = _robotsContentService.GetRobotsContent(appId, "www.example.com");
 
         // Assert
         Assert.That(result, Is.EqualTo(hostDefinedEntity.RobotsContent));
@@ -126,14 +116,14 @@ public sealed class RobotsContentServiceTests
     public void GetRobotsContent_siteId_ReturnsDefaultHostWhenBothDefaultAndDefinedHostExistForANonMatchingHost()
     {
         // Arrange
-        var siteId = Guid.NewGuid();
+        var appId = Guid.NewGuid().ToString();
         var robotsContent = GetSavedRobots();
-        var hostDefinedEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, SpecificHost = "www.example.com", RobotsContent = "Defined Robots" };
-        var defaultEntity = new RobotsEntity { Id = Guid.NewGuid(), SiteId = siteId, RobotsContent = "Default Robots" };
-        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<Guid>())).Returns(new List<RobotsEntity> { hostDefinedEntity, defaultEntity });
+        var hostDefinedEntity = new RobotsEntity { AppId = appId, SpecificHost = "www.example.com", RobotsContent = "Defined Robots" };
+        var defaultEntity = new RobotsEntity { AppId = appId, RobotsContent = "Default Robots" };
+        _mockRobotsContentRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([hostDefinedEntity, defaultEntity]);
 
         // Act
-        var result = _robotsContentService.GetRobotsContent(siteId, "www.non-matching.com");
+        var result = _robotsContentService.GetRobotsContent(appId, "www.non-matching.com");
 
         // Assert
         Assert.That(result, Is.EqualTo(defaultEntity.RobotsContent));
@@ -146,9 +136,11 @@ public sealed class RobotsContentServiceTests
         var model = new SaveRobotsModel
         {
             Id = Guid.NewGuid(),
-            AppId = Guid.Empty,
+            AppId = null,
             RobotsContent = GetSavedRobots()
         };
+
+        _mockAppService.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationViewModel)null);
 
         // Assert
         Assert.Throws<ArgumentException>(() => _robotsContentService.Save(model));
@@ -161,11 +153,11 @@ public sealed class RobotsContentServiceTests
         var model = new SaveRobotsModel
         {
             Id = Guid.NewGuid(),
-            AppId = Guid.NewGuid(),
+            AppId = "some-app-id",
             RobotsContent = GetSavedRobots()
         };
 
-        _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((SiteDefinition)null);
+        _mockAppService.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationViewModel)null);
 
         // Assert
         Assert.Throws<ArgumentException>(() => _robotsContentService.Save(model));
@@ -178,11 +170,11 @@ public sealed class RobotsContentServiceTests
         var model = new SaveRobotsModel
         {
             Id = Guid.NewGuid(),
-            AppId = Guid.NewGuid(),
+            AppId = "some-app-id",
             RobotsContent = GetSavedRobots()
         };
 
-        _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(_mockSiteDefinition.Object);
+        _mockAppService.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationViewModel { AppId = "some-app-id" });
 
         // Act
         _robotsContentService.Save(model);
@@ -231,15 +223,15 @@ public sealed class RobotsContentServiceTests
     }
 
     [Test]
-    [TestCase("f70719d4-adc6-4a06-8662-7c7e78ab3dbc", "5645bc86-f7f7-4c3a-924c-13612c55914a", "", false)]
-    [TestCase("a841af98-cdbd-4e64-82b2-f31f3b0fe647", "5645bc86-f7f7-4c3a-924c-13612c55914a", "", true)]
-    [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86-f7f7-4c3a-924c-13612c55914a", "", true)]
-    [TestCase("00000000-0000-0000-0000-000000000000", "5645bc86-f7f7-4c3a-924c-13612c55914a", "", true)]
-    [TestCase("a841af98-cdbd-4e64-82b2-f31f3b0fe647", "5645bc86-f7f7-4c3a-924c-13612c55914a", "www.example.com", false)]
-    [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86-f7f7-4c3a-924c-13612c55914a", "www.example.com", true)]
-    [TestCase("00000000-0000-0000-0000-000000000000", "5645bc86-f7f7-4c3a-924c-13612c55914a", "www.example.com", true)]
-    [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86-f7f7-4c3a-924c-13612c55914a", "www.non-matching.com", false)]
-    public void DoesConflictExists_GivenTheRepositoryContainsAConflictingConfiguration_ThenTrueIsReturned(Guid id, Guid siteId, string host, bool expectedValue)
+    [TestCase("f70719d4-adc6-4a06-8662-7c7e78ab3dbc", "5645bc86", "", false)]
+    [TestCase("a841af98-cdbd-4e64-82b2-f31f3b0fe647", "5645bc86", "", true)]
+    [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86", "", true)]
+    [TestCase("00000000-0000-0000-0000-000000000000", "5645bc86", "", true)]
+    [TestCase("a841af98-cdbd-4e64-82b2-f31f3b0fe647", "5645bc86", "www.example.com", false)]
+    [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86", "www.example.com", true)]
+    [TestCase("00000000-0000-0000-0000-000000000000", "5645bc86", "www.example.com", true)]
+    [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "5645bc86", "www.non-matching.com", false)]
+    public void DoesConflictExists_GivenTheRepositoryContainsAConflictingConfiguration_ThenTrueIsReturned(string id, string appId, string host, bool expectedValue)
     {
         // Arrange
         var savedRecords = new List<RobotsEntity>
@@ -247,20 +239,20 @@ public sealed class RobotsContentServiceTests
             new()
             {
                 Id = Guid.Parse("f70719d4-adc6-4a06-8662-7c7e78ab3dbc"),
-                SiteId = Guid.Parse("5645bc86-f7f7-4c3a-924c-13612c55914a"),
+                AppId = "5645bc86",
                 SpecificHost = string.Empty,
                 RobotsContent = GetSavedRobots()
             },
             new()
             {
                 Id = Guid.Parse("a841af98-cdbd-4e64-82b2-f31f3b0fe647"),
-                SiteId = Guid.Parse("5645bc86-f7f7-4c3a-924c-13612c55914a"),
+                AppId = "5645bc86",
                 SpecificHost = "www.example.com",
                 RobotsContent = GetSavedRobots()
             }
         };
 
-        var model = new SaveRobotsModel { Id = id, AppId = siteId, SpecificHost = host, RobotsContent = GetSavedRobots() };
+        var model = new SaveRobotsModel { Id = Guid.Parse(id), AppId = appId, SpecificHost = host, RobotsContent = GetSavedRobots() };
         _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns(savedRecords);
 
         // Act
@@ -271,43 +263,43 @@ public sealed class RobotsContentServiceTests
     }
 
     [Test]
-    public void GetDefault_WhenPassedAnInvalidSiteId_ThenThrowsArgumentException()
+    public void GetDefault_WhenPassedAnInvalidAppId_ThenThrowsArgumentException()
     {
         // Arrange
-        var siteId = Guid.Empty;
+        _mockAppService.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationViewModel)null);
 
         // Assert
-        Assert.Throws<ArgumentException>(() => _robotsContentService.GetDefault(siteId));
+        Assert.Throws<ArgumentException>(() => _robotsContentService.GetDefault(null));
     }
 
     [Test]
-    public void GetDefault_WhenPassedAValidSiteId_ButTheRepositoryDoesNotContainTheSite_ThenThrowsArgumentException()
+    public void GetDefault_WhenPassedAValidAppId_ButTheServiceDoesNotContainTheApplication_ThenThrowsArgumentException()
     {
         // Arrange
-        var siteId = Guid.NewGuid();
+        var appId = Guid.NewGuid().ToString();
 
-        _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns((SiteDefinition)null);
+        _mockAppService.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationViewModel)null);
 
         // Assert
-        Assert.Throws<ArgumentException>(() => _robotsContentService.GetDefault(siteId));
+        Assert.Throws<ArgumentException>(() => _robotsContentService.GetDefault(appId));
     }
 
     [Test]
-    public void GetDefault_WhenPassedAValidSiteId_ThenReturnsAValidSiteRobotsViewModel()
+    public void GetDefault_WhenPassedAValidAppId_ThenReturnsAValidSiteRobotsViewModel()
     {
         // Arrange
-        var siteId = Guid.NewGuid();
-        var mockSiteDefinition = new SiteDefinition { Id = siteId };
+        var appId = Guid.NewGuid().ToString();
+        var application = new ApplicationViewModel { AppId = appId };
 
-        _mockSiteDefinitionRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(mockSiteDefinition);
+        _mockAppService.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync(application);
 
         // Act
-        var result = _robotsContentService.GetDefault(siteId);
+        var result = _robotsContentService.GetDefault(appId);
 
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Id, Is.EqualTo(Guid.Empty));
-        Assert.That(result.AppId, Is.EqualTo(siteId));
+        Assert.That(result.AppId, Is.EqualTo(appId));
         Assert.That(result.SpecificHost, Is.Null);
     }
 
@@ -315,14 +307,15 @@ public sealed class RobotsContentServiceTests
     public void GetAll_WhenTheRobotsContentRepositoryHasNoRecords_ThenDefaultRecordsShouldBeReturnedForEachSite()
     {
         // Arrange
-        var sites = new List<SiteDefinition>
+        var defaultHosts = new List<HostViewModel> { new() { DisplayName = "Default", HostName = string.Empty } };
+        var applications = new List<ApplicationViewModel>
         {
-            new() { Id = Guid.NewGuid() },
-            new() { Id = Guid.NewGuid() }
+            new() { AppId = Guid.NewGuid().ToString(), AvailableHosts = defaultHosts },
+            new() { AppId = Guid.NewGuid().ToString(), AvailableHosts = defaultHosts }
         };
 
-        _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns(new List<RobotsEntity>(0));
-        _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(sites);
+        _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns([]);
+        _mockAppService.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync(applications);
 
         // Act
         var result = _robotsContentService.GetAll();
@@ -330,10 +323,10 @@ public sealed class RobotsContentServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result[0].AppId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AppId, Is.EqualTo(applications[0].AppId));
         Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].AppId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[1].AppId, Is.EqualTo(applications[1].AppId));
         Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
     }
@@ -342,20 +335,21 @@ public sealed class RobotsContentServiceTests
     public void GetAll_WhenTheRobotsContentRepositoryHasRecords_ThenTheRecordsShouldBeReturnedForEachSite()
     {
         // Arrange
-        var sites = new List<SiteDefinition>
+        var defaultHosts = new List<HostViewModel> { new() { DisplayName = "Default", HostName = string.Empty } };
+        var applications = new List<ApplicationViewModel>
         {
-            new() { Id = Guid.NewGuid() },
-            new() { Id = Guid.NewGuid() }
+            new() { AppId = Guid.NewGuid().ToString(), AvailableHosts = defaultHosts },
+            new() { AppId = Guid.NewGuid().ToString(), AvailableHosts = defaultHosts }
         };
 
         var robotsEntities = new List<RobotsEntity>
         {
-            new() { Id = Guid.NewGuid(), SiteId = sites[0].Id },
-            new() { Id = Guid.NewGuid(), SiteId = sites[1].Id }
+            new() { AppId = applications[0].AppId },
+            new() { AppId = applications[1].AppId }
         };
 
         _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns(robotsEntities);
-        _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(sites);
+        _mockAppService.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync(applications);
 
         // Act
         var result = _robotsContentService.GetAll();
@@ -363,10 +357,10 @@ public sealed class RobotsContentServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result[0].AppId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AppId, Is.EqualTo(applications[0].AppId));
         Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].AppId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[1].AppId, Is.EqualTo(applications[1].AppId));
         Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
     }
@@ -375,20 +369,20 @@ public sealed class RobotsContentServiceTests
     public void GetAll_WhenThereAreRobotsContentForSpecificHosts_ThenTheSpecificHostsShouldBeReturned()
     {
         // Arrange
-        var sites = new List<SiteDefinition>
+        var applications = new List<ApplicationViewModel>
         {
-            new() { Id = Guid.NewGuid(), Name = "Site 1", Hosts = new List<HostDefinition> { new() { Name = "www.exampleone.com" } } },
-            new() { Id = Guid.NewGuid(), Name = "Site 2", Hosts = new List<HostDefinition> { new() { Name = "www.exampletwo.com" } } },
+            new() { AppId = Guid.NewGuid().ToString(), AppName = "Site 1", AvailableHosts = [new() { DisplayName = "www.exampleone.com", HostName = "www.exampleone.com" }] },
+            new() { AppId = Guid.NewGuid().ToString(), AppName = "Site 2", AvailableHosts = [new() { DisplayName = "www.exampletwo.com", HostName = "www.exampletwo.com" }] },
         };
 
         var robotsEntities = new List<RobotsEntity>
         {
-            new() { Id = Guid.NewGuid(), SiteId = sites[0].Id, SpecificHost = "www.exampleone.com" },
-            new() { Id = Guid.NewGuid(), SiteId = sites[1].Id, SpecificHost = "www.exampletwo.com" }
+            new() { AppId = applications[0].AppId, SpecificHost = "www.exampleone.com" },
+            new() { AppId = applications[1].AppId, SpecificHost = "www.exampletwo.com" }
         };
 
         _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns(robotsEntities);
-        _mockSiteDefinitionRepository.Setup(x => x.List()).Returns(sites);
+        _mockAppService.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync(applications);
 
         // Act
         var result = _robotsContentService.GetAll();
@@ -397,41 +391,33 @@ public sealed class RobotsContentServiceTests
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(4));
 
-        Assert.That(result[0].AppId, Is.EqualTo(sites[0].Id));
-        Assert.That(result[0].AppName, Is.EqualTo(sites[0].Name));
+        Assert.That(result[0].AppId, Is.EqualTo(applications[0].AppId));
+        Assert.That(result[0].AppName, Is.EqualTo(applications[0].AppName));
         Assert.That(result[0].SpecificHost, Is.Null);
         Assert.That(result[0].CanDelete, Is.False);
-        Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
-        Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[0].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampleone.com"));
-        Assert.That(result[0].AvailableHosts[1].HostName, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo("www.exampleone.com"));
 
-        Assert.That(result[1].AppId, Is.EqualTo(sites[0].Id));
-        Assert.That(result[1].AppName, Is.EqualTo(sites[0].Name));
+        Assert.That(result[1].AppId, Is.EqualTo(applications[0].AppId));
+        Assert.That(result[1].AppName, Is.EqualTo(applications[0].AppName));
         Assert.That(result[1].SpecificHost, Is.EqualTo("www.exampleone.com"));
         Assert.That(result[1].CanDelete, Is.True);
-        Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
-        Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampleone.com"));
-        Assert.That(result[1].AvailableHosts[1].HostName, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo("www.exampleone.com"));
 
-        Assert.That(result[2].AppId, Is.EqualTo(sites[1].Id));
-        Assert.That(result[2].AppName, Is.EqualTo(sites[1].Name));
+        Assert.That(result[2].AppId, Is.EqualTo(applications[1].AppId));
+        Assert.That(result[2].AppName, Is.EqualTo(applications[1].AppName));
         Assert.That(result[2].SpecificHost, Is.Null);
         Assert.That(result[2].CanDelete, Is.False);
-        Assert.That(result[2].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
-        Assert.That(result[2].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[2].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampletwo.com"));
-        Assert.That(result[2].AvailableHosts[1].HostName, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[2].AvailableHosts[0].DisplayName, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[2].AvailableHosts[0].HostName, Is.EqualTo("www.exampletwo.com"));
 
-        Assert.That(result[3].AppId, Is.EqualTo(sites[1].Id));
-        Assert.That(result[3].AppName, Is.EqualTo(sites[1].Name));
+        Assert.That(result[3].AppId, Is.EqualTo(applications[1].AppId));
+        Assert.That(result[3].AppName, Is.EqualTo(applications[1].AppName));
         Assert.That(result[3].SpecificHost, Is.EqualTo("www.exampletwo.com"));
         Assert.That(result[3].CanDelete, Is.True);
-        Assert.That(result[3].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
-        Assert.That(result[3].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[3].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampletwo.com"));
-        Assert.That(result[3].AvailableHosts[1].HostName, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[3].AvailableHosts[0].DisplayName, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[3].AvailableHosts[0].HostName, Is.EqualTo("www.exampletwo.com"));
     }
 
     [Test]
@@ -450,8 +436,9 @@ public sealed class RobotsContentServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var robotsEntity = new RobotsEntity { Id = id, SiteId = Guid.NewGuid() };
+        var robotsEntity = new RobotsEntity { AppId = Guid.NewGuid().ToString() };
         _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(robotsEntity);
+        _mockAppService.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync([]);
 
         // Assert
         Assert.Throws<RobotsEntityNotFoundException>(() => _robotsContentService.Get(id));
@@ -462,18 +449,17 @@ public sealed class RobotsContentServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var siteId = Guid.NewGuid();
-        var robotsEntity = new RobotsEntity { Id = id, SiteId = siteId };
+        var appId = Guid.NewGuid().ToString();
+        var robotsEntity = new RobotsEntity { AppId = appId };
         _mockRobotsContentRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(robotsEntity);
-
-        _mockSiteDefinition.Setup(x => x.Id).Returns(siteId);
+        _mockAppService.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync([new() { AppId = appId }]);
 
         // Act
         var result = _robotsContentService.Get(id);
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Id, Is.EqualTo(id));
+        Assert.That(result.Id, Is.EqualTo(robotsEntity.Id.ExternalId));
     }
 
     private static string GetSavedRobots()

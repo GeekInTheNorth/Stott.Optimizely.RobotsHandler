@@ -7,7 +7,7 @@ public sealed class EnvironmentRobotsModel
 {
     public Guid Id { get; set; }
 
-    public string EnvironmentName { get; set; }
+    public string? EnvironmentName { get; set; }
 
     public bool UseNoFollow { get; set; }
 

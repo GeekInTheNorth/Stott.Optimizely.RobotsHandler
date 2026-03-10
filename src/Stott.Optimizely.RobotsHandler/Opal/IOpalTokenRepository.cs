@@ -11,5 +11,5 @@ public interface IOpalTokenRepository
 
     void Delete(Guid id);
 
-    TokenModel GetByToken(string token);
+    TokenModel? GetByToken(string token);
 }

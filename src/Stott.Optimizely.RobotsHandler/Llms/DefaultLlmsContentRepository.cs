@@ -23,7 +23,7 @@ public sealed class DefaultLlmsContentRepository : ILlmsContentRepository
         store.Delete(Identity.NewIdentity(id));
     }
 
-    public LlmsTxtEntity Get(Guid id)
+    public LlmsTxtEntity? Get(Guid id)
     {
         if (Guid.Empty.Equals(id))
         {
@@ -35,7 +35,7 @@ public sealed class DefaultLlmsContentRepository : ILlmsContentRepository
 
     public List<LlmsTxtEntity> GetAll()
     {
-        return store.Find<LlmsTxtEntity>(new Dictionary<string, object>()).ToList();
+        return [.. store.Find<LlmsTxtEntity>(new Dictionary<string, object>())];
     }
 
     public List<LlmsTxtEntity> GetAllForSite(string? appId)
@@ -45,7 +45,7 @@ public sealed class DefaultLlmsContentRepository : ILlmsContentRepository
             return [];
         }
 
-        return store.Find<LlmsTxtEntity>(new Dictionary<string, object> { { nameof(LlmsTxtEntity.AppId), appId } }).ToList();
+        return [.. store.Find<LlmsTxtEntity>(new Dictionary<string, object> { { nameof(LlmsTxtEntity.AppId), appId } })];
     }
 
     public void Save(SaveLlmsModel model)

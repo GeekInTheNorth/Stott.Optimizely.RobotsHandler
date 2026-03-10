@@ -20,11 +20,8 @@ internal sealed class TokenHashService : ITokenHashService
         }
 
         // Hash the token with the date-based salt using PBKDF2
-        using (var pbkdf2 = new Rfc2898DeriveBytes(token, ToByteArray(saltValue), Iterations, HashAlgorithmName.SHA256))
-        {
-            var hash = pbkdf2.GetBytes(HashSize);
-            return Convert.ToBase64String(hash);
-        }
+        var hash = Rfc2898DeriveBytes.Pbkdf2(token, ToByteArray(saltValue), Iterations, HashAlgorithmName.SHA256, HashSize);
+        return Convert.ToBase64String(hash);
     }
 
     public bool VerifyToken(string token, string hash, string saltValue)

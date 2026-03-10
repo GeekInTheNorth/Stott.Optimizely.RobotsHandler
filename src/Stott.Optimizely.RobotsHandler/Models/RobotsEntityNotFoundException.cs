@@ -1,7 +1,7 @@
 using System;
-using System.Runtime.Serialization;
 
-[Serializable]
+namespace Stott.Optimizely.RobotsHandler.Models;
+
 public class RobotsEntityNotFoundException : Exception
 {
     public RobotsEntityNotFoundException()
@@ -20,11 +20,6 @@ public class RobotsEntityNotFoundException : Exception
 
     public RobotsEntityNotFoundException(string message, Exception inner)
         : base(message, inner)
-    {
-    }
-
-    protected RobotsEntityNotFoundException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 }

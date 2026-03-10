@@ -25,7 +25,7 @@ public static class ServiceExtensions
     /// <returns></returns>
     public static IServiceCollection AddRobotsHandler(
         this IServiceCollection serviceCollection,
-        Action<AuthorizationOptions> authorizationOptions = null)
+        Action<AuthorizationOptions>? authorizationOptions = null)
     {
         serviceCollection.AddScoped<IRobotsCacheHandler, RobotsCacheHandler>();
         serviceCollection.AddScoped<IRobotsContentService, RobotsContentService>();

@@ -6,5 +6,5 @@ namespace Stott.Optimizely.RobotsHandler.Opal.Models;
 public class FunctionsRoot
 {
     [JsonPropertyName("functions")]
-    public List<Function> Functions { get; set; }
+    public List<Function> Functions { get; set; } = [];
 }

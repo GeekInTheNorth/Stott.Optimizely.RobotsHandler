@@ -1,12 +1,9 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Applications;
-using EPiServer.Web;
 
 using NUnit.Framework;
 using Stott.Optimizely.RobotsHandler.Applications;
-using Stott.Optimizely.RobotsHandler.Extensions;
 
 namespace Stott.Optimizely.RobotsHandler.Test.Extensions;
 
@@ -14,33 +11,29 @@ namespace Stott.Optimizely.RobotsHandler.Test.Extensions;
 public sealed class ApplicationMapperTests
 {
     [Test]
-    public void ToHostSummaries_ReturnsDefaultHost_WhenHostDefinitionsIsNull()
+    public void ToHostSummaries_ReturnsEmpty_WhenHostDefinitionsIsNull()
     {
         // Arrange
         IList<ApplicationHost> hostDefinitions = null;
 
         // Act
-        var result = ApplicationMapper.CreateHostSummaries(hostDefinitions);
+        var result = ApplicationMapper.CreateHostSummaries(hostDefinitions).ToList();
 
         // Assert
-        Assert.That(result, Has.Count.EqualTo(1));
-        Assert.That(result.First().DisplayName, Is.EqualTo("Default"));
-        Assert.That(result.First().HostName, Is.EqualTo(string.Empty));
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
-    public void ToHostSummaries_ReturnsDefaultHost_WhenHostDefinitionsIsEmpty()
+    public void ToHostSummaries_ReturnsEmpty_WhenHostDefinitionsIsEmpty()
     {
         // Arrange
         IList<ApplicationHost> hostDefinitions = new List<ApplicationHost>();
 
         // Act
-        var result = ApplicationMapper.CreateHostSummaries(hostDefinitions);
+        var result = ApplicationMapper.CreateHostSummaries(hostDefinitions).ToList();
 
         // Assert
-        Assert.That(result, Has.Count.EqualTo(1));
-        Assert.That(result.First().DisplayName, Is.EqualTo("Default"));
-        Assert.That(result.First().HostName, Is.EqualTo(string.Empty));
+        Assert.That(result, Is.Empty);
     }
 
     [Test]
@@ -60,14 +53,14 @@ public sealed class ApplicationMapperTests
         Assert.That(result, Has.Count.EqualTo(3));
         Assert.That(result[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].DisplayName, Is.EqualTo("host1.com"));
-        Assert.That(result[1].HostName, Is.EqualTo("host1.com"));
-        Assert.That(result[2].DisplayName, Is.EqualTo("host2.com"));
-        Assert.That(result[2].HostName, Is.EqualTo("host2.com"));
+        Assert.That(result[1].DisplayName, Is.EqualTo("http://host1.com/"));
+        Assert.That(result[1].HostName, Is.EqualTo("http://host1.com/"));
+        Assert.That(result[2].DisplayName, Is.EqualTo("http://host2.com/"));
+        Assert.That(result[2].HostName, Is.EqualTo("http://host2.com/"));
     }
 
     [Test]
-    public void ToHostSummaries_ExcludesHostsWithoutUrl()
+    public void ToHostSummaries_IncludesAllHostsWithUrls()
     {
         // Arrange
         IList<ApplicationHost> hostDefinitions = new List<ApplicationHost>
@@ -80,10 +73,10 @@ public sealed class ApplicationMapperTests
         var result = ApplicationMapper.CreateHostSummaries(hostDefinitions).ToList();
 
         // Assert
-        Assert.That(result, Has.Count.EqualTo(2));
+        Assert.That(result, Has.Count.EqualTo(3));
         Assert.That(result[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].DisplayName, Is.EqualTo("host1.com"));
-        Assert.That(result[1].HostName, Is.EqualTo("host1.com"));
+        Assert.That(result[1].DisplayName, Is.EqualTo("http://host1.com/"));
+        Assert.That(result[1].HostName, Is.EqualTo("http://host1.com/"));
     }
 }

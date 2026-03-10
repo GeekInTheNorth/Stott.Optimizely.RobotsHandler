@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
-
-using EPiServer.Web;
 
 using Moq;
 
@@ -16,10 +14,6 @@ namespace Stott.Optimizely.RobotsHandler.Test.Llms;
 [TestFixture]
 public class DefaultLlmsContentServiceTests
 {
-    private Mock<HostViewModel> _mockHostDefinition;
-
-    private Mock<ApplicationViewModel> _mockApplicationDefinition;
-
     private Mock<IApplicationDefinitionService> _mockApplicationDefinitionRepository;
 
     private Mock<ILlmsContentRepository> _mockRepository;
@@ -29,13 +23,8 @@ public class DefaultLlmsContentServiceTests
     [SetUp]
     public void SetUp()
     {
-        _mockHostDefinition = new Mock<HostViewModel>();
-
-        _mockApplicationDefinition = new Mock<ApplicationViewModel>();
-        _mockApplicationDefinition.Setup(x => x.AvailableHosts).Returns([_mockHostDefinition.Object]);
-
         _mockApplicationDefinitionRepository = new Mock<IApplicationDefinitionService>();
-        _mockApplicationDefinitionRepository.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync(new List<ApplicationViewModel>());
+        _mockApplicationDefinitionRepository.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync([]);
 
         _mockRepository = new Mock<ILlmsContentRepository>();
 
@@ -63,8 +52,8 @@ public class DefaultLlmsContentServiceTests
         // Arrange
         var appId = "appId";
         var LlmsContent = GetSavedLlms();
-        var LlmsTxtEntity = new LlmsTxtEntity { Id = Guid.NewGuid(), AppId = appId, SpecificHost = "www.example.com", LlmsContent = LlmsContent };
-        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns(new List<LlmsTxtEntity> { LlmsTxtEntity });
+        var LlmsTxtEntity = new LlmsTxtEntity { AppId = appId, SpecificHost = "www.example.com", LlmsContent = LlmsContent };
+        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([LlmsTxtEntity]);
 
         // Act
         var result = _service.GetLlmsContent(appId, "www.example.com");
@@ -79,8 +68,8 @@ public class DefaultLlmsContentServiceTests
         // Arrange
         var appId = "appId";
         var LlmsContent = GetSavedLlms();
-        var LlmsTxtEntity = new LlmsTxtEntity { Id = Guid.NewGuid(), AppId = appId, SpecificHost = string.Empty, LlmsContent = LlmsContent };
-        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns(new List<LlmsTxtEntity> { LlmsTxtEntity });
+        var LlmsTxtEntity = new LlmsTxtEntity { AppId = appId, SpecificHost = string.Empty, LlmsContent = LlmsContent };
+        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([LlmsTxtEntity]);
 
         // Act
         var result = _service.GetLlmsContent(appId, null);
@@ -95,8 +84,8 @@ public class DefaultLlmsContentServiceTests
         // Arrange
         var appId = "appId";
         var LlmsContent = GetSavedLlms();
-        var LlmsTxtEntity = new LlmsTxtEntity { Id = Guid.NewGuid(), AppId = appId, SpecificHost = "www.example.com", LlmsContent = LlmsContent };
-        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns(new List<LlmsTxtEntity> { LlmsTxtEntity });
+        var LlmsTxtEntity = new LlmsTxtEntity { AppId = appId, SpecificHost = "www.example.com", LlmsContent = LlmsContent };
+        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([LlmsTxtEntity]);
 
         // Act
         var result = _service.GetLlmsContent(appId, "www.non-matching.com");
@@ -111,9 +100,9 @@ public class DefaultLlmsContentServiceTests
         // Arrange
         var appId = "appId";
         var LlmsContent = GetSavedLlms();
-        var hostDefinedEntity = new LlmsTxtEntity { Id = Guid.NewGuid(), AppId = appId, SpecificHost = "www.example.com", LlmsContent = "Defined Robots" };
-        var defaultEntity = new LlmsTxtEntity { Id = Guid.NewGuid(), AppId = appId, LlmsContent = "Default Robots" };
-        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns(new List<LlmsTxtEntity> { hostDefinedEntity, defaultEntity });
+        var hostDefinedEntity = new LlmsTxtEntity { AppId = appId, SpecificHost = "www.example.com", LlmsContent = "Defined Robots" };
+        var defaultEntity = new LlmsTxtEntity { AppId = appId, LlmsContent = "Default Robots" };
+        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([hostDefinedEntity, defaultEntity]);
 
         // Act
         var result = _service.GetLlmsContent(appId, "www.example.com");
@@ -128,9 +117,9 @@ public class DefaultLlmsContentServiceTests
         // Arrange
         var appId = "appId";
         var LlmsContent = GetSavedLlms();
-        var hostDefinedEntity = new LlmsTxtEntity { Id = Guid.NewGuid(), AppId = appId, SpecificHost = "www.example.com", LlmsContent = "Defined Robots" };
-        var defaultEntity = new LlmsTxtEntity { Id = Guid.NewGuid(), AppId = appId, LlmsContent = "Default Robots" };
-        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns(new List<LlmsTxtEntity> { hostDefinedEntity, defaultEntity });
+        var hostDefinedEntity = new LlmsTxtEntity { AppId = appId, SpecificHost = "www.example.com", LlmsContent = "Defined Robots" };
+        var defaultEntity = new LlmsTxtEntity { AppId = appId, LlmsContent = "Default Robots" };
+        _mockRepository.Setup(x => x.GetAllForSite(It.IsAny<string>())).Returns([hostDefinedEntity, defaultEntity]);
 
         // Act
         var result = _service.GetLlmsContent(appId, "www.non-matching.com");
@@ -149,6 +138,8 @@ public class DefaultLlmsContentServiceTests
             AppId = "appId",
             LlmsContent = GetSavedLlms()
         };
+
+        _mockApplicationDefinitionRepository.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationViewModel)null);
 
         // Assert
         Assert.Throws<ArgumentException>(() => _service.Save(model));
@@ -182,7 +173,7 @@ public class DefaultLlmsContentServiceTests
             LlmsContent = GetSavedLlms()
         };
 
-        _mockApplicationDefinitionRepository.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync(_mockApplicationDefinition.Object);
+        _mockApplicationDefinitionRepository.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync(new ApplicationViewModel { AppId = "appId" });
 
         // Act
         _service.Save(model);
@@ -239,7 +230,7 @@ public class DefaultLlmsContentServiceTests
     [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "appId1", "www.example.com", true)]
     [TestCase("00000000-0000-0000-0000-000000000000", "appId1", "www.example.com", true)]
     [TestCase("db107c5e-73ff-442f-93f3-bd99f56603f5", "appId1", "www.non-matching.com", false)]
-    public void DoesConflictExists_GivenTheRepositoryContainsAConflictingConfiguration_ThenTrueIsReturned(Guid id, string appId, string host, bool expectedValue)
+    public void DoesConflictExists_GivenTheRepositoryContainsAConflictingConfiguration_ThenTrueIsReturned(string id, string appId, string host, bool expectedValue)
     {
         // Arrange
         var savedRecords = new List<LlmsTxtEntity>
@@ -260,7 +251,7 @@ public class DefaultLlmsContentServiceTests
             }
         };
 
-        var model = new SaveLlmsModel { Id = id, AppId = appId, SpecificHost = host, LlmsContent = GetSavedLlms() };
+        var model = new SaveLlmsModel { Id = Guid.Parse(id), AppId = appId, SpecificHost = host, LlmsContent = GetSavedLlms() };
         _mockRepository.Setup(x => x.GetAll()).Returns(savedRecords);
 
         // Act
@@ -274,10 +265,10 @@ public class DefaultLlmsContentServiceTests
     public void GetDefault_WhenPassedAnInvalidSiteId_ThenThrowsArgumentException()
     {
         // Arrange
-        var siteId = string.Empty;
+        _mockApplicationDefinitionRepository.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync((ApplicationViewModel)null);
 
         // Assert
-        Assert.Throws<ArgumentException>(() => _service.GetDefault(siteId));
+        Assert.Throws<ArgumentException>(() => _service.GetDefault(string.Empty));
     }
 
     [Test]
@@ -297,9 +288,9 @@ public class DefaultLlmsContentServiceTests
     {
         // Arrange
         var appId = "appId";
-        var mockSiteDefinition = new ApplicationViewModel { AppId = appId };
+        var application = new ApplicationViewModel { AppId = appId };
 
-        _mockApplicationDefinitionRepository.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync(mockSiteDefinition);
+        _mockApplicationDefinitionRepository.Setup(x => x.GetApplicationByIdAsync(It.IsAny<string>())).ReturnsAsync(application);
 
         // Act
         var result = _service.GetDefault(appId);
@@ -321,7 +312,7 @@ public class DefaultLlmsContentServiceTests
             new() { AppId = "appId2" }
         };
 
-        _mockRepository.Setup(x => x.GetAll()).Returns(new List<LlmsTxtEntity>(0));
+        _mockRepository.Setup(x => x.GetAll()).Returns([]);
         _mockApplicationDefinitionRepository.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync(sites);
 
         // Act
@@ -336,16 +327,17 @@ public class DefaultLlmsContentServiceTests
     public void GetAll_WhenTheLlmsContentRepositoryHasRecords_ThenAnEntryIsReturnedForEachItem()
     {
         // Arrange
+        var defaultHosts = new List<HostViewModel> { new() { DisplayName = "Default", HostName = string.Empty } };
         var sites = new List<ApplicationViewModel>
         {
-            new() { AppId = "appId1" },
-            new() { AppId = "appId2" }
+            new() { AppId = "appId1", AvailableHosts = defaultHosts },
+            new() { AppId = "appId2", AvailableHosts = defaultHosts }
         };
 
         var robotsEntities = new List<LlmsTxtEntity>
         {
-            new() { Id = Guid.NewGuid(), AppId = sites[0].AppId },
-            new() { Id = Guid.NewGuid(), AppId = sites[1].AppId }
+            new() { AppId = sites[0].AppId },
+            new() { AppId = sites[1].AppId }
         };
 
         _mockRepository.Setup(x => x.GetAll()).Returns(robotsEntities);
@@ -371,14 +363,14 @@ public class DefaultLlmsContentServiceTests
         // Arrange
         var sites = new List<ApplicationViewModel>
         {
-            new() { AppId = "appId1", AppName = "Site 1", AvailableHosts = new List<HostViewModel> { new() { HostName = "www.exampleone.com" } } },
-            new() { AppId = "appId2", AppName = "Site 2", AvailableHosts = new List<HostViewModel> { new() { HostName = "www.exampletwo.com" } } },
+            new() { AppId = "appId1", AppName = "Site 1", AvailableHosts = [new() { DisplayName = "www.exampleone.com", HostName = "www.exampleone.com" }] },
+            new() { AppId = "appId2", AppName = "Site 2", AvailableHosts = [new() { DisplayName = "www.exampletwo.com", HostName = "www.exampletwo.com" }] },
         };
 
         var robotsEntities = new List<LlmsTxtEntity>
         {
-            new() { Id = Guid.NewGuid(), AppId = sites[0].AppId, SpecificHost = "www.exampleone.com" },
-            new() { Id = Guid.NewGuid(), AppId = sites[1].AppId, SpecificHost = "www.exampletwo.com" }
+            new() { AppId = sites[0].AppId, SpecificHost = "www.exampleone.com" },
+            new() { AppId = sites[1].AppId, SpecificHost = "www.exampletwo.com" }
         };
 
         _mockRepository.Setup(x => x.GetAll()).Returns(robotsEntities);
@@ -394,18 +386,14 @@ public class DefaultLlmsContentServiceTests
         Assert.That(result[0].AppId, Is.EqualTo(sites[0].AppId));
         Assert.That(result[0].AppName, Is.EqualTo(sites[0].AppName));
         Assert.That(result[0].SpecificHost, Is.EqualTo("www.exampleone.com"));
-        Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
-        Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[0].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampleone.com"));
-        Assert.That(result[0].AvailableHosts[1].HostName, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("www.exampleone.com"));
+        Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo("www.exampleone.com"));
 
         Assert.That(result[1].AppId, Is.EqualTo(sites[1].AppId));
         Assert.That(result[1].AppName, Is.EqualTo(sites[1].AppName));
         Assert.That(result[1].SpecificHost, Is.EqualTo("www.exampletwo.com"));
-        Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
-        Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampletwo.com"));
-        Assert.That(result[1].AvailableHosts[1].HostName, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("www.exampletwo.com"));
+        Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo("www.exampletwo.com"));
     }
 
     [Test]
@@ -424,8 +412,9 @@ public class DefaultLlmsContentServiceTests
     {
         // Arrange
         var id = Guid.NewGuid();
-        var LlmsTxtEntity = new LlmsTxtEntity { Id = id, AppId = "nonMatchingAppId" };
+        var LlmsTxtEntity = new LlmsTxtEntity { AppId = "nonMatchingAppId" };
         _mockRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(LlmsTxtEntity);
+        _mockApplicationDefinitionRepository.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync([]);
 
         // Assert
         Assert.Throws<RobotsEntityNotFoundException>(() => _service.Get(id));
@@ -437,17 +426,19 @@ public class DefaultLlmsContentServiceTests
         // Arrange
         var id = Guid.NewGuid();
         var appId = "appId";
-        var LlmsTxtEntity = new LlmsTxtEntity { Id = id, AppId = appId };
-        _mockRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(LlmsTxtEntity);
-
-        _mockApplicationDefinition.Setup(x => x.AppId).Returns(appId);
+        var llmsTxtEntity = new LlmsTxtEntity { AppId = appId };
+        _mockRepository.Setup(x => x.Get(It.IsAny<Guid>())).Returns(llmsTxtEntity);
+        _mockApplicationDefinitionRepository.Setup(x => x.GetAllApplicationsAsync()).ReturnsAsync(
+        [
+            new() { AppId = appId }
+        ]);
 
         // Act
         var result = _service.Get(id);
 
         // Assert
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.Id, Is.EqualTo(id));
+        Assert.That(result.Id, Is.EqualTo(llmsTxtEntity.Id.ExternalId));
     }
 
     private static string GetSavedLlms()

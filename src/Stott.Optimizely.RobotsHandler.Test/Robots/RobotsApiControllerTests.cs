@@ -42,7 +42,7 @@ public sealed class RobotsApiControllerTests
     }
 
     [Test]
-    [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.InvalidGuidStrings))]
+    [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.EmptyStrings))]
     public void Details_ThrowsArgumentExceptionWhenPresentedWithAnInvalidSiteId(string siteId)
     {
         // Assert
@@ -72,7 +72,7 @@ public sealed class RobotsApiControllerTests
         _controller.Details(Guid.Empty.ToString(), siteId);
 
         // Assert
-        _mockService.Verify(x => x.GetDefault(It.IsAny<Guid>()), Times.Once);
+        _mockService.Verify(x => x.GetDefault(It.IsAny<string>()), Times.Once);
     }
 
     [Test]

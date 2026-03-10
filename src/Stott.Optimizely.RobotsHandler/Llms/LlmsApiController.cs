@@ -11,27 +11,17 @@ namespace Stott.Optimizely.RobotsHandler.Llms;
 
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
-public sealed class LlmsApiController : BaseApiController
+public sealed class LlmsApiController(
+    ILlmsContentService service,
+    ILogger<LlmsApiController> logger) : BaseApiController
 {
-    private readonly ILlmsContentService _service;
-
-    private readonly ILogger<LlmsApiController> _logger;
-
-    public LlmsApiController(
-        ILlmsContentService service, 
-        ILogger<LlmsApiController> logger)
-    {
-        _service = service;
-        _logger = logger;
-    }
-
     [HttpGet]
     [Route("/stott.robotshandler/api/llms/list/")]
     public IActionResult ApiList()
     {
         var model = new LlmsListViewModel
         {
-            List = _service.GetAll()
+            List = service.GetAll()
         };
 
         return CreateSafeJsonResult(model);
@@ -51,7 +41,7 @@ public sealed class LlmsApiController : BaseApiController
             throw new ArgumentException("AppId has not been provided.", nameof(appId));
         }
 
-        var model = Guid.Empty.Equals(llmsId) ? _service.GetDefault(appId) : _service.Get(llmsId);
+        var model = Guid.Empty.Equals(llmsId) ? service.GetDefault(appId) : service.Get(llmsId);
 
         return CreateSafeJsonResult(model);
     }
@@ -62,7 +52,7 @@ public sealed class LlmsApiController : BaseApiController
     {
         try
         {
-            if (_service.DoesConflictExists(formSubmitModel))
+            if (service.DoesConflictExists(formSubmitModel))
             {
                 return new ContentResult
                 {
@@ -71,13 +61,13 @@ public sealed class LlmsApiController : BaseApiController
                     ContentType = "text/plain"
                 };
             }
-            _service.Save(formSubmitModel);
+            service.Save(formSubmitModel);
 
             return new OkResult();
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to save llms.txt content for {siteName}", formSubmitModel.AppName);
+            logger.LogError(exception, "Failed to save llms.txt content for {siteName}", formSubmitModel.AppName);
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,
@@ -103,13 +93,13 @@ public sealed class LlmsApiController : BaseApiController
                 };
             }
 
-            _service.Delete(id);
+            service.Delete(id);
 
             return new OkResult();
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to delete this llms configuration.");
+            logger.LogError(exception, "Failed to delete this llms configuration.");
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,

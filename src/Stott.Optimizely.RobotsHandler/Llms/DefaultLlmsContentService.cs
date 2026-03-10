@@ -23,7 +23,7 @@ public class DefaultLlmsContentService(
 
     public bool DoesConflictExists(SaveLlmsModel model)
     {
-        var existingConfigurations = llmsContentRepository.GetAll() ?? new List<LlmsTxtEntity>(0);
+        var existingConfigurations = llmsContentRepository.GetAll() ?? [];
         return existingConfigurations.Any(x => IsConflict(model, x));
     }
 
@@ -60,7 +60,7 @@ public class DefaultLlmsContentService(
             }
         }
 
-        return models.OrderBy(x => x.AppName).ThenBy(x => x.SpecificHost).ToList();
+        return [.. models.OrderBy(x => x.AppName).ThenBy(x => x.SpecificHost)];
     }
 
     public ApplicationLlmsViewModel GetDefault(string? appId)

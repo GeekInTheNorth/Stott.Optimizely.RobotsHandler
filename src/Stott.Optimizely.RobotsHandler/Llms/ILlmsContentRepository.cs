@@ -11,7 +11,7 @@ public interface ILlmsContentRepository
 
     List<LlmsTxtEntity> GetAllForSite(string? appId);
 
-    LlmsTxtEntity Get(Guid id);
+    LlmsTxtEntity? Get(Guid id);
 
     void Save(SaveLlmsModel model);
 
