@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 
+using EPiServer.Applications;
 using EPiServer.Web;
 
 using Microsoft.AspNetCore.Authorization;
@@ -21,8 +22,8 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
 
     public OpalLlmsApiController(
         ILlmsContentService service,
-        ISiteDefinitionResolver siteDefinitionResolver,
-        ILogger<OpalLlmsApiController> logger) : base(siteDefinitionResolver)
+        IApplicationResolver applicationResolver,
+        ILogger<OpalLlmsApiController> logger) : base(applicationResolver)
     {
         _service = service;
         _logger = logger;
@@ -100,8 +101,8 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
                 var saveModel = new SaveLlmsModel
                 {
                     Id = specificRobotsConfig.Id,
-                    SiteId = specificRobotsConfig.SiteId,
-                    SiteName = specificRobotsConfig.SiteName,
+                    AppId = specificRobotsConfig.AppId,
+                    AppName = specificRobotsConfig.AppName,
                     SpecificHost = specificRobotsConfig.SpecificHost,
                     LlmsContent = model.Parameters?.LlmsTxtContent ?? specificRobotsConfig.LlmsContent
                 };
@@ -120,14 +121,14 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
                 var specificConfiguration =
                     configurations.FirstOrDefault(x => string.Equals(x.SpecificHost, hostName, StringComparison.OrdinalIgnoreCase)) ??
                     configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase))) ??
-                    GetEmptySiteModel<SiteLlmsViewModel>(hostName);
+                    GetEmptySiteModel<ApplicationLlmsViewModel>(hostName);
 
                 if (specificConfiguration is null)
                 {
                     return Json(new
                     {
                         Success = false,
-                        Message = $"Could not locate a site that matched the host name of {model.Parameters.HostName}."
+                        Message = $"Could not locate a site that matched the host name of {model.Parameters?.HostName}."
                     });
                 }
 
@@ -135,8 +136,8 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
                 var saveModel = new SaveLlmsModel
                 {
                     Id = isSpecificHost ? specificConfiguration.Id : Guid.Empty,
-                    SiteId = specificConfiguration.SiteId,
-                    SiteName = specificConfiguration.SiteName,
+                    AppId = specificConfiguration.AppId,
+                    AppName = specificConfiguration.AppName,
                     SpecificHost = hostName,
                     LlmsContent = model.Parameters?.LlmsTxtContent
                 };

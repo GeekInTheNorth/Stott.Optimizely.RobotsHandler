@@ -18,7 +18,7 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
         store = DynamicDataStoreFactory.Instance.CreateStore(typeof(RobotsEntity));
     }
 
-    public RobotsEntity Get(Guid id)
+    public RobotsEntity? Get(Guid id)
     {
         if (Guid.Empty.Equals(id))
         {
@@ -33,9 +33,14 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
         return store.Find<RobotsEntity>(new Dictionary<string, object>()).ToList();
     }
 
-    public List<RobotsEntity> GetAllForSite(Guid siteId)
+    public List<RobotsEntity> GetAllForSite(string? appId)
     {
-        return store.Find<RobotsEntity>(new Dictionary<string, object> { { nameof(RobotsEntity.SiteId), siteId } }).ToList();
+        if (string.IsNullOrWhiteSpace(appId))
+        {
+            return [];
+        }
+
+        return store.Find<RobotsEntity>(new Dictionary<string, object> { { nameof(RobotsEntity.AppId), appId } }).ToList();
     }
 
     public void Save(SaveRobotsModel model)
@@ -44,7 +49,7 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
         recordToSave ??= new RobotsEntity
         {
             Id = Identity.NewIdentity(Guid.NewGuid()),
-            SiteId = model.SiteId,
+            AppId = model.AppId,
         };
 
         recordToSave.SpecificHost = model.SpecificHost;

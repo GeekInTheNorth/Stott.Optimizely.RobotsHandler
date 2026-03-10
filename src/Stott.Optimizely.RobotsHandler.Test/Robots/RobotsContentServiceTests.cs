@@ -146,7 +146,7 @@ public sealed class RobotsContentServiceTests
         var model = new SaveRobotsModel
         {
             Id = Guid.NewGuid(),
-            SiteId = Guid.Empty,
+            AppId = Guid.Empty,
             RobotsContent = GetSavedRobots()
         };
 
@@ -161,7 +161,7 @@ public sealed class RobotsContentServiceTests
         var model = new SaveRobotsModel
         {
             Id = Guid.NewGuid(),
-            SiteId = Guid.NewGuid(),
+            AppId = Guid.NewGuid(),
             RobotsContent = GetSavedRobots()
         };
 
@@ -178,7 +178,7 @@ public sealed class RobotsContentServiceTests
         var model = new SaveRobotsModel
         {
             Id = Guid.NewGuid(),
-            SiteId = Guid.NewGuid(),
+            AppId = Guid.NewGuid(),
             RobotsContent = GetSavedRobots()
         };
 
@@ -260,7 +260,7 @@ public sealed class RobotsContentServiceTests
             }
         };
 
-        var model = new SaveRobotsModel { Id = id, SiteId = siteId, SpecificHost = host, RobotsContent = GetSavedRobots() };
+        var model = new SaveRobotsModel { Id = id, AppId = siteId, SpecificHost = host, RobotsContent = GetSavedRobots() };
         _mockRobotsContentRepository.Setup(x => x.GetAll()).Returns(savedRecords);
 
         // Act
@@ -307,7 +307,7 @@ public sealed class RobotsContentServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Id, Is.EqualTo(Guid.Empty));
-        Assert.That(result.SiteId, Is.EqualTo(siteId));
+        Assert.That(result.AppId, Is.EqualTo(siteId));
         Assert.That(result.SpecificHost, Is.Null);
     }
 
@@ -330,10 +330,10 @@ public sealed class RobotsContentServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AppId, Is.EqualTo(sites[0].Id));
         Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].SiteId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[1].AppId, Is.EqualTo(sites[1].Id));
         Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
     }
@@ -363,10 +363,10 @@ public sealed class RobotsContentServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AppId, Is.EqualTo(sites[0].Id));
         Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].SiteId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[1].AppId, Is.EqualTo(sites[1].Id));
         Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
     }
@@ -397,8 +397,8 @@ public sealed class RobotsContentServiceTests
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(4));
 
-        Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
-        Assert.That(result[0].SiteName, Is.EqualTo(sites[0].Name));
+        Assert.That(result[0].AppId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AppName, Is.EqualTo(sites[0].Name));
         Assert.That(result[0].SpecificHost, Is.Null);
         Assert.That(result[0].CanDelete, Is.False);
         Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
@@ -406,8 +406,8 @@ public sealed class RobotsContentServiceTests
         Assert.That(result[0].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampleone.com"));
         Assert.That(result[0].AvailableHosts[1].HostName, Is.EqualTo("www.exampleone.com"));
 
-        Assert.That(result[1].SiteId, Is.EqualTo(sites[0].Id));
-        Assert.That(result[1].SiteName, Is.EqualTo(sites[0].Name));
+        Assert.That(result[1].AppId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[1].AppName, Is.EqualTo(sites[0].Name));
         Assert.That(result[1].SpecificHost, Is.EqualTo("www.exampleone.com"));
         Assert.That(result[1].CanDelete, Is.True);
         Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
@@ -415,8 +415,8 @@ public sealed class RobotsContentServiceTests
         Assert.That(result[1].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampleone.com"));
         Assert.That(result[1].AvailableHosts[1].HostName, Is.EqualTo("www.exampleone.com"));
 
-        Assert.That(result[2].SiteId, Is.EqualTo(sites[1].Id));
-        Assert.That(result[2].SiteName, Is.EqualTo(sites[1].Name));
+        Assert.That(result[2].AppId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[2].AppName, Is.EqualTo(sites[1].Name));
         Assert.That(result[2].SpecificHost, Is.Null);
         Assert.That(result[2].CanDelete, Is.False);
         Assert.That(result[2].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
@@ -424,8 +424,8 @@ public sealed class RobotsContentServiceTests
         Assert.That(result[2].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampletwo.com"));
         Assert.That(result[2].AvailableHosts[1].HostName, Is.EqualTo("www.exampletwo.com"));
 
-        Assert.That(result[3].SiteId, Is.EqualTo(sites[1].Id));
-        Assert.That(result[3].SiteName, Is.EqualTo(sites[1].Name));
+        Assert.That(result[3].AppId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[3].AppName, Is.EqualTo(sites[1].Name));
         Assert.That(result[3].SpecificHost, Is.EqualTo("www.exampletwo.com"));
         Assert.That(result[3].CanDelete, Is.True);
         Assert.That(result[3].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));

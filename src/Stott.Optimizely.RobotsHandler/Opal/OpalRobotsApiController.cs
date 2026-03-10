@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-using EPiServer.Web;
+using EPiServer.Applications;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,8 +21,8 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
 
     public OpalRobotsApiController(
         IRobotsContentService service,
-        ISiteDefinitionResolver siteDefinitionResolver,
-        ILogger<OpalRobotsApiController> logger) : base(siteDefinitionResolver)
+        IApplicationResolver applicationResolver,
+        ILogger<OpalRobotsApiController> logger) : base(applicationResolver)
     {
         _service = service;
         _logger = logger;
@@ -100,8 +100,8 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
                 var saveModel = new SaveRobotsModel
                 {
                     Id = specificRobotsConfig.Id,
-                    SiteId = specificRobotsConfig.SiteId,
-                    SiteName = specificRobotsConfig.SiteName,
+                    AppId = specificRobotsConfig.AppId,
+                    AppName = specificRobotsConfig.AppName,
                     SpecificHost = specificRobotsConfig.SpecificHost,
                     RobotsContent = model.Parameters?.RobotsTxtContent ?? specificRobotsConfig.RobotsContent
                 };
@@ -127,7 +127,7 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
                     return Json(new
                     {
                         Success = false,
-                        Message = $"Could not locate a site that matched the host name of {model.Parameters.HostName}."
+                        Message = $"Could not locate a site that matched the host name of {model.Parameters?.HostName}."
                     });
                 }
 
@@ -136,8 +136,8 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
                 var saveModel = new SaveRobotsModel
                 {
                     Id = isSpecificHost ? specificConfiguration.Id : Guid.Empty,
-                    SiteId = specificConfiguration.SiteId,
-                    SiteName = specificConfiguration.SiteName,
+                    AppId = specificConfiguration.AppId,
+                    AppName = specificConfiguration.AppName,
                     SpecificHost = hostName,
                     RobotsContent = model.Parameters?.RobotsTxtContent
                 };

@@ -302,8 +302,8 @@ public sealed class OpalRobotsApiControllerTests
         _mockService.Verify(s => s.Save(It.Is<SaveRobotsModel>(m => 
             m.Id == robotsId && 
             m.RobotsContent == newContent &&
-            m.SiteName == existingConfig.SiteName &&
-            m.SiteId == existingConfig.SiteId &&
+            m.AppName == existingConfig.AppName &&
+            m.AppId == existingConfig.AppId &&
             m.SpecificHost == existingConfig.SpecificHost)), Times.Once);
     }
 
@@ -527,7 +527,7 @@ public sealed class OpalRobotsApiControllerTests
             new SiteRobotsViewModel
             {
                 Id = Guid.NewGuid(),
-                SiteName = "Test One",
+                AppName = "Test One",
                 SpecificHost = "specific.test",
                 AvailableHosts = new List<SiteHostViewModel>
                 {
@@ -540,7 +540,7 @@ public sealed class OpalRobotsApiControllerTests
             new SiteRobotsViewModel
             {
                 Id = Guid.NewGuid(),
-                SiteName = "Test Two",
+                AppName = "Test Two",
                 SpecificHost = null,
                 AvailableHosts = new List<SiteHostViewModel>
                 {

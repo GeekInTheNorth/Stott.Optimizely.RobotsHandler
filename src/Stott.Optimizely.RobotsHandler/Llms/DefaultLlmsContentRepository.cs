@@ -38,9 +38,14 @@ public sealed class DefaultLlmsContentRepository : ILlmsContentRepository
         return store.Find<LlmsTxtEntity>(new Dictionary<string, object>()).ToList();
     }
 
-    public List<LlmsTxtEntity> GetAllForSite(Guid siteId)
+    public List<LlmsTxtEntity> GetAllForSite(string? appId)
     {
-        return store.Find<LlmsTxtEntity>(new Dictionary<string, object> { { nameof(LlmsTxtEntity.SiteId), siteId } }).ToList();
+        if (string.IsNullOrWhiteSpace(appId))
+        {
+            return [];
+        }
+
+        return store.Find<LlmsTxtEntity>(new Dictionary<string, object> { { nameof(LlmsTxtEntity.AppId), appId } }).ToList();
     }
 
     public void Save(SaveLlmsModel model)
@@ -49,7 +54,7 @@ public sealed class DefaultLlmsContentRepository : ILlmsContentRepository
         recordToSave ??= new LlmsTxtEntity
         {
             Id = Identity.NewIdentity(Guid.NewGuid()),
-            SiteId = model.SiteId,
+            AppId = model.AppId,
         };
 
         recordToSave.SpecificHost = model.SpecificHost;

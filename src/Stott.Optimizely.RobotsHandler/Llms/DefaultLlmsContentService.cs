@@ -2,27 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using EPiServer.Web;
-
-using Stott.Optimizely.RobotsHandler.Extensions;
+using Stott.Optimizely.RobotsHandler.Applications;
 using Stott.Optimizely.RobotsHandler.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Llms;
 
-public class DefaultLlmsContentService : ILlmsContentService
+public class DefaultLlmsContentService(
+    IApplicationDefinitionService appService, 
+    ILlmsContentRepository llmsContentRepository) : ILlmsContentService
 {
-    private readonly ISiteDefinitionRepository siteDefinitionRepository;
-
-    private readonly ILlmsContentRepository llmsContentRepository;
-
-    public DefaultLlmsContentService(
-        ISiteDefinitionRepository siteDefinitionRepository,
-        ILlmsContentRepository llmsContentRepository)
-    {
-        this.siteDefinitionRepository = siteDefinitionRepository;
-        this.llmsContentRepository = llmsContentRepository;
-    }
-
     public void Delete(Guid id)
     {
         if (Guid.Empty.Equals(id))
@@ -39,7 +27,7 @@ public class DefaultLlmsContentService : ILlmsContentService
         return existingConfigurations.Any(x => IsConflict(model, x));
     }
 
-    public SiteLlmsViewModel Get(Guid id)
+    public ApplicationLlmsViewModel Get(Guid id)
     {
         var robotRecord = llmsContentRepository.Get(id);
         if (robotRecord == null)
@@ -47,53 +35,53 @@ public class DefaultLlmsContentService : ILlmsContentService
             throw new RobotsEntityNotFoundException(id);
         }
 
-        var sites = siteDefinitionRepository.List();
-        var site = sites.FirstOrDefault(x => x.Id.Equals(robotRecord.SiteId));
-        if (site == null)
+        var applications = appService.GetAllApplicationsAsync().GetAwaiter().GetResult();
+        var application = applications.FirstOrDefault(x => string.Equals(x.AppId, robotRecord.AppId, StringComparison.OrdinalIgnoreCase));
+        if (application == null)
         {
-            throw new RobotsEntityNotFoundException($"Llms entity with id '{id}' not match any site definitions.");
+            throw new RobotsEntityNotFoundException($"Llms entity with id '{id}' not match any application definitions.");
         }
 
-        return ToModel(robotRecord, site);
+        return ToModel(robotRecord, application);
     }
 
-    public IList<SiteLlmsViewModel> GetAll()
+    public IList<ApplicationLlmsViewModel> GetAll()
     {
         var allRecords = llmsContentRepository.GetAll();
-        var sites = siteDefinitionRepository.List();
-        var models = new List<SiteLlmsViewModel>();
+        var applications = appService.GetAllApplicationsAsync().GetAwaiter().GetResult();
+        var models = new List<ApplicationLlmsViewModel>();
 
         foreach (var robotRecord in allRecords)
         {
-            var site = sites.FirstOrDefault(x => x.Id.Equals(robotRecord.SiteId));
-            if (site != null)
+            var application = applications.FirstOrDefault(x => string.Equals(x.AppId, robotRecord.AppId));
+            if (application != null)
             {
-                models.Add(ToModel(robotRecord, site));
+                models.Add(ToModel(robotRecord, application));
             }
         }
 
-        return models.OrderBy(x => x.SiteName).ThenBy(x => x.SpecificHost).ToList();
+        return models.OrderBy(x => x.AppName).ThenBy(x => x.SpecificHost).ToList();
     }
 
-    public SiteLlmsViewModel GetDefault(Guid siteId)
+    public ApplicationLlmsViewModel GetDefault(string? appId)
     {
-        var site = siteDefinitionRepository.Get(siteId);
-        if (site == null)
+        var application = appService.GetApplicationByIdAsync(appId).GetAwaiter().GetResult();
+        if (application == null)
         {
-            throw new ArgumentException($"{nameof(siteId)} does not correlate to a known site.", nameof(siteId));
+            throw new ArgumentException($"{nameof(appId)} does not correlate to a known application.", nameof(appId));
         }
 
-        return ToModel(site);
+        return ToModel(application);
     }
 
-    public string GetDefaultLlmsContent()
+    public string? GetDefaultLlmsContent()
     {
         return string.Empty;
     }
 
-    public string GetLlmsContent(Guid siteId, string host)
+    public string? GetLlmsContent(string? appId, string? host)
     {
-        var llmsEntries = llmsContentRepository.GetAllForSite(siteId) ?? new List<LlmsTxtEntity>(0);
+        var llmsEntries = llmsContentRepository.GetAllForSite(appId) ?? [];
         var matchingLlms = llmsEntries.FirstOrDefault(x => string.Equals(x.SpecificHost, host, StringComparison.OrdinalIgnoreCase)) ??
                            llmsEntries.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.SpecificHost));
 
@@ -102,44 +90,44 @@ public class DefaultLlmsContentService : ILlmsContentService
 
     public void Save(SaveLlmsModel model)
     {
-        if (Guid.Empty.Equals(model.SiteId))
+        if (Guid.Empty.Equals(model.AppId))
         {
-            throw new ArgumentException($"{nameof(model)}.{nameof(model.SiteId)} must not be null or empty.", nameof(model));
+            throw new ArgumentException($"{nameof(model)}.{nameof(model.AppId)} must not be null or empty.", nameof(model));
         }
 
-        var existingSite = siteDefinitionRepository.Get(model.SiteId);
-        if (existingSite == null)
+        var application = appService.GetApplicationByIdAsync(model.AppId).GetAwaiter().GetResult();
+        if (application == null)
         {
-            throw new ArgumentException($"{nameof(model)}.{nameof(model.SiteId)} does not correlate to a known site.", nameof(model));
+            throw new ArgumentException($"{nameof(model)}.{nameof(model.AppId)} does not correlate to a known site.", nameof(model));
         }
 
         llmsContentRepository.Save(model);
     }
 
-    private static SiteLlmsViewModel ToModel(LlmsTxtEntity entity, SiteDefinition siteDefinition)
+    private static ApplicationLlmsViewModel ToModel(LlmsTxtEntity entity, ApplicationViewModel application)
     {
-        return new SiteLlmsViewModel
+        return new ApplicationLlmsViewModel
         {
             Id = entity.Id.ExternalId,
-            SiteId = entity.SiteId,
+            AppId = entity.AppId,
             IsForWholeSite = entity.IsForWholeSite || string.IsNullOrWhiteSpace(entity.SpecificHost),
             SpecificHost = entity.SpecificHost,
             LlmsContent = entity.LlmsContent,
-            SiteName = siteDefinition.Name,
-            AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList()
+            AppName = application.AppName,
+            AvailableHosts = application.AvailableHosts
         };
     }
 
-    private SiteLlmsViewModel ToModel(SiteDefinition siteDefinition)
+    private ApplicationLlmsViewModel ToModel(ApplicationViewModel application)
     {
-        return new SiteLlmsViewModel
+        return new ApplicationLlmsViewModel
         {
             Id = Guid.Empty,
-            SiteId = siteDefinition.Id,
+            AppId = application.AppId,
             IsForWholeSite = true,
             LlmsContent = GetDefaultLlmsContent(),
-            SiteName = siteDefinition.Name,
-            AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList()
+            AppName = application.AppName,
+            AvailableHosts = application.AvailableHosts
         };
     }
 
@@ -148,7 +136,7 @@ public class DefaultLlmsContentService : ILlmsContentService
         var modelHost = model.SpecificHost ?? string.Empty;
         var entityHost = entity.SpecificHost ?? string.Empty;
 
-        return Equals(model.SiteId, entity.SiteId) && !Equals(model.Id, entity.Id.ExternalId) &&
+        return Equals(model.AppId, entity.AppId) && !Equals(model.Id, entity.Id.ExternalId) &&
                string.Equals(modelHost, entityHost, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -2,25 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using EPiServer.Web;
+using EPiServer.Applications;
 
+using Stott.Optimizely.RobotsHandler.Applications;
 using Stott.Optimizely.RobotsHandler.Common;
-using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
-public abstract class OpalBaseApiController : BaseApiController
+public abstract class OpalBaseApiController(IApplicationResolver applicationResolver) : BaseApiController
 {
-    private readonly ISiteDefinitionResolver _siteDefinitionResolver;
-
-    protected OpalBaseApiController(ISiteDefinitionResolver siteDefinitionResolver)
-    {
-        _siteDefinitionResolver = siteDefinitionResolver;
-    }
-
-    protected static IEnumerable<OpalSiteContentModel> ConvertToModels<TContent>(IList<TContent> siteModels, Func<TContent, string> contentSelector)
-        where TContent : ISiteContentViewModel
+    protected static IEnumerable<OpalSiteContentModel> ConvertToModels<TContent>(IList<TContent> siteModels, Func<TContent, string?> contentSelector)
+        where TContent : IApplicationContentViewModel
     {
         if (siteModels is null)
         {
@@ -37,14 +30,14 @@ public abstract class OpalBaseApiController : BaseApiController
                 {
                     Id = siteModel.Id,
                     SpecificHost = siteModel.SpecificHost,
-                    SiteName = siteModel.SiteName,
+                    SiteName = siteModel.AppName,
                     Content = contentSelector(siteModel)
                 };
 
                 continue;
             }
 
-            var availableHosts = siteModel.AvailableHosts.Where(x => !string.IsNullOrWhiteSpace(x.HostName)).Select(x => x.HostName).ToList();
+            var availableHosts = siteModel.AvailableHosts?.Where(x => !string.IsNullOrWhiteSpace(x.HostName)).Select(x => x.HostName!).ToList() ?? [];
             foreach (var availableHost in availableHosts)
             {
                 if (!specifiedHosts.Any(x => string.Equals(x, availableHost, StringComparison.OrdinalIgnoreCase)))
@@ -53,7 +46,7 @@ public abstract class OpalBaseApiController : BaseApiController
                     {
                         Id = siteModel.Id,
                         SpecificHost = availableHost,
-                        SiteName = siteModel.SiteName,
+                        SiteName = siteModel.AppName,
                         Content = contentSelector(siteModel)
                     };
                 }
@@ -61,46 +54,61 @@ public abstract class OpalBaseApiController : BaseApiController
         }
     }
 
-    protected static OpalSiteContentModel ConvertToModel<TContent>(TContent viewModel, string specificHost, Func<TContent, string> contentSelector)
-        where TContent : ISiteContentViewModel
+    protected static OpalSiteContentModel ConvertToModel<TContent>(TContent viewModel, string specificHost, Func<TContent, string?> contentSelector)
+        where TContent : IApplicationContentViewModel
     {
         return new OpalSiteContentModel
         {
             Id = viewModel.Id,
             SpecificHost = specificHost,
-            SiteName = viewModel.SiteName,
+            SiteName = viewModel.AppName,
             Content = contentSelector(viewModel)
         };
     }
 
-    protected TModel GetEmptySiteModel<TModel>(string hostName)
-        where TModel : ISiteContentViewModel
+    protected TModel? GetEmptySiteModel<TModel>(string hostName)
+        where TModel : IApplicationContentViewModel
     {
-        var siteDefinition = _siteDefinitionResolver.GetByHostname(hostName, false, out var matchedHost);
-        if (siteDefinition is null)
+        var applicationDefinition = applicationResolver.GetByHostname(hostName, false);
+        if (applicationDefinition?.Application is null)
         {
             return default;
         }
 
         var model = Activator.CreateInstance<TModel>();
         model.Id = Guid.Empty;
-        model.SiteId = siteDefinition.Id;
+        model.AppId = applicationDefinition.Application?.Name;
         model.IsForWholeSite = false;
         model.SpecificHost = hostName;
-        model.SiteName = siteDefinition.Name;
-        model.AvailableHosts = siteDefinition.Hosts.ToHostSummaries().ToList();
+        model.AppName = applicationDefinition.Application?.DisplayName;
+        model.AvailableHosts = GetHostViewModels(applicationDefinition.Application).ToList();
 
         return model;
     }
 
     private static IList<string> GetSpecificHosts<TContent>(IList<TContent> models)
-        where TContent : ISiteContentViewModel
+        where TContent : IApplicationContentViewModel
     {
         if (models is null)
         {
-            return new List<string>();
+            return [];
         }
 
-        return models.Where(x => !string.IsNullOrWhiteSpace(x.SpecificHost)).Select(x => x.SpecificHost).ToList();
+        return models.Where(x => !string.IsNullOrWhiteSpace(x.SpecificHost)).Select(x => x.SpecificHost!).ToList();
+    }
+
+    private static IEnumerable<HostViewModel> GetHostViewModels(Application? application)
+    {
+        if (application is Website website)
+        {
+            return ApplicationMapper.CreateHostSummaries(website.Hosts);
+        }
+
+        if (application is RemoteWebsite remoteWebsite)
+        {
+            return ApplicationMapper.CreateHostSummaries(remoteWebsite.Hosts);
+        }
+
+        return Enumerable.Empty<HostViewModel>();
     }
 }

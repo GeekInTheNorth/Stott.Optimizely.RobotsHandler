@@ -146,7 +146,7 @@ public class DefaultLlmsContentServiceTests
         var model = new SaveLlmsModel
         {
             Id = Guid.NewGuid(),
-            SiteId = Guid.Empty,
+            AppId = Guid.Empty,
             LlmsContent = GetSavedLlms()
         };
 
@@ -161,7 +161,7 @@ public class DefaultLlmsContentServiceTests
         var model = new SaveLlmsModel
         {
             Id = Guid.NewGuid(),
-            SiteId = Guid.NewGuid(),
+            AppId = Guid.NewGuid(),
             LlmsContent = GetSavedLlms()
         };
 
@@ -178,7 +178,7 @@ public class DefaultLlmsContentServiceTests
         var model = new SaveLlmsModel
         {
             Id = Guid.NewGuid(),
-            SiteId = Guid.NewGuid(),
+            AppId = Guid.NewGuid(),
             LlmsContent = GetSavedLlms()
         };
 
@@ -260,7 +260,7 @@ public class DefaultLlmsContentServiceTests
             }
         };
 
-        var model = new SaveLlmsModel { Id = id, SiteId = siteId, SpecificHost = host, LlmsContent = GetSavedLlms() };
+        var model = new SaveLlmsModel { Id = id, AppId = siteId, SpecificHost = host, LlmsContent = GetSavedLlms() };
         _mockRepository.Setup(x => x.GetAll()).Returns(savedRecords);
 
         // Act
@@ -307,7 +307,7 @@ public class DefaultLlmsContentServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Id, Is.EqualTo(Guid.Empty));
-        Assert.That(result.SiteId, Is.EqualTo(siteId));
+        Assert.That(result.AppId, Is.EqualTo(siteId));
         Assert.That(result.SpecificHost, Is.Null);
     }
 
@@ -357,10 +357,10 @@ public class DefaultLlmsContentServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2));
-        Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AppId, Is.EqualTo(sites[0].Id));
         Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
-        Assert.That(result[1].SiteId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[1].AppId, Is.EqualTo(sites[1].Id));
         Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
     }
@@ -391,16 +391,16 @@ public class DefaultLlmsContentServiceTests
         Assert.That(result, Is.Not.Null);
         Assert.That(result, Has.Count.EqualTo(2));
 
-        Assert.That(result[0].SiteId, Is.EqualTo(sites[0].Id));
-        Assert.That(result[0].SiteName, Is.EqualTo(sites[0].Name));
+        Assert.That(result[0].AppId, Is.EqualTo(sites[0].Id));
+        Assert.That(result[0].AppName, Is.EqualTo(sites[0].Name));
         Assert.That(result[0].SpecificHost, Is.EqualTo("www.exampleone.com"));
         Assert.That(result[0].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));
         Assert.That(result[0].AvailableHosts[1].DisplayName, Is.EqualTo("www.exampleone.com"));
         Assert.That(result[0].AvailableHosts[1].HostName, Is.EqualTo("www.exampleone.com"));
 
-        Assert.That(result[1].SiteId, Is.EqualTo(sites[1].Id));
-        Assert.That(result[1].SiteName, Is.EqualTo(sites[1].Name));
+        Assert.That(result[1].AppId, Is.EqualTo(sites[1].Id));
+        Assert.That(result[1].AppName, Is.EqualTo(sites[1].Name));
         Assert.That(result[1].SpecificHost, Is.EqualTo("www.exampletwo.com"));
         Assert.That(result[1].AvailableHosts[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[1].AvailableHosts[0].HostName, Is.EqualTo(string.Empty));

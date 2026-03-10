@@ -77,7 +77,7 @@ public sealed class RobotsApiController : BaseApiController
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to save robots.txt content for {siteName}", formSubmitModel.SiteName);
+            _logger.LogError(exception, "Failed to save robots.txt content for {siteName}", formSubmitModel.AppName);
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,

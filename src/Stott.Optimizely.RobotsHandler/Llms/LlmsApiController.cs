@@ -39,19 +39,19 @@ public sealed class LlmsApiController : BaseApiController
 
     [HttpGet]
     [Route("/stott.robotshandler/api/llms/[action]")]
-    public IActionResult Details(string id, string siteId)
+    public IActionResult Details(string id, string appId)
     {
         if (!Guid.TryParse(id, out var llmsId))
         {
             throw new ArgumentException("Id cannot be parsed as a valid GUID.", nameof(id));
         }
 
-        if (!Guid.TryParse(siteId, out var llmsSiteId) || Guid.Empty.Equals(llmsSiteId))
+        if (string.IsNullOrWhiteSpace(appId))
         {
-            throw new ArgumentException("SiteId cannot be parsed as a valid GUID.", nameof(siteId));
+            throw new ArgumentException("AppId has not been provided.", nameof(appId));
         }
 
-        var model = Guid.Empty.Equals(llmsId) ? _service.GetDefault(llmsSiteId) : _service.Get(llmsId);
+        var model = Guid.Empty.Equals(llmsId) ? _service.GetDefault(appId) : _service.Get(llmsId);
 
         return CreateSafeJsonResult(model);
     }
@@ -77,7 +77,7 @@ public sealed class LlmsApiController : BaseApiController
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to save llms.txt content for {siteName}", formSubmitModel.SiteName);
+            _logger.LogError(exception, "Failed to save llms.txt content for {siteName}", formSubmitModel.AppName);
             return new ContentResult
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError,

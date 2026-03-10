@@ -3,25 +3,23 @@
 using System;
 
 using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.DependencyInjection;
 using EPiServer.Scheduler;
 using EPiServer.Web.Routing;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 
 using OptimizelyTwelveTest.Features.Common;
-using OptimizelyTwelveTest.Features.Search;
 
 using ServiceExtensions;
 
 using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Configuration;
-using Stott.Optimizely.RobotsHandler.Robots;
-using Stott.Security.Optimizely.Common;
-using Stott.Security.Optimizely.Features.Configuration;
 
 public class Startup
 {
@@ -53,14 +51,7 @@ public class Startup
         });
 
         services.AddCms()
-                .AddFind()
-                .AddMediatR(config =>
-                {
-                    config.RegisterServicesFromAssemblyContaining<RobotsApiController>();
-                    config.RegisterServicesFromAssemblyContaining<SearchPageController>();
-                })
-                .AddCustomDependencies()
-                .AddSwaggerGen();
+                .AddCustomDependencies();
 
         //// services.AddRobotsHandler();
         services.AddRobotsHandler(authorizationOptions =>
@@ -71,17 +62,17 @@ public class Startup
             });
         });
 
-        services.AddStottSecurity(cspSetupOptions =>
-        {
-            cspSetupOptions.ConnectionStringName = "EPiServerDB";
-        },
-        authorizationOptions =>
-        {
-            authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
-            {
-                policy.RequireRole("WebAdmins");
-            });
-        });
+        //services.AddStottSecurity(cspSetupOptions =>
+        //{
+        //    cspSetupOptions.ConnectionStringName = "EPiServerDB";
+        //},
+        //authorizationOptions =>
+        //{
+        //    authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
+        //    {
+        //        policy.RequireRole("WebAdmins");
+        //    });
+        //});
 
         services.ConfigureApplicationCookie(options =>
         {
@@ -108,7 +99,7 @@ public class Startup
                 }
                 else
                 {
-                    context.Response.Headers.Add(HeaderNames.CacheControl, "no-cache, max-age=0");
+                    context.Response.Headers.Append(HeaderNames.CacheControl, "no-cache, max-age=0");
                 }
             }
 
@@ -121,11 +112,8 @@ public class Startup
 
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseStottSecurity();
+        // app.UseStottSecurity();
         app.UseRobotsHandler();
-
-        app.UseSwagger();
-        app.UseSwaggerUI();
 
         app.UseEndpoints(endpoints =>
         {
