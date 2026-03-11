@@ -8,6 +8,7 @@
     <PackageReference Include="EPiServer.Cms.UI.AspNetIdentity" Version="13.0.0-preview3" />
     <PackageReference Include="EPiServer.Cms.UI.ContentManager" Version="13.0.0-preview3" />
     <PackageReference Include="MediatR" Version="14.1.0" />
+	<PackageReference Include="Optimizely.Graph.Cms" Version="13.0.0-preview3" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>

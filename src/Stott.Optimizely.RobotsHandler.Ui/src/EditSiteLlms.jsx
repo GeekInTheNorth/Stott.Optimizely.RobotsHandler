@@ -6,8 +6,8 @@ function EditSiteLlms(props) {
 
     const [showModal, setShowModal] = useState(false)
     const [id, setId] = useState(props.id ?? '')
-    const [siteId, setSiteId] = useState(props.siteId ?? '')
-    const [siteName, setSiteName] = useState('')
+    const [appId, setAppId] = useState(props.appId ?? '')
+    const [appName, setAppName] = useState('')
     const [siteLlmsContent, setSiteLlmsContent] = useState('')
     const [availableHosts, setAvailableHosts] = useState([])
     const [isDefault, setIsDefault] = useState(true)
@@ -23,12 +23,12 @@ function EditSiteLlms(props) {
     }
 
     const handleShowEditModal = async () => {
-        await axios.get(import.meta.env.VITE_APP_LLMS_EDIT, { params: { id: id, siteId: siteId } })
+        await axios.get(import.meta.env.VITE_APP_LLMS_EDIT, { params: { id: id, appId: appId } })
             .then((response) => {
                 if (response.data) {
                     setId(response.data.id);
-                    setSiteId(response.data.siteId);
-                    setSiteName(response.data.siteName);
+                    setAppId(response.data.appId);
+                    setAppName(response.data.appName);
                     setSiteLlmsContent(response.data.llmsContent);
                     setAvailableHosts(response.data.availableHosts ?? []);
                     setIsDefault(response.data.isForWholeSite ?? true);
@@ -47,14 +47,14 @@ function EditSiteLlms(props) {
     const handleSaveLlmsContent = async () => {
         let params = new URLSearchParams();
         params.append('id', id);
-        params.append('siteId', siteId);
-        params.append('siteName', siteName);
+        params.append('appId', appId);
+        params.append('appName', appName);
         params.append('specificHost', specificHost);
         params.append('llmsContent', siteLlmsContent);
 
         await axios.post(import.meta.env.VITE_APP_LLMS_SAVE, params)
             .then(() => {
-                handleShowSuccessToast('Success', 'Your llms.txt content changes for \'' + siteName + '\' were successfully applied.');
+                handleShowSuccessToast('Success', 'Your llms.txt content changes for \'' + appName + '\' were successfully applied.');
                 setShowModal(false);
                 handleReload();
             },
@@ -64,7 +64,7 @@ function EditSiteLlms(props) {
                     setShowModal(false);
                 }
                 else {
-                    handleShowFailureToast('Failure', 'An error was encountered when trying to save your llms.txt content for \'' + siteName + '\'.');
+                    handleShowFailureToast('Failure', 'An error was encountered when trying to save your llms.txt content for \'' + appName + '\'.');
                     setShowModal(false);
                 }
             });
@@ -93,7 +93,7 @@ function EditSiteLlms(props) {
             <Button variant='primary' onClick={handleShowEditModal} className='text-nowrap me-2'>Edit</Button>
             <Modal show={showModal} size='xl'>
                 <Modal.Header closeButton onClick={handleCloseModal}>
-                    <Modal.Title>{siteName}</Modal.Title>
+                    <Modal.Title>{appName}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className='mb-3'>

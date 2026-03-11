@@ -42,7 +42,7 @@ Authorization: bearer token-value`,
         responseJson: `[
   {
     "id": "guid",
-    "siteName": "string",
+    "appName": "string",
     "isDefaultForSite": boolean,
     "specificHost": "string",
     "robotsContent": "string"
@@ -66,8 +66,8 @@ Authorization: bearer token-value`,
   "message": "string",
   "data": {
     "id": "guid",
-    "siteId": "guid",
-    "siteName": "string",
+    "appId": "string",
+    "appName": "string",
     "specificHost": "string",
     "robotsContent": "string"
   }
@@ -86,7 +86,7 @@ Authorization: bearer token-value`,
         responseJson: `[
   {
     "id": "guid",
-    "siteName": "string",
+    "appName": "string",
     "isDefaultForSite": boolean,
     "specificHost": "string",
     "llmsContent": "string"
@@ -110,8 +110,8 @@ Authorization: bearer token-value`,
   "message": "string",
   "data": {
     "id": "guid",
-    "siteId": "guid",
-    "siteName": "string",
+    "appId": "string",
+    "appName": "string",
     "specificHost": "string",
     "llmsContent": "string"
   }
