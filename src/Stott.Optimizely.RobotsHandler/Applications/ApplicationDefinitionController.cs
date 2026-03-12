@@ -21,7 +21,7 @@ public sealed class ApplicationDefinitionController(IApplicationDefinitionServic
 
         allApps.Insert(0, new ApplicationViewModel
         {
-            AppName = "All Sites",
+            AppName = "All Applications",
             AvailableHosts = ApplicationMapper.CreateHostSummaries("All Hosts")
         });
 
