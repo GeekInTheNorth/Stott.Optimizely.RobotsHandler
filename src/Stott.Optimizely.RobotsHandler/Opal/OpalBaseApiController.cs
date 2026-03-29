@@ -81,12 +81,12 @@ public abstract class OpalBaseApiController(IApplicationResolver applicationReso
         model.IsForWholeSite = false;
         model.SpecificHost = hostName;
         model.AppName = applicationDefinition.Application?.DisplayName;
-        model.AvailableHosts = GetHostViewModels(applicationDefinition.Application).ToList();
+        model.AvailableHosts = [.. GetHostViewModels(applicationDefinition.Application)];
 
         return model;
     }
 
-    private static IList<string> GetSpecificHosts<TContent>(IList<TContent> models)
+    private static List<string> GetSpecificHosts<TContent>(IList<TContent> models)
         where TContent : IApplicationContentViewModel
     {
         if (models is null)
@@ -94,7 +94,7 @@ public abstract class OpalBaseApiController(IApplicationResolver applicationReso
             return [];
         }
 
-        return models.Where(x => !string.IsNullOrWhiteSpace(x.SpecificHost)).Select(x => x.SpecificHost!).ToList();
+        return [.. models.Where(x => !string.IsNullOrWhiteSpace(x.SpecificHost)).Select(x => x.SpecificHost!)];
     }
 
     private static IEnumerable<HostViewModel> GetHostViewModels(Application? application)
@@ -104,11 +104,11 @@ public abstract class OpalBaseApiController(IApplicationResolver applicationReso
             return ApplicationMapper.CreateHostSummaries(website.Hosts);
         }
 
-        if (application is RemoteWebsite remoteWebsite)
+        if (application is InProcessWebsite inprocessWebsite)
         {
-            return ApplicationMapper.CreateHostSummaries(remoteWebsite.Hosts);
+            return ApplicationMapper.CreateHostSummaries(inprocessWebsite.Hosts);
         }
 
-        return Enumerable.Empty<HostViewModel>();
+        return [];
     }
 }

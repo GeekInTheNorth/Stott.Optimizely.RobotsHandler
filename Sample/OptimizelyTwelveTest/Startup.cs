@@ -3,6 +3,7 @@
 using System;
 using EPiServer.Cms.Shell.UI;
 using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.Cms.UI.VisitorGroups;
 using EPiServer.Data;
 using EPiServer.DependencyInjection;
 using EPiServer.Scheduler;
@@ -29,7 +30,8 @@ public class Startup(IWebHostEnvironment webHostingEnvironment)
         services.AddCms()
                 .AddCmsAspNetIdentity<ApplicationUser>()
                 .AddAdminUserRegistration(options => { options.Behavior = RegisterAdminUserBehaviors.Enabled; })
-                .AddVisitorGroups()
+                .AddVisitorGroupsMvc()
+                .AddVisitorGroupsUI()
                 .AddContentGraph()
                 .AddContentManager()
                 .AddCmsTagHelpers()
