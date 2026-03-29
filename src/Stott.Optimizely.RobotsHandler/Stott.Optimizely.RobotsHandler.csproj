@@ -16,7 +16,7 @@
         <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
         <AssemblyVersion>7.0.0</AssemblyVersion>
         <FileVersion>7.0.0</FileVersion>
-        <Version>7.0.0-alpha</Version>
+        <Version>7.0.0-alpha2</Version>
         <PackageReleaseNotes>Fix errors for Optimizely Notification Service.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
