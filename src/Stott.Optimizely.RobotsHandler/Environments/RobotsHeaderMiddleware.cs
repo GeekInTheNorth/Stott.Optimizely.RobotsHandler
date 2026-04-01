@@ -8,14 +8,9 @@ using Stott.Optimizely.RobotsHandler.Extensions;
 
 namespace Stott.Optimizely.RobotsHandler.Environments;
 
-public sealed class RobotsHeaderMiddleware
+public sealed class RobotsHeaderMiddleware(RequestDelegate next)
 {
-    private readonly RequestDelegate _next;
-
-    public RobotsHeaderMiddleware(RequestDelegate next)
-    {
-        _next = next;
-    }
+    private readonly RequestDelegate _next = next;
 
     public async Task Invoke(
         HttpContext context,

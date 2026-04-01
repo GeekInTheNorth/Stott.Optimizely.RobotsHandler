@@ -2,9 +2,9 @@
 
 public class SaveLlmsTextConfigurationsCommand
 {
-    public string LlmsId { get; set; }
+    public string? LlmsId { get; set; }
 
-    public string HostName { get; set; }
+    public string? HostName { get; set; }
 
-    public string LlmsTxtContent { get; set; }
+    public string? LlmsTxtContent { get; set; }
 }

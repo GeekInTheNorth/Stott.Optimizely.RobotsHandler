@@ -4,11 +4,11 @@
 ###
 
 # Variables - Change these as needed
-@baseUrl = https://localhost:44344
+@baseUrl = https://localhost:5000
 @apiPath = /stott.robotshandler/opal
-@token = put-bearer-token-here
-@testHostNameOne = localhost:44344
-@testHostNameTwo = localhost:44347
+@token = X7hMZuo3idXCkgElP4iHrIdNnyY5WYNzq
+@testHostNameOne = localhost:5000
+@testHostNameTwo = localhost:5002
 
 # For production testing, uncomment these instead:
 # @baseUrl = https://test-cms.stott.pro
@@ -78,7 +78,7 @@ Authorization: Bearer {{token}}
 
 {
   "parameters": {
-    "robotsId": "3cd8ebcd-3733-4774-8c67-8bd28b440ca7",
+    "robotsId": "1a1543cd-78ce-4b38-9ae1-c63a4ff5c60e",
     "robotsTxtContent": "User-agent: *\nDisallow: /admin/\nDisallow: /private/\n\nSitemap: https://example.com/sitemap.xml"
   }
 }

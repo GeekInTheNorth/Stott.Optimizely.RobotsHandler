@@ -8,11 +8,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 
 using NUnit.Framework;
-
+using Stott.Optimizely.RobotsHandler.Applications;
 using Stott.Optimizely.RobotsHandler.Llms;
 using Stott.Optimizely.RobotsHandler.Opal;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
-using Stott.Optimizely.RobotsHandler.Sites;
 using Stott.Optimizely.RobotsHandler.Test.TestCases;
 
 namespace Stott.Optimizely.RobotsHandler.Test.Opal;
@@ -56,7 +55,7 @@ public sealed class OpalLlmsApiControllerTests
     public void GetLlmsTxtConfigurations_GivenThereAreNoConfigurations_ThenAnEmptyArrayIsReturned()
     {
         // Arrange
-        _mockService.Setup(s => s.GetAll()).Returns(new List<SiteLlmsViewModel>());
+        _mockService.Setup(s => s.GetAll()).Returns(new List<ApplicationLlmsViewModel>());
 
         // Act
         var result = _controller.GetLlmsTxtConfigurations(new ToolRequest<GetConfigurationsQuery>()) as ContentResult;
@@ -280,7 +279,7 @@ public sealed class OpalLlmsApiControllerTests
         var llmsId = existingConfig.Id;
         var newContent = "User-agent: GPT\nDisallow: /admin";
 
-        _mockService.Setup(s => s.GetAll()).Returns(new List<SiteLlmsViewModel> { existingConfig });
+        _mockService.Setup(s => s.GetAll()).Returns(new List<ApplicationLlmsViewModel> { existingConfig });
 
         var model = new ToolRequest<SaveLlmsTextConfigurationsCommand>
         {
@@ -302,8 +301,8 @@ public sealed class OpalLlmsApiControllerTests
         _mockService.Verify(s => s.Save(It.Is<SaveLlmsModel>(m => 
             m.Id == llmsId && 
             m.LlmsContent == newContent &&
-            m.SiteName == existingConfig.SiteName &&
-            m.SiteId == existingConfig.SiteId &&
+            m.AppName == existingConfig.AppName &&
+            m.AppId == existingConfig.AppId &&
             m.SpecificHost == existingConfig.SpecificHost)), Times.Once);
     }
 
@@ -551,36 +550,34 @@ public sealed class OpalLlmsApiControllerTests
             Times.Once);
     }
 
-    private static List<SiteLlmsViewModel> CreateDummyData()
+    private static List<ApplicationLlmsViewModel> CreateDummyData()
     {
-        return new List<SiteLlmsViewModel>
-        {
-            new SiteLlmsViewModel
-            {
+        return
+        [
+            new ApplicationLlmsViewModel {
                 Id = Guid.NewGuid(),
-                SiteName = "Test One",
+                AppName = "Test One",
                 SpecificHost = "specific.test",
-                AvailableHosts = new List<SiteHostViewModel>
-                {
-                    new SiteHostViewModel { HostName = "available1.test" },
-                    new SiteHostViewModel { HostName = "available2.test" }
-                },
+                AvailableHosts =
+                [
+                    new HostViewModel { HostName = "available1.test", DisplayName = "Site One" },
+                    new HostViewModel { HostName = "available2.test", DisplayName = "Site Two" }
+                ],
                 LlmsContent = "User-agent: *\nDisallow: /",
                 IsForWholeSite = false
             },
-            new SiteLlmsViewModel
-            {
+            new ApplicationLlmsViewModel {
                 Id = Guid.NewGuid(),
-                SiteName = "Test Two",
+                AppName = "Test Two",
                 SpecificHost = null,
-                AvailableHosts = new List<SiteHostViewModel>
-                {
-                    new SiteHostViewModel { HostName = "available3.test" },
-                    new SiteHostViewModel { HostName = "available4.test" }
-                },
+                AvailableHosts =
+                [
+                    new HostViewModel { HostName = "available3.test", DisplayName = "Site Three" },
+                    new HostViewModel { HostName = "available4.test", DisplayName = "Site Four" }
+                ],
                 LlmsContent = "User-agent: *\nDisallow: /private",
                 IsForWholeSite = true
             }
-        };
+        ];
     }
 }

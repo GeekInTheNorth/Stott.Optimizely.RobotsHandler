@@ -1,14 +1,14 @@
-﻿@using EPiServer.Shell.Navigation
+﻿@addTagHelper *, EPiServer.Shell.UI
+@using EPiServer.Shell.Navigation
 
 @{
-    Layout = string.Empty;
+    Layout = null;
 }
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Content Security Policy Management</title>
-    @Html.CreatePlatformNavigationMenu()
     <style>
         body {
             margin: 0;
@@ -23,6 +23,7 @@
     </style>
 </head>
 <body>
+    <platform-navigation />
     <div class="admin-container">
         <h1>
             My Custom Admin Page

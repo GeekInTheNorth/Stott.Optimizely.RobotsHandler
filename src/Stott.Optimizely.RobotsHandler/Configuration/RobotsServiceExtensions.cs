@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-
+using Stott.Optimizely.RobotsHandler.Applications;
 using Stott.Optimizely.RobotsHandler.Cache;
 using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Environments;
@@ -25,7 +25,7 @@ public static class ServiceExtensions
     /// <returns></returns>
     public static IServiceCollection AddRobotsHandler(
         this IServiceCollection serviceCollection,
-        Action<AuthorizationOptions> authorizationOptions = null)
+        Action<AuthorizationOptions>? authorizationOptions = null)
     {
         serviceCollection.AddScoped<IRobotsCacheHandler, RobotsCacheHandler>();
         serviceCollection.AddScoped<IRobotsContentService, RobotsContentService>();
@@ -38,6 +38,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IOpalTokenRepository, OpalTokenRepository>();
         serviceCollection.AddScoped(provider => new Lazy<IEnvironmentRobotsRepository>(() => provider.GetRequiredService<IEnvironmentRobotsRepository>()));
         serviceCollection.AddScoped<IStaticFileResolver, StaticFileResolver>();
+        serviceCollection.AddScoped<IApplicationDefinitionService, ApplicationDefinitionService>();
 
         // Authorization
         if (authorizationOptions != null)

@@ -5,15 +5,15 @@ namespace Stott.Optimizely.RobotsHandler.Llms;
 
 public interface ILlmsContentService
 {
-    IList<SiteLlmsViewModel> GetAll();
+    IList<ApplicationLlmsViewModel> GetAll();
 
-    SiteLlmsViewModel Get(Guid id);
+    ApplicationLlmsViewModel Get(Guid id);
 
-    SiteLlmsViewModel GetDefault(Guid siteId);
+    ApplicationLlmsViewModel GetDefault(string? appId);
 
-    string GetLlmsContent(Guid siteId, string host);
+    string? GetLlmsContent(string? appId, string? host);
 
-    string GetDefaultLlmsContent();
+    string? GetDefaultLlmsContent();
 
     void Save(SaveLlmsModel model);
 

@@ -4,5 +4,5 @@ namespace Stott.Optimizely.RobotsHandler.Llms;
 
 public sealed class LlmsListViewModel
 {
-    public IList<SiteLlmsViewModel> List { get; set; }
+    public IList<ApplicationLlmsViewModel> List { get; set; } = [];
 }

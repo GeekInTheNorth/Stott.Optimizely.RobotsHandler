@@ -23,6 +23,7 @@ namespace OptimizelyTwelveTest.ServiceExtensions
             .Add(context =>
             {
                 if (context.HttpContext.Request.Path.StartsWithSegments("/util") ||
+                    context.HttpContext.Request.Path.StartsWithSegments("/optimizely") ||
                     context.HttpContext.Request.Path.StartsWithSegments("/EPiServer") ||
                     context.HttpContext.Request.Path.StartsWithSegments("/EPiServer.Forms") ||
                     context.HttpContext.Request.Path.StartsWithSegments("/episerver") ||

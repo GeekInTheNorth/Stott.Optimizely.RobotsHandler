@@ -9,9 +9,9 @@ public interface ILlmsContentRepository
 {
     List<LlmsTxtEntity> GetAll();
 
-    List<LlmsTxtEntity> GetAllForSite(Guid siteId);
+    List<LlmsTxtEntity> GetAllForSite(string? appId);
 
-    LlmsTxtEntity Get(Guid id);
+    LlmsTxtEntity? Get(Guid id);
 
     void Save(SaveLlmsModel model);
 
