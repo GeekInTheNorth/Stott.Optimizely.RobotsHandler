@@ -1,34 +1,17 @@
-﻿namespace OptimizelyTwelveTest.Features.Home
+﻿namespace OptimizelyTwelveTest.Features.Home;
+
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Mvc;
+
+using OptimizelyTwelveTest.Features.Common;
+
+public class HomePageController : PageControllerBase<HomePage>
 {
-    using System.Threading.Tasks;
-
-    using Microsoft.AspNetCore.Mvc;
-
-    using OptimizelyTwelveTest.Features.Common;
-
-    using Stott.Security.Optimizely.Features.Csp.Settings.Service;
-
-    public class HomePageController : PageControllerBase<HomePage>
+    public async Task<IActionResult> Index(HomePage currentPage)
     {
-        private readonly ICspSettingsService _cspSettingsService;
+        var model = new HomePageViewModel { CurrentPage = currentPage };
 
-        public HomePageController(ICspSettingsService cspSettingsService)
-        {
-            _cspSettingsService = cspSettingsService;
-        }
-
-        public async Task<IActionResult> Index(HomePage currentPage, bool resetReportMode)
-        {
-            var model = new HomePageViewModel { CurrentPage = currentPage };
-
-            if (resetReportMode)
-            {
-                var currentSettings = await _cspSettingsService.GetAsync();
-                currentSettings.IsReportOnly = true;
-                await _cspSettingsService.SaveAsync(currentSettings, "Mark Stott");
-            }
-
-            return View(model);
-        }
+        return View(model);
     }
 }

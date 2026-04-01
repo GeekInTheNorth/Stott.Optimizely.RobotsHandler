@@ -9,9 +9,9 @@ public interface IRobotsContentService
 
     SiteRobotsViewModel Get(Guid id);
 
-    SiteRobotsViewModel GetDefault(Guid siteId);
+    SiteRobotsViewModel GetDefault(string? appId);
 
-    string GetRobotsContent(Guid siteId, string host);
+    string? GetRobotsContent(string? appId, string? host);
 
     string GetDefaultRobotsContent();
 

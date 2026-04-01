@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 
-using EPiServer.Web;
+using EPiServer.Applications;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,30 +11,23 @@ using Stott.Optimizely.RobotsHandler.Extensions;
 
 namespace Stott.Optimizely.RobotsHandler.Llms;
 
-public sealed class LlmsTextController : Controller
+public sealed class LlmsTextController(
+    IApplicationResolver applicationResolver,
+    ILlmsContentService service,
+    ILogger<LlmsTextController> logger) : Controller
 {
-    private readonly ILlmsContentService _service;
-
-    private readonly ILogger<LlmsTextController> _logger;
-
-    public LlmsTextController(ILlmsContentService service, ILogger<LlmsTextController> logger)
-    {
-        _service = service;
-        _logger = logger;
-    }
-
     [HttpGet]
     [Route("llms.txt")]
     [AllowAnonymous]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         try
         {
-            var llmsContent = _service.GetLlmsContent(SiteDefinition.Current.Id, Request.Host.Value);
-
+            var application = await applicationResolver.GetByContextAsync();
+            var llmsContent = service.GetLlmsContent(application?.Name, Request?.Host.Value);
             if (string.IsNullOrWhiteSpace(llmsContent))
             {
-                _logger.LogWarning("The llms.txt content is empty for the current site.");
+                logger.LogWarning("The llms.txt content is empty for the current site.");
                 return NotFound();
             }
 
@@ -49,7 +43,7 @@ public sealed class LlmsTextController : Controller
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to load the llms.txt for the current site.");
+            logger.LogError(exception, "Failed to load the llms.txt for the current site.");
             throw;
         }
     }

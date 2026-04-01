@@ -2,5 +2,5 @@
 
 public class GetConfigurationsQuery
 {
-    public string HostName { get; set; }
+    public string? HostName { get; set; }
 }

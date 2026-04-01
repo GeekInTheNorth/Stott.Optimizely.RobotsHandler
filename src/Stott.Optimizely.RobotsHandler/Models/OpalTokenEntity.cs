@@ -7,17 +7,17 @@ namespace Stott.Optimizely.RobotsHandler.Models;
 [EPiServerDataStore(AutomaticallyCreateStore = true, AutomaticallyRemapStore = true)]
 public class OpalTokenEntity : IDynamicData
 {
-    public Identity Id { get; set; }
+    public Identity Id { get; set; } = Identity.NewIdentity(Guid.NewGuid());
 
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    public string RobotsScope { get; set; }
+    public string? RobotsScope { get; set; }
 
-    public string LlmsScope { get; set; }
+    public string? LlmsScope { get; set; }
 
-    public string TokenHash { get; set; }
+    public string? TokenHash { get; set; }
 
-    public string DisplayToken { get; set; }
+    public string? DisplayToken { get; set; }
 
-    public string TokenSalt { get; set; }
+    public string TokenSalt { get; set; } = string.Empty;
 }

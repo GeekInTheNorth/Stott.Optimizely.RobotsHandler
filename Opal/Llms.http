@@ -5,10 +5,10 @@
 ###
 
 # Variables - Change these as needed
-@baseUrl = https://localhost:44344
+@baseUrl = https://localhost:5000
 @apiPath = /stott.robotshandler/opal
-@token = put-bearer-token-here
-@testHostName = localhost:44344
+@token = X7hMZuo3idXCkgElP4iHrIdNnyY5WYNz
+@testHostName = localhost:5000
 
 # For production testing, uncomment these instead:
 # @baseUrl = https://test-cms.stott.pro
@@ -50,7 +50,7 @@ Authorization: Bearer {{token}}
 
 {
   "parameters": {
-    "hostName": "example.com"
+    "hostName": "www.example.com"
   }
 }
 
@@ -78,7 +78,7 @@ Authorization: Bearer {{token}}
 
 {
   "parameters": {
-    "llmsId": "d994532b-02df-42dd-93ef-18bee7c3346f",
+    "llmsId": "1b0349f2-c352-4d9f-b7d3-285389d02c53",
     "llmsTxtContent": "# LLMS.TXT\n\n# Model Information\nmodel-name: GPT-4\nmodel-version: 2024-03\ntraining-data-cutoff: 2023-04\n\n# Usage Guidelines\nallowed-uses: content-generation, code-assistance, research\nrestricted-uses: personal-data-processing, medical-diagnosis\n\n# Contact Information\ncontact: ai-team@example.com\nwebsite: https://example.com/ai-policy"
   }
 }

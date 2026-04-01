@@ -1,13 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.10.34928.147
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11512.155 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OptimizelyTwelveTest", "OptimizelyTwelveTest\OptimizelyTwelveTest.csproj", "{5D9A020E-AE86-4902-AC8C-94C3A24297BF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stott.Optimizely.RobotsHandler", "..\src\Stott.Optimizely.RobotsHandler\Stott.Optimizely.RobotsHandler.csproj", "{696A0DB5-92CA-4992-AA55-3C2F570888C2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stott.Optimizely.RobotsHandler.Test", "..\src\Stott.Optimizely.RobotsHandler.Test\Stott.Optimizely.RobotsHandler.Test.csproj", "{D7D6E33E-542E-46E1-B0C6-BFC4210E47D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpalTests", "OpalTests", "{B229F2B1-7980-41EE-816E-59813F665803}"
+	ProjectSection(SolutionItems) = preProject
+		..\Opal\Discovery.http = ..\Opal\Discovery.http
+		..\Opal\Llms.http = ..\Opal\Llms.http
+		..\Opal\Robots.http = ..\Opal\Robots.http
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

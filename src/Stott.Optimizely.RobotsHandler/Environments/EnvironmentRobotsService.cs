@@ -9,40 +9,24 @@ using Stott.Optimizely.RobotsHandler.Common;
 
 namespace Stott.Optimizely.RobotsHandler.Environments;
 
-public sealed class EnvironmentRobotsService : IEnvironmentRobotsService
+public sealed class EnvironmentRobotsService(
+    Lazy<IEnvironmentRobotsRepository> repository,
+    IWebHostEnvironment hostingEnvironment,
+    IRobotsCacheHandler cacheHandler) : IEnvironmentRobotsService
 {
-    private readonly Lazy<IEnvironmentRobotsRepository> _repository;
-
-    private readonly IWebHostEnvironment _hostingEnvironment;
-
-    private readonly IRobotsCacheHandler _cacheHandler;
-
-    public EnvironmentRobotsService(
-        Lazy<IEnvironmentRobotsRepository> repository,
-        IWebHostEnvironment hostingEnvironment,
-        IRobotsCacheHandler cacheHandler)
-    {
-        _repository = repository;
-        _hostingEnvironment = hostingEnvironment;
-        _cacheHandler = cacheHandler;
-    }
-
     public IList<EnvironmentRobotsModel> GetAll()
     {
-        var currentEnvironment = _hostingEnvironment.EnvironmentName;
-        var configurations = _repository.Value.GetAll() ?? new List<EnvironmentRobotsModel>(0);
+        var currentEnvironment = hostingEnvironment.EnvironmentName;
+        var configurations = repository.Value.GetAll() ?? [];
         IncludeAllEnvironments(configurations, currentEnvironment);
 
         var currentConfig = configurations.FirstOrDefault(x => string.Equals(x.EnvironmentName, currentEnvironment, StringComparison.OrdinalIgnoreCase));
-        if (currentConfig != null)
-        {
-            currentConfig.IsCurrentEnvironment = true;
-        }
+        currentConfig?.IsCurrentEnvironment = true;
 
-        return configurations.OrderByDescending(x => x.IsCurrentEnvironment).ThenBy(x => x.EnvironmentName).ToList();
+        return [.. configurations.OrderByDescending(x => x.IsCurrentEnvironment).ThenBy(x => x.EnvironmentName)];
     }
 
-    public EnvironmentRobotsModel Get(string environmentName)
+    public EnvironmentRobotsModel? Get(string? environmentName)
     {
         if (string.IsNullOrWhiteSpace(environmentName))
         {
@@ -50,24 +34,24 @@ public sealed class EnvironmentRobotsService : IEnvironmentRobotsService
         }
 
         var cacheKey = GetCacheKey(environmentName);
-        var environmentModel = _cacheHandler.Get<EnvironmentRobotsModel>(cacheKey);
+        var environmentModel = cacheHandler.Get<EnvironmentRobotsModel>(cacheKey);
         if (environmentModel is not null)
         {
             return environmentModel;
         }
 
-        environmentModel = _repository.Value.Get(environmentName);
+        environmentModel = repository.Value.Get(environmentName);
         if (environmentModel is not null)
         {
-            _cacheHandler.Add(cacheKey, environmentModel);
+            cacheHandler.Add(cacheKey, environmentModel);
         }
 
         return environmentModel;
     }
 
-    public EnvironmentRobotsModel GetCurrent()
+    public EnvironmentRobotsModel? GetCurrent()
     {
-        return Get(_hostingEnvironment.EnvironmentName);
+        return Get(hostingEnvironment.EnvironmentName);
     }
 
     public void Save(EnvironmentRobotsModel model)
@@ -77,8 +61,8 @@ public sealed class EnvironmentRobotsService : IEnvironmentRobotsService
             return;
         }
 
-        _cacheHandler.RemoveAll();
-        _repository.Value.Save(model);
+        cacheHandler.RemoveAll();
+        repository.Value.Save(model);
     }
 
     private static void IncludeAllEnvironments(IList<EnvironmentRobotsModel> environmentModels, string currentEnvironmentName)

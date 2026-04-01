@@ -5,6 +5,7 @@ using System.Linq;
 using EPiServer.Data;
 using EPiServer.Data.Dynamic;
 
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Robots;
@@ -18,7 +19,7 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
         store = DynamicDataStoreFactory.Instance.CreateStore(typeof(RobotsEntity));
     }
 
-    public RobotsEntity Get(Guid id)
+    public RobotsEntity? Get(Guid id)
     {
         if (Guid.Empty.Equals(id))
         {
@@ -33,21 +34,23 @@ public sealed class RobotsContentRepository : IRobotsContentRepository
         return store.Find<RobotsEntity>(new Dictionary<string, object>()).ToList();
     }
 
-    public List<RobotsEntity> GetAllForSite(Guid siteId)
+    public List<RobotsEntity> GetAllForSite(string? appId)
     {
-        return store.Find<RobotsEntity>(new Dictionary<string, object> { { nameof(RobotsEntity.SiteId), siteId } }).ToList();
+        if (string.IsNullOrWhiteSpace(appId))
+        {
+            return [];
+        }
+
+        return store.Find<RobotsEntity>(new Dictionary<string, object> { { nameof(RobotsEntity.AppId), appId } }).ToList();
     }
 
     public void Save(SaveRobotsModel model)
     {
         var recordToSave = Get(model.Id);
-        recordToSave ??= new RobotsEntity
-        {
-            Id = Identity.NewIdentity(Guid.NewGuid()),
-            SiteId = model.SiteId,
-        };
+        recordToSave ??= new RobotsEntity { Id = Identity.NewIdentity(Guid.NewGuid()) };
 
-        recordToSave.SpecificHost = model.SpecificHost;
+        recordToSave.AppId = model.AppId;
+        recordToSave.SpecificHost = model.SpecificHost.GetSanitizedHostDomain();
         recordToSave.IsForWholeSite = string.IsNullOrWhiteSpace(model.SpecificHost);
         recordToSave.RobotsContent = model.RobotsContent;
 

@@ -1,40 +1,48 @@
 ﻿namespace OptimizelyTwelveTest;
 
 using System;
-
+using EPiServer.Cms.Shell.UI;
 using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.Cms.UI.VisitorGroups;
+using EPiServer.Data;
+using EPiServer.DependencyInjection;
 using EPiServer.Scheduler;
 using EPiServer.Web.Routing;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
-
+using Optimizely.Graph.DependencyInjection;
 using OptimizelyTwelveTest.Features.Common;
-using OptimizelyTwelveTest.Features.Search;
 
 using ServiceExtensions;
 
 using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Configuration;
-using Stott.Optimizely.RobotsHandler.Robots;
-using Stott.Security.Optimizely.Common;
-using Stott.Security.Optimizely.Features.Configuration;
 
-public class Startup
+public class Startup(IWebHostEnvironment webHostingEnvironment)
 {
-    private readonly IWebHostEnvironment _webHostingEnvironment;
-
-    public Startup(IWebHostEnvironment webHostingEnvironment)
-    {
-        _webHostingEnvironment = webHostingEnvironment;
-    }
-
     public void ConfigureServices(IServiceCollection services)
     {
-        if (_webHostingEnvironment.IsDevelopment())
+        services.AddCms()
+                .AddCmsAspNetIdentity<ApplicationUser>()
+                .AddAdminUserRegistration(options => { options.Behavior = RegisterAdminUserBehaviors.Enabled; })
+                .AddVisitorGroupsMvc()
+                .AddVisitorGroupsUI()
+                .AddContentGraph()
+                .AddContentManager()
+                .AddCmsTagHelpers()
+                .AddCustomDependencies();
+
+        services.Configure<DataAccessOptions>(options =>
+        {
+            options.UpdateDatabaseCompatibilityLevel = true;
+        });
+
+        if (webHostingEnvironment.IsDevelopment())
         {
             services.Configure<SchedulerOptions>(o =>
             {
@@ -43,7 +51,6 @@ public class Startup
         }
 
         services.AddRazorPages();
-        services.AddCmsAspNetIdentity<ApplicationUser>();
         
         // Various serialization formats.
         //// services.AddMvc().AddNewtonsoftJson();
@@ -52,36 +59,26 @@ public class Startup
             config.JsonSerializerOptions.PropertyNamingPolicy = new UpperCaseNamingPolicy();
         });
 
-        services.AddCms()
-                .AddFind()
-                .AddMediatR(config =>
-                {
-                    config.RegisterServicesFromAssemblyContaining<RobotsApiController>();
-                    config.RegisterServicesFromAssemblyContaining<SearchPageController>();
-                })
-                .AddCustomDependencies()
-                .AddSwaggerGen();
-
         //// services.AddRobotsHandler();
         services.AddRobotsHandler(authorizationOptions =>
         {
             authorizationOptions.AddPolicy(RobotsConstants.AuthorizationPolicy, policy =>
             {
-                policy.RequireRole("RobotAdmins","Everyone");
+                policy.RequireRole("RobotAdmins", "WebAdmins", "Everyone");
             });
         });
 
-        services.AddStottSecurity(cspSetupOptions =>
-        {
-            cspSetupOptions.ConnectionStringName = "EPiServerDB";
-        },
-        authorizationOptions =>
-        {
-            authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
-            {
-                policy.RequireRole("WebAdmins");
-            });
-        });
+        //services.AddStottSecurity(cspSetupOptions =>
+        //{
+        //    cspSetupOptions.ConnectionStringName = "EPiServerDB";
+        //},
+        //authorizationOptions =>
+        //{
+        //    authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
+        //    {
+        //        policy.RequireRole("WebAdmins");
+        //    });
+        //});
 
         services.ConfigureApplicationCookie(options =>
         {
@@ -100,7 +97,7 @@ public class Startup
         app.UseResponseCaching();
         app.Use(async (context, next) =>
         {
-            if (context.Request is not null && !context.Request.Path.Value.StartsWith("/episerver/", StringComparison.OrdinalIgnoreCase))
+            if (context.Request is not null && !context.Request.Path.Value.StartsWith("/optimizely/", StringComparison.OrdinalIgnoreCase))
             {
                 if (context.Response.Headers.ContainsKey(HeaderNames.CacheControl))
                 {
@@ -108,7 +105,7 @@ public class Startup
                 }
                 else
                 {
-                    context.Response.Headers.Add(HeaderNames.CacheControl, "no-cache, max-age=0");
+                    context.Response.Headers.Append(HeaderNames.CacheControl, "no-cache, max-age=0");
                 }
             }
 
@@ -121,16 +118,13 @@ public class Startup
 
         app.UseAuthentication();
         app.UseAuthorization();
-        app.UseStottSecurity();
+        // app.UseStottSecurity();
         app.UseRobotsHandler();
-
-        app.UseSwagger();
-        app.UseSwaggerUI();
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapContent();
-            endpoints.MapRazorPages();
+            endpoints.MapControllers();
         });
     }
 }
