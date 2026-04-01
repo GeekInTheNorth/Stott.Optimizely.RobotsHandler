@@ -1,12 +1,12 @@
 # Stott.Optimizely.RobotsHandler
 
 [![Platform](https://img.shields.io/badge/Platform-.NET%206-blue.svg?style=flat)](https://docs.microsoft.com/en-us/dotnet/)
-[![Platform](https://img.shields.io/badge/Optimizely-%2012-blue.svg?style=flat)](http://world.episerver.com/cms/)
+[![Platform](https://img.shields.io/badge/Optimizely-%2012%2C13-blue.svg?style=flat)](http://world.episerver.com/cms/)
 [![GitHub](https://img.shields.io/github/license/GeekInTheNorth/Stott.Optimizely.RobotsHandler)](https://github.com/GeekInTheNorth/Stott.Optimizely.RobotsHandler/blob/main/LICENSE.txt)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/GeekInTheNorth/Stott.Optimizely.RobotsHandler/dotnet.yml?branch=main)
 ![Nuget](https://img.shields.io/nuget/v/Stott.Optimizely.RobotsHandler)
 
-This is an admin extension for Optimizely CMS 12+ for managing robots content. Stott Robots Handler is a free to use module, however if you want to show your support, buy me a coffee on ko-fi:
+This is an admin extension for Optimizely CMS 12 & 13 for managing robots content. Stott Robots Handler is a free to use module, however if you want to show your support, buy me a coffee on ko-fi:
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V0RX2BQ)
 
