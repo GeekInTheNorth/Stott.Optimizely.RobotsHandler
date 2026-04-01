@@ -16,8 +16,8 @@
         <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
         <AssemblyVersion>7.0.0</AssemblyVersion>
         <FileVersion>7.0.0</FileVersion>
-        <Version>7.0.0-alpha2</Version>
-        <PackageReleaseNotes>Fix errors for Optimizely Notification Service.</PackageReleaseNotes>
+        <Version>7.0.0</Version>
+        <PackageReleaseNotes>Update compilation for CMS 13.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
         <Nullable>enable</Nullable>
@@ -53,7 +53,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="EPiServer.CMS.UI.Core" Version="[13.0.0-preview4,14.0.0)" />
+        <PackageReference Include="EPiServer.CMS.UI.Core" Version="[13.0.0,14.0.0)" />
     </ItemGroup>
 
 </Project>

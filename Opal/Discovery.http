@@ -4,7 +4,7 @@
 ###
 
 # Variables - Change these as needed
-@baseUrl = https://localhost:44344
+@baseUrl = https://localhost:5000
 @apiPath = /stott.robotshandler/opal
 
 # Test 1: Basic Discovery API call (IIS Express)
