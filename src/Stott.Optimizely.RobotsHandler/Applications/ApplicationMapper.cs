@@ -3,20 +3,22 @@ using System.Linq;
 
 using EPiServer.Applications;
 
+using Stott.Optimizely.RobotsHandler.Extensions;
+
 namespace Stott.Optimizely.RobotsHandler.Applications;
 
 internal static class ApplicationMapper
 {
     internal static List<HostViewModel> CreateHostSummaries(string defaultHostName)
     {
-        return new List<HostViewModel>
-        {
+        return
+        [
             new HostViewModel
             {
                 DisplayName = defaultHostName,
                 HostName = string.Empty
             }
-        };
+        ];
     }
 
     internal static IEnumerable<HostViewModel> CreateHostSummaries(IList<ApplicationHost>? hostDefinitions)
@@ -35,7 +37,7 @@ internal static class ApplicationMapper
 
         foreach (var host in hostDefinitions.Where(x => x.Url is not null))
         {
-            yield return new HostViewModel { DisplayName = host.Url?.ToString(), HostName = host.Url?.ToString() };
+            yield return new HostViewModel { DisplayName = host.Url?.ToString(), HostName = host.Url.GetSanitizedHostDomain() };
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Stott.Optimizely.RobotsHandler.Applications;
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Llms;
@@ -81,8 +82,9 @@ public class DefaultLlmsContentService(
 
     public string? GetLlmsContent(string? appId, string? host)
     {
+        var cleanedHost = host.GetSanitizedHostDomain();
         var llmsEntries = llmsContentRepository.GetAllForSite(appId) ?? [];
-        var matchingLlms = llmsEntries.FirstOrDefault(x => string.Equals(x.SpecificHost, host, StringComparison.OrdinalIgnoreCase)) ??
+        var matchingLlms = llmsEntries.FirstOrDefault(x => string.Equals(x.SpecificHost, cleanedHost, StringComparison.OrdinalIgnoreCase)) ??
                            llmsEntries.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.SpecificHost));
 
         return matchingLlms?.LlmsContent;

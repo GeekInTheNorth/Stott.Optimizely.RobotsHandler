@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using EPiServer.Web;
-
 using Stott.Optimizely.RobotsHandler.Applications;
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Robots;
@@ -80,8 +79,9 @@ public sealed class RobotsContentService(
 
     public string? GetRobotsContent(string? appId, string? host)
     {
-        var robots = robotsContentRepository.GetAllForSite(appId) ?? new List<RobotsEntity>(0);
-        var matchingRobots = robots.FirstOrDefault(x => string.Equals(x.SpecificHost, host, StringComparison.OrdinalIgnoreCase)) ??
+        var cleanedHost = host.GetSanitizedHostDomain();
+        var robots = robotsContentRepository.GetAllForSite(appId) ?? [];
+        var matchingRobots = robots.FirstOrDefault(x => string.Equals(x.SpecificHost, cleanedHost, StringComparison.OrdinalIgnoreCase)) ??
                              robots.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.SpecificHost));
 
         if (matchingRobots == null)
@@ -154,8 +154,8 @@ public sealed class RobotsContentService(
 
     private static bool IsConflict(SaveRobotsModel model, RobotsEntity entity)
     {
-        var modelHost = model.SpecificHost ?? string.Empty;
-        var entityHost = entity.SpecificHost ?? string.Empty;
+        var modelHost = model.SpecificHost.GetSanitizedHostDomain() ?? string.Empty;
+        var entityHost = entity.SpecificHost.GetSanitizedHostDomain() ?? string.Empty;
 
         return string.Equals(model.AppId, entity.AppId, StringComparison.OrdinalIgnoreCase) && 
                !Guid.Equals(model.Id, entity.Id.ExternalId) &&
