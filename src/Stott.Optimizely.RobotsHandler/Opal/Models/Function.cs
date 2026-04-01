@@ -6,17 +6,17 @@ namespace Stott.Optimizely.RobotsHandler.Opal.Models;
 public class Function
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     [JsonPropertyName("parameters")]
-    public List<FunctionParameter> Parameters { get; set; }
+    public List<FunctionParameter> Parameters { get; set; } = [];
 
     [JsonPropertyName("endpoint")]
-    public string Endpoint { get; set; }
+    public string? Endpoint { get; set; }
 
     [JsonPropertyName("http_method")]
-    public string HttpMethod { get; set; }
+    public string? HttpMethod { get; set; }
 }

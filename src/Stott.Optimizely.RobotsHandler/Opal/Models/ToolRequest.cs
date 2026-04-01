@@ -2,5 +2,5 @@
 
 public class ToolRequest<TModel> where TModel : class
 {
-    public TModel Parameters { get; set; }
+    public TModel? Parameters { get; set; }
 }

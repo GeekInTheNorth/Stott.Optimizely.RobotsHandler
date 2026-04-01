@@ -5,6 +5,7 @@ using System.Linq;
 using EPiServer.Data;
 using EPiServer.Data.Dynamic;
 
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Llms;
@@ -23,7 +24,7 @@ public sealed class DefaultLlmsContentRepository : ILlmsContentRepository
         store.Delete(Identity.NewIdentity(id));
     }
 
-    public LlmsTxtEntity Get(Guid id)
+    public LlmsTxtEntity? Get(Guid id)
     {
         if (Guid.Empty.Equals(id))
         {
@@ -35,24 +36,26 @@ public sealed class DefaultLlmsContentRepository : ILlmsContentRepository
 
     public List<LlmsTxtEntity> GetAll()
     {
-        return store.Find<LlmsTxtEntity>(new Dictionary<string, object>()).ToList();
+        return [.. store.Find<LlmsTxtEntity>(new Dictionary<string, object>())];
     }
 
-    public List<LlmsTxtEntity> GetAllForSite(Guid siteId)
+    public List<LlmsTxtEntity> GetAllForSite(string? appId)
     {
-        return store.Find<LlmsTxtEntity>(new Dictionary<string, object> { { nameof(LlmsTxtEntity.SiteId), siteId } }).ToList();
+        if (string.IsNullOrWhiteSpace(appId))
+        {
+            return [];
+        }
+
+        return [.. store.Find<LlmsTxtEntity>(new Dictionary<string, object> { { nameof(LlmsTxtEntity.AppId), appId } })];
     }
 
     public void Save(SaveLlmsModel model)
     {
         var recordToSave = Get(model.Id);
-        recordToSave ??= new LlmsTxtEntity
-        {
-            Id = Identity.NewIdentity(Guid.NewGuid()),
-            SiteId = model.SiteId,
-        };
+        recordToSave ??= new LlmsTxtEntity { Id = Identity.NewIdentity(Guid.NewGuid()) };
 
-        recordToSave.SpecificHost = model.SpecificHost;
+        recordToSave.AppId = model.AppId;
+        recordToSave.SpecificHost = model.SpecificHost.GetSanitizedHostDomain();
         recordToSave.IsForWholeSite = string.IsNullOrWhiteSpace(model.SpecificHost);
         recordToSave.LlmsContent = model.LlmsContent;
 

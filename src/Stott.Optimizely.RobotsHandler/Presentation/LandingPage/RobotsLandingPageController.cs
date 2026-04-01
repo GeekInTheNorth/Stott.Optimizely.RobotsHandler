@@ -12,18 +12,8 @@ using Stott.Optimizely.RobotsHandler.Models;
 using Stott.Security.Optimizely.Features.StaticFile;
 
 [Authorize(Policy = RobotsConstants.AuthorizationPolicy)]
-public sealed class RobotsLandingPageController : Controller
+public sealed class RobotsLandingPageController(ICspNonceService cspNonceService, IStaticFileResolver staticFileResolver) : Controller
 {
-    private readonly ICspNonceService _cspNonceService;
-
-    private readonly IStaticFileResolver _staticFileResolver;
-
-    public RobotsLandingPageController(ICspNonceService cspNonceService, IStaticFileResolver staticFileResolver)
-    {
-        _cspNonceService = cspNonceService;
-        _staticFileResolver = staticFileResolver;
-    }
-
     [HttpGet]
     [Route("/stott.robotshandler/administration/")]
     public IActionResult Index()
@@ -32,8 +22,8 @@ public sealed class RobotsLandingPageController : Controller
         {
             ApplicationName = "Stott Robots Handler",
             ApplicationVersion = GetApplicationVersion(),
-            JavaScriptFile = $"/stott.robotshandler/static/{_staticFileResolver.GetJavaScriptFileName()}",
-            CssFile = $"/stott.robotshandler/static/{_staticFileResolver.GetStyleSheetFileName()}",
+            JavaScriptFile = $"/stott.robotshandler/static/{staticFileResolver.GetJavaScriptFileName()}",
+            CssFile = $"/stott.robotshandler/static/{staticFileResolver.GetStyleSheetFileName()}",
             Nonce = GetNonce()
         };
 
@@ -44,8 +34,8 @@ public sealed class RobotsLandingPageController : Controller
     [Route("/stott.robotshandler/static/{staticFileName}")]
     public IActionResult ApplicationStaticFile(string staticFileName)
     {
-        var fileBytes = _staticFileResolver.GetFileContent(staticFileName);
-        var mimeType = _staticFileResolver.GetFileMimeType(staticFileName);
+        var fileBytes = staticFileResolver.GetFileContent(staticFileName);
+        var mimeType = staticFileResolver.GetFileMimeType(staticFileName);
 
         if (fileBytes.Length == 0)
         {
@@ -63,11 +53,11 @@ public sealed class RobotsLandingPageController : Controller
         return $"v{assemblyName?.Version}";
     }
 
-    private string GetNonce()
+    private string? GetNonce()
     {
         try
         {
-            return _cspNonceService.GetNonce();
+            return cspNonceService.GetNonce();
         }
         catch (Exception)
         {

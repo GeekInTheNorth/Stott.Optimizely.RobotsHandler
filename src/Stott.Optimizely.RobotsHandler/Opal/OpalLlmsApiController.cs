@@ -1,33 +1,24 @@
 ﻿using System;
 using System.Linq;
 
-using EPiServer.Web;
+using EPiServer.Applications;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Llms;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
 
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
 [AllowAnonymous]
-public sealed class OpalLlmsApiController : OpalBaseApiController
+public sealed class OpalLlmsApiController(
+    ILlmsContentService service,
+    IApplicationResolver applicationResolver,
+    ILogger<OpalLlmsApiController> logger) : OpalBaseApiController(applicationResolver)
 {
-    private readonly ILlmsContentService _service;
-
-    private readonly ILogger<OpalLlmsApiController> _logger;
-
-    public OpalLlmsApiController(
-        ILlmsContentService service,
-        ISiteDefinitionResolver siteDefinitionResolver,
-        ILogger<OpalLlmsApiController> logger) : base(siteDefinitionResolver)
-    {
-        _service = service;
-        _logger = logger;
-    }
-
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/get-llms-txt-configurations/")]
     [Route("/stott.robotshandler/opal/discovery/tools/get-llms-txt-configurations/")]
@@ -36,10 +27,11 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
     {
         try
         {
-            var configurations = _service.GetAll();
-            if (!string.IsNullOrWhiteSpace(model?.Parameters?.HostName))
+            var configurations = service.GetAll();
+            var hostName = model?.Parameters?.HostName.GetSanitizedHostDomain();
+
+            if (!string.IsNullOrWhiteSpace(hostName))
             {
-                var hostName = model.Parameters.HostName.Trim();
                 var specificConfiguration =
                     configurations.FirstOrDefault(x => string.Equals(x.SpecificHost, hostName, StringComparison.OrdinalIgnoreCase)) ??
                     configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase)));
@@ -49,7 +41,7 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
                     return Json(new
                     {
                         Success = false,
-                        Message = $"Could not locate a llms.txt config that matched the host name of {model.Parameters.HostName}."
+                        Message = $"Could not locate a llms.txt config that matched the host name of {hostName}."
                     });
                 }
 
@@ -60,7 +52,7 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error was encountered while processing the llms-txt-configurations tool.");
+            logger.LogError(ex, "An error was encountered while processing the llms-txt-configurations tool.");
             throw;
         }
     }
@@ -73,10 +65,10 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
     {
         try
         {
-            var configurations = _service.GetAll();
-            var hostName = model.Parameters?.HostName?.Trim() ?? string.Empty;
+            var configurations = service.GetAll();
+            var hostName = model?.Parameters?.HostName.GetSanitizedHostDomain();
 
-            if (string.IsNullOrWhiteSpace(model.Parameters?.LlmsTxtContent))
+            if (string.IsNullOrWhiteSpace(model?.Parameters?.LlmsTxtContent))
             {
                 return Json(new
                 {
@@ -85,7 +77,7 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
                 });
             }
 
-            if (Guid.TryParse(model.Parameters?.LlmsId, out var llmsId) && !Guid.Empty.Equals(llmsId))
+            if (Guid.TryParse(model?.Parameters?.LlmsId, out var llmsId) && !Guid.Empty.Equals(llmsId))
             {
                 var specificRobotsConfig = configurations.FirstOrDefault(x => Equals(x.Id, llmsId));
                 if (specificRobotsConfig is null)
@@ -100,13 +92,13 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
                 var saveModel = new SaveLlmsModel
                 {
                     Id = specificRobotsConfig.Id,
-                    SiteId = specificRobotsConfig.SiteId,
-                    SiteName = specificRobotsConfig.SiteName,
+                    AppId = specificRobotsConfig.AppId,
+                    AppName = specificRobotsConfig.AppName,
                     SpecificHost = specificRobotsConfig.SpecificHost,
                     LlmsContent = model.Parameters?.LlmsTxtContent ?? specificRobotsConfig.LlmsContent
                 };
 
-                _service.Save(saveModel);
+                service.Save(saveModel);
                 return Json(new
                 {
                     Success = true,
@@ -120,14 +112,14 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
                 var specificConfiguration =
                     configurations.FirstOrDefault(x => string.Equals(x.SpecificHost, hostName, StringComparison.OrdinalIgnoreCase)) ??
                     configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase))) ??
-                    GetEmptySiteModel<SiteLlmsViewModel>(hostName);
+                    GetEmptySiteModel<ApplicationLlmsViewModel>(hostName);
 
                 if (specificConfiguration is null)
                 {
                     return Json(new
                     {
                         Success = false,
-                        Message = $"Could not locate a site that matched the host name of {model.Parameters.HostName}."
+                        Message = $"Could not locate a site that matched the host name of {hostName}."
                     });
                 }
 
@@ -135,13 +127,13 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
                 var saveModel = new SaveLlmsModel
                 {
                     Id = isSpecificHost ? specificConfiguration.Id : Guid.Empty,
-                    SiteId = specificConfiguration.SiteId,
-                    SiteName = specificConfiguration.SiteName,
+                    AppId = specificConfiguration.AppId,
+                    AppName = specificConfiguration.AppName,
                     SpecificHost = hostName,
-                    LlmsContent = model.Parameters?.LlmsTxtContent
+                    LlmsContent = model?.Parameters?.LlmsTxtContent
                 };
 
-                _service.Save(saveModel);
+                service.Save(saveModel);
                 return Json(new
                 {
                     Success = true,
@@ -158,7 +150,7 @@ public sealed class OpalLlmsApiController : OpalBaseApiController
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error was encountered while attempting to save llms.txt content tool.");
+            logger.LogError(ex, "An error was encountered while attempting to save llms.txt content tool.");
             throw;
         }
     }

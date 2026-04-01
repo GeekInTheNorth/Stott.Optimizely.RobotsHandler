@@ -5,10 +5,10 @@ import { Alert, Button, Modal } from 'react-bootstrap'
 function AddSiteLlms(props) {
 
     const [showModal, setShowModal] = useState(false);
-    const [siteCollection, setSiteCollection] = useState([]);
+    const [appCollection, setAppCollection] = useState([]);
     const [hostCollection, setHostCollection] = useState([]);
-    const [siteId, setSiteId] = useState(null);
-    const [siteName, setSiteName] = useState(null);
+    const [appId, setAppId] = useState(null);
+    const [appName, setAppName] = useState(null);
     const [siteLlmsContent, setSiteLlmsContent] = useState('');
     const [hostName, setHostName] = useState('');
     const [isDefault, setIsDefault] = useState(true)
@@ -34,18 +34,18 @@ Optional details go here
     };
 
     const handleShowEditModal = async () => {
-        await axios.get(import.meta.env.VITE_APP_SITES_LIST)
+        await axios.get(import.meta.env.VITE_APP_APPLICATIONS_LIST)
             .then((response) => {
                 if (response.data && response.data && Array.isArray(response.data)){
-                    setSiteCollection(response.data);
+                    setAppCollection(response.data);
                     if(response.data.length > 0){
-                        var firstSite = response.data[0];
-                        var hosts = firstSite.availableHosts ?? [];
-                        setSiteId(firstSite.siteId);
-                        setSiteName(firstSite.siteName);
+                        var firstApp = response.data[0];
+                        var hosts = firstApp.availableHosts ?? [];
+                        setAppId(firstApp.appId);
+                        setAppName(firstApp.appName);
                         setHostCollection(hosts);
                         if (hosts.length > 0){
-                            setHostName(hosts[0].value);
+                            setHostName(hosts[0].hostName);
                         }
                     }
 
@@ -53,27 +53,27 @@ Optional details go here
                     setShowModal(true);
                 }
                 else{
-                    handleShowFailureToast('Failure', 'Failed to retrieve site data.');
+                    handleShowFailureToast('Failure', 'Failed to retrieve application data.');
                 }
             },
             () => {
-                handleShowFailureToast('Failure', 'Failed to retrieve site data.');
+                handleShowFailureToast('Failure', 'Failed to retrieve application data.');
             });
     }
 
     const handleSaveLlmsContent = async () => {
 
-        let selectedSite = getSelectedSite();
+        let selectedApp = getSelectedApp();
         let selectedHost = getSelectedHostName();
         let params = new URLSearchParams();
-        params.append('siteId', selectedSite.siteId);
-        params.append('siteName', selectedSite.siteName);
+        params.append('appId', selectedApp.appId);
+        params.append('appName', selectedApp.appName);
         params.append('specificHost', selectedHost);
         params.append('llmsContent', siteLlmsContent);
 
         await axios.post(import.meta.env.VITE_APP_LLMS_SAVE, params)
             .then(() => {
-                handleShowSuccessToast('Success', 'Your llms.txt content changes for \'' + siteName + '\' were successfully applied.');
+                handleShowSuccessToast('Success', 'Your llms.txt content changes for \'' + appName + '\' were successfully applied.');
                 setShowModal(false);
                 handleReload();
             },
@@ -89,14 +89,14 @@ Optional details go here
             });
     }
 
-    const handleSiteSelection = (event) => {
-        const selectedSiteid = event.target.value;
-        const selectedSite = siteCollection.filter(x => x.siteId == selectedSiteid)[0];
-        const availableHosts = selectedSite.availableHosts ?? [];
-        const firstHost = availableHosts.length > 0 ? availableHosts[0].value : '';
+    const handleAppSelection = (event) => {
+        const selectedAppId = event.target.value;
+        const selectedApp = appCollection.filter(x => x.appId == selectedAppId)[0];
+        const availableHosts = selectedApp.availableHosts ?? [];
+        const firstHost = availableHosts.length > 0 ? availableHosts[0].hostName : '';
 
-        setSiteId(selectedSite.siteId);
-        setSiteName(selectedSite.siteName);
+        setAppId(selectedApp.appId);
+        setAppName(selectedApp.appName);
         setHostName(firstHost);
         setHostCollection(availableHosts);
     }
@@ -111,11 +111,11 @@ Optional details go here
         setSiteLlmsContent(event.target.value);
     }
 
-    const renderAvailableSites = () => {
-        return siteCollection && siteCollection.map((site, index) => {
-            const { siteId, siteName } = site
+    const renderAvailableApps = () => {
+        return appCollection && appCollection.map((app, index) => {
+            const { appId, appName } = app
             return (
-                <option key={index} value={siteId}>{siteName}</option>
+                <option key={index} value={appId}>{appName}</option>
             )
         })
     }
@@ -129,22 +129,22 @@ Optional details go here
         })
     }
 
-    const getSelectedSite = () => {
-        if (siteId === undefined || siteId === null || siteId === '') {
-            var firstSite = siteCollection[0];
-            setSiteId(firstSite.siteId);
-            setSiteName(firstSite.siteName);
+    const getSelectedApp = () => {
+        if (appId === undefined || appId === null || appId === '') {
+            var firstApp = appCollection[0];
+            setAppId(firstApp.appId);
+            setAppName(firstApp.appName);
 
-            return firstSite;
+            return firstApp;
         }
 
-        var matches = siteCollection.filter(matchSite);
+        var matches = appCollection.filter(matchApp);
 
         return matches[0];
     }
 
-    const matchSite = (thisSite) => {
-        return thisSite && thisSite.siteId && thisSite.siteId === siteId;
+    const matchApp = (thisApp) => {
+        return thisApp && thisApp.appId && thisApp.appId === appId;
     }
 
     const getSelectedHostName = () => {
@@ -170,8 +170,8 @@ Optional details go here
                 </Modal.Header>
                 <Modal.Body>
                 <div className='mb-3'>
-                        <label>Site</label>
-                        <select className='form-control form-select' name='SpecificHost' onChange={handleSiteSelection}>{renderAvailableSites()}</select>
+                        <label>Application</label>
+                        <select className='form-control form-select' name='SpecificHost' onChange={handleAppSelection}>{renderAvailableApps()}</select>
                     </div>
                     <div className='mb-3'>
                         <label>Host</label>
@@ -183,7 +183,7 @@ Optional details go here
                     <div className='mb-3'>
                         <label>LLMS.txt Content</label>
                         <textarea className='form-control large-text-area' name='LlmsContent' cols='60' rows='10' onChange={handleSiteLlmsContentChange} value={siteLlmsContent}>
-                            
+
                         </textarea>
                     </div>
                 </Modal.Body>

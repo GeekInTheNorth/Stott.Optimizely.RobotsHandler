@@ -1,33 +1,24 @@
 ﻿using System;
 using System.Linq;
 
-using EPiServer.Web;
+using EPiServer.Applications;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+using Stott.Optimizely.RobotsHandler.Extensions;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
 using Stott.Optimizely.RobotsHandler.Robots;
 
 namespace Stott.Optimizely.RobotsHandler.Opal;
 
 [AllowAnonymous]
-public sealed class OpalRobotsApiController : OpalBaseApiController
+public sealed class OpalRobotsApiController(
+    IRobotsContentService service,
+    IApplicationResolver applicationResolver,
+    ILogger<OpalRobotsApiController> logger) : OpalBaseApiController(applicationResolver)
 {
-    private readonly IRobotsContentService _service;
-
-    private readonly ILogger<OpalRobotsApiController> _logger;
-
-    public OpalRobotsApiController(
-        IRobotsContentService service,
-        ISiteDefinitionResolver siteDefinitionResolver,
-        ILogger<OpalRobotsApiController> logger) : base(siteDefinitionResolver)
-    {
-        _service = service;
-        _logger = logger;
-    }
-
     [HttpPost]
     [Route("/stott.robotshandler/opal/tools/get-robot-txt-configurations/")]
     [Route("/stott.robotshandler/opal/discovery/tools/get-robot-txt-configurations/")]
@@ -36,10 +27,11 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
     {
         try
         {
-            var configurations = _service.GetAll();
-            if (!string.IsNullOrWhiteSpace(model?.Parameters?.HostName))
+            var configurations = service.GetAll();
+            var hostName = model?.Parameters?.HostName.GetSanitizedHostDomain();
+
+            if (!string.IsNullOrWhiteSpace(hostName))
             {
-                var hostName = model.Parameters.HostName.Trim();
                 var specificConfiguration =
                     configurations.FirstOrDefault(x => string.Equals(x.SpecificHost, hostName, StringComparison.OrdinalIgnoreCase)) ??
                     configurations.FirstOrDefault(x => x.AvailableHosts.Any(h => string.Equals(h.HostName, hostName, StringComparison.OrdinalIgnoreCase)));
@@ -49,7 +41,7 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
                     return Json(new
                     {
                         Success = false,
-                        Message = $"Could not locate a robots.txt config that matched the host name of {model.Parameters.HostName}."
+                        Message = $"Could not locate a robots.txt config that matched the host name of {hostName}."
                     });
                 }
 
@@ -60,7 +52,7 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error was encountered while processing the robot-txt-configurations tool.");
+            logger.LogError(ex, "An error was encountered while processing the robot-txt-configurations tool.");
             throw;
         }
     }
@@ -73,8 +65,8 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
     {
         try
         {
-            var configurations = _service.GetAll();
-            var hostName = model.Parameters?.HostName?.Trim() ?? string.Empty;
+            var configurations = service.GetAll();
+            var hostName = model.Parameters?.HostName.GetSanitizedHostDomain();
 
             if (string.IsNullOrWhiteSpace(model.Parameters?.RobotsTxtContent))
             {
@@ -100,13 +92,13 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
                 var saveModel = new SaveRobotsModel
                 {
                     Id = specificRobotsConfig.Id,
-                    SiteId = specificRobotsConfig.SiteId,
-                    SiteName = specificRobotsConfig.SiteName,
+                    AppId = specificRobotsConfig.AppId,
+                    AppName = specificRobotsConfig.AppName,
                     SpecificHost = specificRobotsConfig.SpecificHost,
                     RobotsContent = model.Parameters?.RobotsTxtContent ?? specificRobotsConfig.RobotsContent
                 };
 
-                _service.Save(saveModel);
+                service.Save(saveModel);
                 return Json(new
                 {
                     Success = true,
@@ -127,7 +119,7 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
                     return Json(new
                     {
                         Success = false,
-                        Message = $"Could not locate a site that matched the host name of {model.Parameters.HostName}."
+                        Message = $"Could not locate a site that matched the host name of {hostName}."
                     });
                 }
 
@@ -136,13 +128,13 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
                 var saveModel = new SaveRobotsModel
                 {
                     Id = isSpecificHost ? specificConfiguration.Id : Guid.Empty,
-                    SiteId = specificConfiguration.SiteId,
-                    SiteName = specificConfiguration.SiteName,
+                    AppId = specificConfiguration.AppId,
+                    AppName = specificConfiguration.AppName,
                     SpecificHost = hostName,
                     RobotsContent = model.Parameters?.RobotsTxtContent
                 };
 
-                _service.Save(saveModel);
+                service.Save(saveModel);
                 return Json(new
                 {
                     Success = true,
@@ -159,7 +151,7 @@ public sealed class OpalRobotsApiController : OpalBaseApiController
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error was encountered while processing the robot-txt-configurations tool.");
+            logger.LogError(ex, "An error was encountered while processing the robot-txt-configurations tool.");
             throw;
         }
     }

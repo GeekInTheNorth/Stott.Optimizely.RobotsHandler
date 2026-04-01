@@ -1,4 +1,6 @@
-﻿using System;
+using System.Threading.Tasks;
+
+using EPiServer.Applications;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +19,8 @@ public sealed class RobotsTextControllerTests
 {
     private RobotsTextController _controller;
 
+    private Mock<IApplicationResolver> _mockApplicationResolver;
+
     private Mock<IRobotsContentService> _serviceMock;
 
     private Mock<HttpRequest> _mockHttpRequest;
@@ -30,6 +34,7 @@ public sealed class RobotsTextControllerTests
     [SetUp]
     public void SetUp()
     {
+        _mockApplicationResolver = new Mock<IApplicationResolver>();
         _serviceMock = new Mock<IRobotsContentService>();
         _loggerMock = new Mock<ILogger<RobotsTextController>>();
 
@@ -37,12 +42,13 @@ public sealed class RobotsTextControllerTests
         _mockHttpRequest.Setup(x => x.Host).Returns(new HostString("www.example.com"));
 
         _mockHttpResponse = new Mock<HttpResponse>();
+        _mockHttpResponse.Setup(x => x.Headers).Returns(new HeaderDictionary());
 
         _mockHttpContext = new Mock<HttpContext>();
         _mockHttpContext.Setup(x => x.Request).Returns(_mockHttpRequest.Object);
         _mockHttpContext.Setup(x => x.Response).Returns(_mockHttpResponse.Object);
 
-        _controller = new RobotsTextController(_serviceMock.Object, _loggerMock.Object)
+        _controller = new RobotsTextController(_mockApplicationResolver.Object, _serviceMock.Object, _loggerMock.Object)
         {
             ControllerContext = new ControllerContext
             {
@@ -52,14 +58,14 @@ public sealed class RobotsTextControllerTests
     }
 
     [Test]
-    public void Index_WhenCalled_ReturnsRobotsContent()
+    public async Task Index_WhenCalled_ReturnsRobotsContent()
     {
         // Arrange
         var robotsContent = "User-agent: *\nDisallow: /";
-        _serviceMock.Setup(x => x.GetRobotsContent(It.IsAny<Guid>(), It.IsAny<string>())).Returns(robotsContent);
+        _serviceMock.Setup(x => x.GetRobotsContent(It.IsAny<string>(), It.IsAny<string>())).Returns(robotsContent);
 
         // Act
-        var result = _controller.Index();
+        var result = await _controller.Index();
 
         // Assert
         var contentResult = result as ContentResult;

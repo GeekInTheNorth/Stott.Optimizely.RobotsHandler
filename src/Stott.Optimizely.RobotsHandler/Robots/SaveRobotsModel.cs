@@ -6,11 +6,11 @@ public sealed class SaveRobotsModel
 {
     public Guid Id { get; set; }
 
-    public Guid SiteId { get; set; }
+    public string? AppId { get; set; }
 
-    public string SiteName { get; set; }
+    public string? AppName { get; set; }
 
-    public string SpecificHost { get; set; }
+    public string? SpecificHost { get; set; }
 
-    public string RobotsContent { get; set; }
+    public string? RobotsContent { get; set; }
 }

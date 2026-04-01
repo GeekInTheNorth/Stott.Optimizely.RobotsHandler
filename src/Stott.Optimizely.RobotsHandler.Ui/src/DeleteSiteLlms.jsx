@@ -18,12 +18,12 @@ function DeleteSiteLlms(props) {
         let url = ''.concat(import.meta.env.VITE_APP_LLMS_DELETE, props.id, '/');
         await axios.delete(url)
             .then(() => {
-                handleShowSuccessToast('Success', 'Your llms content for \'' + props.siteName + '\' was successfully deleted.');
+                handleShowSuccessToast('Success', 'Your llms content for \'' + props.appName + '\' was successfully deleted.');
                 setShowModal(false);
                 handleReload();
             },
             () => {
-                handleShowFailureToast('Failure', 'An error was encountered when trying to delete your llms content for \'' + props.siteName + '\'.');
+                handleShowFailureToast('Failure', 'An error was encountered when trying to delete your llms content for \'' + props.appName + '\'.');
                 setShowModal(false);
             });
     }
@@ -40,7 +40,7 @@ function DeleteSiteLlms(props) {
                     <Modal.Title>Delete LLMS Configuration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <label>Are you sure you want to delete this configuration for '{props.siteName}'?</label>
+                    <label>Are you sure you want to delete this configuration for '{props.appName}'?</label>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant='danger' type='button' onClick={handleDeleteLlmsContent}>Delete</Button>

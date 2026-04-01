@@ -8,22 +8,22 @@ import DeleteSiteRobots from './DeleteSiteRobots';
 function ConfigurationList(props)
 {
 
-    const [siteCollection, setSiteCollection] = useState([])
+    const [appCollection, setAppCollection] = useState([])
 
     useEffect(() => {
-        getSiteCollection()
+        getAppCollection()
     }, [])
 
     const handleShowFailureToast = (title, description) => props.showToastNotificationEvent && props.showToastNotificationEvent(false, title, description)
 
-    const getSiteCollection = async () => {
-        
-        setSiteCollection([]);
-        
+    const getAppCollection = async () => {
+
+        setAppCollection([]);
+
         await axios.get(import.meta.env.VITE_APP_ROBOTS_LIST)
             .then((response) => {
                 if (response.data && response.data.list && Array.isArray(response.data.list)){
-                    setSiteCollection(response.data.list);
+                    setAppCollection(response.data.list);
                 }
                 else{
                     handleShowFailureToast('Failure', 'Failed to retrieve robots configuration data.');
@@ -34,17 +34,17 @@ function ConfigurationList(props)
             });
     }
 
-    const renderSiteList = () => {
-        return siteCollection && siteCollection.map((siteDetails, index) => {
-            const { id, siteId, siteName, isForWholeSite, specificHost, canDelete } = siteDetails
+    const renderAppList = () => {
+        return appCollection && appCollection.map((appDetails, index) => {
+            const { id, appId, appName, isForWholeSite, specificHost, canDelete } = appDetails
             const hostName = isForWholeSite === true ? 'Default' : specificHost;
             return (
                 <tr key={index}>
-                    <td>{siteName}</td>
+                    <td>{appName}</td>
                     <td>{hostName}</td>
                     <td>
-                        <EditSiteRobots id={id} siteId={siteId} showToastNotificationEvent={props.showToastNotificationEvent} reloadEvent={getSiteCollection}></EditSiteRobots>
-                        <DeleteSiteRobots id={id} siteName={siteName} showToastNotificationEvent={props.showToastNotificationEvent} canDelete={canDelete} reloadEvent={getSiteCollection}></DeleteSiteRobots>
+                        <EditSiteRobots id={id} appId={appId} showToastNotificationEvent={props.showToastNotificationEvent} reloadEvent={getAppCollection}></EditSiteRobots>
+                        <DeleteSiteRobots id={id} appName={appName} showToastNotificationEvent={props.showToastNotificationEvent} canDelete={canDelete} reloadEvent={getAppCollection}></DeleteSiteRobots>
                     </td>
                 </tr>
             )
@@ -58,20 +58,20 @@ function ConfigurationList(props)
                     <Alert variant='primary' className='p-3'>A default configuration will always be shown for each site to reflect the fallback behaviour of the AddOn.</Alert>
                 </div>
                 <div className='col-xl-3 col-lg-3 col-sm-12 col-xs-12 p-0 text-end'>
-                    <AddSiteRobots showToastNotificationEvent={props.showToastNotificationEvent} reloadEvent={getSiteCollection}></AddSiteRobots>
+                    <AddSiteRobots showToastNotificationEvent={props.showToastNotificationEvent} reloadEvent={getAppCollection}></AddSiteRobots>
                 </div>
             </Row>
             <Row>
                 <table className='table table-striped'>
                     <thead>
                         <tr>
-                            <th className='table-header-fix'>Site Name</th>
+                            <th className='table-header-fix'>Application</th>
                             <th className='table-header-fix'>Host</th>
                             <th className='table-header-fix'>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {renderSiteList()}
+                        {renderAppList()}
                     </tbody>
                 </table>
             </Row>

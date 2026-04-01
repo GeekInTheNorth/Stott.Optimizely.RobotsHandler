@@ -8,11 +8,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 
 using NUnit.Framework;
-
+using Stott.Optimizely.RobotsHandler.Applications;
 using Stott.Optimizely.RobotsHandler.Opal;
 using Stott.Optimizely.RobotsHandler.Opal.Models;
 using Stott.Optimizely.RobotsHandler.Robots;
-using Stott.Optimizely.RobotsHandler.Sites;
 using Stott.Optimizely.RobotsHandler.Test.TestCases;
 
 namespace Stott.Optimizely.RobotsHandler.Test.Opal;
@@ -302,8 +301,8 @@ public sealed class OpalRobotsApiControllerTests
         _mockService.Verify(s => s.Save(It.Is<SaveRobotsModel>(m => 
             m.Id == robotsId && 
             m.RobotsContent == newContent &&
-            m.SiteName == existingConfig.SiteName &&
-            m.SiteId == existingConfig.SiteId &&
+            m.AppName == existingConfig.AppName &&
+            m.AppId == existingConfig.AppId &&
             m.SpecificHost == existingConfig.SpecificHost)), Times.Once);
     }
 
@@ -522,34 +521,34 @@ public sealed class OpalRobotsApiControllerTests
 
     private static List<SiteRobotsViewModel> CreateDummyData()
     {
-        return new List<SiteRobotsViewModel>
-        {
+        return
+        [
             new SiteRobotsViewModel
             {
                 Id = Guid.NewGuid(),
-                SiteName = "Test One",
+                AppName = "Test One",
                 SpecificHost = "specific.test",
-                AvailableHosts = new List<SiteHostViewModel>
-                {
-                    new SiteHostViewModel { HostName = "available1.test" },
-                    new SiteHostViewModel { HostName = "available2.test" }
-                },
+                AvailableHosts =
+                [
+                    new HostViewModel { HostName = "available1.test", DisplayName = "Site 1" },
+                    new HostViewModel { HostName = "available2.test", DisplayName = "Site 2" }
+                ],
                 RobotsContent = "User-agent: *\nDisallow: /admin",
                 IsForWholeSite = false
             },
             new SiteRobotsViewModel
             {
                 Id = Guid.NewGuid(),
-                SiteName = "Test Two",
+                AppName = "Test Two",
                 SpecificHost = null,
-                AvailableHosts = new List<SiteHostViewModel>
-                {
-                    new SiteHostViewModel { HostName = "available3.test" },
-                    new SiteHostViewModel { HostName = "available4.test" }
-                },
+                AvailableHosts =
+                [
+                    new HostViewModel { HostName = "available3.test", DisplayName = "Site 3" },
+                    new HostViewModel { HostName = "available4.test", DisplayName = "Site 4" }
+                ],
                 RobotsContent = "User-agent: *\nDisallow: /private",
                 IsForWholeSite = true
             }
-        };
+        ];
     }
 }

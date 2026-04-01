@@ -1,8 +1,8 @@
 ﻿namespace Stott.Optimizely.RobotsHandler.Robots;
 
 using System;
-
-using EPiServer.Web;
+using System.Threading.Tasks;
+using EPiServer.Applications;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,26 +10,20 @@ using Microsoft.Extensions.Logging;
 
 using Stott.Optimizely.RobotsHandler.Extensions;
 
-public sealed class RobotsTextController : Controller
+public sealed class RobotsTextController(
+     IApplicationResolver applicationResolver,
+     IRobotsContentService service,
+     ILogger<RobotsTextController> logger) : Controller
 {
-    private readonly IRobotsContentService _service;
-
-    private readonly ILogger<RobotsTextController> _logger;
-
-    public RobotsTextController(IRobotsContentService service, ILogger<RobotsTextController> logger)
-    {
-        _service = service;
-        _logger = logger;
-    }
-
     [HttpGet]
     [Route("robots.txt")]
     [AllowAnonymous]
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         try
         {
-            var robotsContent = _service.GetRobotsContent(SiteDefinition.Current.Id, Request.Host.Value);
+            var application = await applicationResolver.GetByContextAsync();
+            var robotsContent = service.GetRobotsContent(application?.Name, Request?.Host.Value);
 
             // Set a low cache duration, but not zero to ensure the CDN protects against DDOS attacks
             Response.Headers.AddOrUpdateHeader("Cache-Control", "public, max-age=300");
@@ -43,7 +37,7 @@ public sealed class RobotsTextController : Controller
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "Failed to load the robots.txt for the current site.");
+            logger.LogError(exception, "Failed to load the robots.txt for the current site.");
             throw;
         }
     }

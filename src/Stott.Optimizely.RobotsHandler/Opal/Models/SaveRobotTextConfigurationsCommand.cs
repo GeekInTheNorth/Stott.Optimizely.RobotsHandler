@@ -2,9 +2,9 @@
 
 public class SaveRobotTextConfigurationsCommand
 {
-    public string RobotsId { get; set; }
+    public string? RobotsId { get; set; }
 
-    public string HostName { get; set; }
+    public string? HostName { get; set; }
 
-    public string RobotsTxtContent { get; set; }
+    public string? RobotsTxtContent { get; set; }
 }
