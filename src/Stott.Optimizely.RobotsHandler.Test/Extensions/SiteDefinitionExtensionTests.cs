@@ -54,9 +54,9 @@ public sealed class ApplicationMapperTests
         Assert.That(result[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].HostName, Is.EqualTo(string.Empty));
         Assert.That(result[1].DisplayName, Is.EqualTo("http://host1.com/"));
-        Assert.That(result[1].HostName, Is.EqualTo("http://host1.com/"));
+        Assert.That(result[1].HostName, Is.EqualTo("host1.com"));
         Assert.That(result[2].DisplayName, Is.EqualTo("http://host2.com/"));
-        Assert.That(result[2].HostName, Is.EqualTo("http://host2.com/"));
+        Assert.That(result[2].HostName, Is.EqualTo("host2.com"));
     }
 
     [Test]
@@ -77,6 +77,6 @@ public sealed class ApplicationMapperTests
         Assert.That(result[0].DisplayName, Is.EqualTo("Default"));
         Assert.That(result[0].HostName, Is.EqualTo(string.Empty));
         Assert.That(result[1].DisplayName, Is.EqualTo("http://host1.com/"));
-        Assert.That(result[1].HostName, Is.EqualTo("http://host1.com/"));
+        Assert.That(result[1].HostName, Is.EqualTo("host1.com"));
     }
 }

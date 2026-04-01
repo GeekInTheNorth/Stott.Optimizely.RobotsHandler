@@ -11,7 +11,7 @@ internal static class StringExtensions
             return null;
         }
 
-        var sanitized = hostName.TrimEnd('/');
+        var sanitized = hostName.Trim().TrimEnd('/');
         var normalized = sanitized.Contains("://") ? sanitized : $"https://{sanitized}";
         if (Uri.TryCreate(normalized, UriKind.Absolute, out var uri))
         {
