@@ -71,7 +71,7 @@ public class LlmsTextControllerTests
         var contentResult = result as ContentResult;
         Assert.That(contentResult, Is.Not.Null);
         Assert.That(contentResult.Content, Is.EqualTo(robotsContent));
-        Assert.That(contentResult.ContentType, Is.EqualTo("text/plain"));
+        Assert.That(contentResult.ContentType, Is.EqualTo("text/plain; charset=utf-8"));
         Assert.That(contentResult.StatusCode, Is.EqualTo(200));
     }
 }
