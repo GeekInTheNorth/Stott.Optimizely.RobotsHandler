@@ -43,7 +43,7 @@ public sealed class LlmsTextController : Controller
             return new ContentResult
             {
                 Content = llmsContent,
-                ContentType = "text/plain",
+                ContentType = "text/plain; charset=utf-8",
                 StatusCode = 200
             };
         }
