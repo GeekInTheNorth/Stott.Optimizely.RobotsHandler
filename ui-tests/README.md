@@ -104,6 +104,10 @@ The Playwright `webServer` config starts the sample with `dotnet run` and waits 
 - `src/EnvironmentAdminPage.ts` + `tests/environment-robots.spec.ts` — environment overrides:
   toggles the Development switches and asserts the home page's `X-Robots-Tag` header and
   `<meta name="robots">` tag (absent when disabled; present with directives when enabled).
+- `src/OpalTokenAdminPage.ts` + `src/opal.ts` + `tests/opal.spec.ts` — Opal AI endpoints:
+  the discovery manifest (anonymous), and `get-robot-txt-configurations` guarded by a bearer
+  token created via the API Tokens UI — returns data with a valid Read-scoped token, and `401`
+  with a wrong or missing token.
 - `tests/admin-smoke.spec.ts` — light check that the admin SPA loads and lists both sites.
 
 Both files are `[AllowAnonymous]` and routing is host-based, so reads don't need the session.
