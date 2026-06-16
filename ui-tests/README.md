@@ -13,14 +13,21 @@ The sample hosts two sites across four HTTPS ports:
 | Test Website 1 | `https://localhost:5000` | `https://localhost:5001` |
 | Test Website 2 | `https://localhost:5002` | `https://localhost:5003` |
 
-The suite edits robots.txt content bound to each **frontend** host, then asserts:
+The suite edits content via the admin UI and asserts, for both `robots.txt` and `llms.txt`:
 
-- each frontend domain serves its own configured content (`text/plain`);
+- each frontend domain serves its own configured content (`text/plain; charset=utf-8`);
 - content is isolated between sites (site 1's content never appears on site 2 and vice-versa);
-- the **editor** domains (5001 / 5003) never expose the frontend content — they fall back to
-  the add-on default (`User-agent: *` / `Disallow: /`).
+- the **editor** domains (5001 / 5003) never expose the frontend content — robots.txt falls
+  back to the add-on default (`Disallow: /`), llms.txt returns `404` (it has no default);
+- a host-specific config overrides the site-wide Default for the same host.
 
-This proves that robots.txt content is only accessible via the frontend domains.
+It also covers **environment-level overrides** for the `Development` environment: with no
+overrides the home page has no `X-Robots-Tag` header and no `<meta name="robots">` tag; with
+overrides enabled, both are present and contain the selected directives (no follow / no index /
+no image index / no archive, and all combined).
+
+This proves robots/llms content is only accessible via the frontend domains, and that the
+environment overrides are emitted correctly.
 
 ## Prerequisites
 
@@ -48,7 +55,10 @@ so there is no seeded admin. Create one once:
    ```
    ADMIN_USERNAME=admin@example.com
    ADMIN_PASSWORD=your-password
+   ENVIRONMENT_NAME=Development
    ```
+   `ENVIRONMENT_NAME` is the hosting environment the environment-override tests target; the
+   sample runs as `Development`.
 
 Because LocalDB persists, this is only needed once per machine/database.
 
@@ -91,6 +101,9 @@ The Playwright `webServer` config starts the sample with `dotnet run` and waits 
 - `tests/robots-priority.spec.ts` / `tests/llms-priority.spec.ts` — host precedence: a
   host-specific config overrides the site-wide Default for the same host.
 - `tests/content-type.spec.ts` — asserts both files are served as `text/plain; charset=utf-8`.
+- `src/EnvironmentAdminPage.ts` + `tests/environment-robots.spec.ts` — environment overrides:
+  toggles the Development switches and asserts the home page's `X-Robots-Tag` header and
+  `<meta name="robots">` tag (absent when disabled; present with directives when enabled).
 - `tests/admin-smoke.spec.ts` — light check that the admin SPA loads and lists both sites.
 
 Both files are `[AllowAnonymous]` and routing is host-based, so reads don't need the session.

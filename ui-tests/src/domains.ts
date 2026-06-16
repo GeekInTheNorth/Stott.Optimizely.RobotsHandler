@@ -25,6 +25,9 @@ export const SITES = {
 export const ADMIN_HOST = 'https://localhost:5001';
 export const ADMIN_URL = `${ADMIN_HOST}/stott.robotshandler/administration/`;
 
+// The hosting environment used for environment-level robots-override tests.
+export const ENVIRONMENT_NAME = process.env.ENVIRONMENT_NAME ?? 'Development';
+
 // Unique, identifiable robots.txt content bound to each frontend host only.
 export const SITE1_MARKER = 'UITEST-SITE1-FRONTEND';
 export const SITE2_MARKER = 'UITEST-SITE2-FRONTEND';

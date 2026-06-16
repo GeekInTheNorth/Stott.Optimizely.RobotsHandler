@@ -4,10 +4,13 @@ export interface TextFileResponse {
   status: number;
   contentType: string;
   body: string;
+  /** All response headers, lower-cased keys (e.g. headers['x-robots-tag']). */
+  headers: Record<string, string>;
 }
 
 /**
- * Fetches a public text file (e.g. /robots.txt or /llms.txt) with caching disabled.
+ * Fetches a URL with caching disabled — used for /robots.txt and /llms.txt, and for the
+ * home page when checking the X-Robots-Tag header / meta robots tag.
  *
  * Both routes return `Cache-Control: public, max-age=300` and the sample app enables
  * ResponseCaching (keyed by host+path, ignoring query), so a `no-cache` request is
@@ -25,10 +28,12 @@ export async function fetchTextFile(url: string): Promise<TextFileResponse> {
   });
   try {
     const res = await context.get(url);
+    const headers = res.headers();
     return {
       status: res.status(),
-      contentType: res.headers()['content-type'] ?? '',
+      contentType: headers['content-type'] ?? '',
       body: await res.text(),
+      headers,
     };
   } finally {
     await context.dispose();
