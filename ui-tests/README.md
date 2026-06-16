@@ -108,6 +108,10 @@ The Playwright `webServer` config starts the sample with `dotnet run` and waits 
   the discovery manifest (anonymous), and `get-robot-txt-configurations` guarded by a bearer
   token created via the API Tokens UI — returns data with a valid Read-scoped token, and `401`
   with a wrong or missing token.
+- `tests/opal-save.spec.ts` — `save-robot-txt-configuration` (Write scope): a Write token saves
+  valid data (by hostName and by robotsId resolved from GET) — verified via GET; invalid data
+  is rejected (HTTP 200 with `success:false`, nothing persisted); a Read-only token is `401` and
+  never saves.
 - `tests/admin-smoke.spec.ts` — light check that the admin SPA loads and lists both sites.
 
 Both files are `[AllowAnonymous]` and routing is host-based, so reads don't need the session.
