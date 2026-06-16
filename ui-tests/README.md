@@ -74,38 +74,42 @@ The Playwright `webServer` config starts the sample with `dotnet run` and waits 
 
 ## How it works
 
-- `playwright.config.ts` — auto-starts the sample and defines two projects: a `setup`
-  project that logs in once, and a `chromium` project that depends on it and reuses the
-  saved session. Also sets `ignoreHTTPSErrors` for the self-signed dev cert.
-- `tests/auth.setup.ts` — the `setup` project: logs in once at `/util/Login` (fields
-  `#UserName` / `#Password`) and saves the session to `.auth/state.json`. Because it runs as a
-  real test it is **visible under `--headed` / `--ui`**, and login runs exactly once per run.
+- `playwright.config.ts` — auto-starts the sample, runs `global-setup.ts` once, and defines a
+  single `chromium` project. Sets `ignoreHTTPSErrors` for the self-signed dev cert and reuses
+  the saved session via `storageState`.
+- `global-setup.ts` — logs in once at `/util/Login` (fields `#UserName` / `#Password`) and saves
+  the session to `.auth/state.json`. This is **global setup**, not a listed test, so the Test
+  Explorer shows only the real specs.
 - `src/domains.ts` — the four domains, site/host constants, and the unique content markers.
-- `src/RobotsAdminPage.ts` — page object that drives the admin SPA (idempotent add/edit + delete).
-- `tests/robots-routing.spec.ts` — the routing assertions (edit via UI, then navigate to
-  `/robots.txt` on each domain and assert on the response).
+- `src/RobotsAdminPage.ts` / `src/LlmsAdminPage.ts` — page objects that drive the admin SPA
+  (add / edit / delete / clear-all / set-default). The browser visibly drives the UI under
+  `--headed`.
+- `src/textFile.ts` — `fetchTextFile(url)`: reads `/robots.txt` or `/llms.txt` with caching
+  disabled.
+- `tests/robots-routing.spec.ts` / `tests/llms-routing.spec.ts` — per-domain routing assertions
+  (edit via UI, then read the file and assert content + isolation).
+- `tests/robots-priority.spec.ts` / `tests/llms-priority.spec.ts` — host precedence: a
+  host-specific config overrides the site-wide Default for the same host.
+- `tests/content-type.spec.ts` — asserts both files are served as `text/plain; charset=utf-8`.
 - `tests/admin-smoke.spec.ts` — light check that the admin SPA loads and lists both sites.
 
-The routing tests navigate the browser to `/robots.txt` (so the run is watchable headed) and
-assert on the raw HTTP response. `/robots.txt` is `[AllowAnonymous]` and routing is host-based,
-so the reused admin session does not affect the served content.
+Both files are `[AllowAnonymous]` and routing is host-based, so reads don't need the session.
+Reads go through `fetchTextFile`, which sends `Cache-Control: no-cache` — the routes return
+`Cache-Control: public, max-age=300` and the sample enables ResponseCaching, so this is required
+to observe freshly-saved content (and to stop one test's cached response affecting another).
 
-To watch the run: `npm run test:headed` (drives every step in a visible browser), or
-`npm run test:ui` to step through interactively. `npx playwright test --project=setup --headed`
-shows just the login.
+**robots.txt vs llms.txt** — robots.txt always returns `200`, falling back to the add-on default
+(`Disallow: /`) when nothing matches; llms.txt has no default, so it returns **`404`** when no
+configuration matches the requesting host. The llms list is also empty until configurations
+exist (no synthetic Default row), so setting the site-wide Default is an Add rather than an Edit.
 
-## Viewing tests in VS Code
-
-The Playwright VS Code extension enables only the **first** project by default, so `chromium`
-is listed first in `playwright.config.ts` to keep the real tests (`robots-routing`,
-`admin-smoke`) visible in the Test Explorer. The `authenticate` login runs automatically as a
-`setup` dependency. If you ever want to see/run the login on its own, tick the `setup` project
-in the extension's project selector (Test Explorer → Playwright settings).
+To watch the run: `npm run test:headed` (the browser visibly drives the admin UI for every edit),
+or `npm run test:ui` to step through interactively.
 
 ## Notes
 
-- Tests run serially against a single shared database; setup creates the configs and
-  `afterAll` deletes them, so the suite is re-runnable and leaves the database clean.
+- Tests run serially against a single shared database; each spec creates the configs it needs
+  and cleans up in `afterAll`, so the suite is re-runnable and leaves the database clean.
 - Scope is `robots.txt` only. `llms.txt` and environment-robots are not covered; the page
   object is structured so a parallel `LlmsAdminPage` could be added later.
 - No add-on or UI source is modified — tests target the existing rendered DOM.

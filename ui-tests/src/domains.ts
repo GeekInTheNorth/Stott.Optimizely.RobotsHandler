@@ -30,3 +30,9 @@ export const SITE1_MARKER = 'UITEST-SITE1-FRONTEND';
 export const SITE2_MARKER = 'UITEST-SITE2-FRONTEND';
 export const SITE1_ROBOTS = `# ${SITE1_MARKER}\nUser-agent: *\nDisallow: /site1-only`;
 export const SITE2_ROBOTS = `# ${SITE2_MARKER}\nUser-agent: *\nDisallow: /site2-only`;
+
+// Unique, identifiable llms.txt content (markdown) bound to each frontend host only.
+export const SITE1_LLMS_MARKER = 'UITEST-SITE1-LLMS';
+export const SITE2_LLMS_MARKER = 'UITEST-SITE2-LLMS';
+export const SITE1_LLMS = `# ${SITE1_LLMS_MARKER}\n\n> Site 1 frontend llms content`;
+export const SITE2_LLMS = `# ${SITE2_LLMS_MARKER}\n\n> Site 2 frontend llms content`;
