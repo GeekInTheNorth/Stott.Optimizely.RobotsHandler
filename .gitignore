@@ -356,3 +356,6 @@ App_Data/
 # Modules
 */Stott.Optimizely.RobotsHandler/modules/**
 */OptimizelyTwelveTest/modules/**
+
+# Settings
+appsettings.Development.json
