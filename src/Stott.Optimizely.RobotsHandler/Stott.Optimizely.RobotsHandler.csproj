@@ -14,10 +14,10 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <NeutralLanguage>en-GB</NeutralLanguage>
         <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-        <AssemblyVersion>7.0.0</AssemblyVersion>
-        <FileVersion>7.0.0</FileVersion>
-        <Version>7.0.0</Version>
-        <PackageReleaseNotes>Update compilation for CMS 13.</PackageReleaseNotes>
+        <AssemblyVersion>7.0.1</AssemblyVersion>
+        <FileVersion>7.0.1</FileVersion>
+        <Version>7.0.1</Version>
+        <PackageReleaseNotes>Bug fixes update for CMS 13.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
         <Nullable>enable</Nullable>

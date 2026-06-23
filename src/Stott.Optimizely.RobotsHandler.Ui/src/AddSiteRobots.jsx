@@ -145,7 +145,7 @@ function AddSiteRobots(props) {
     return(
         <>
             <Button variant='primary' onClick={handleShowEditModal} className='text-nowrap p-3'>Add Configuration</Button>
-            <Modal show={showModal} size='lg'>
+            <Modal show={showModal} size='xl'>
                 <Modal.Header closeButton onClick={handleCloseModal}>
                     <Modal.Title>Create Robots Configuration</Modal.Title>
                 </Modal.Header>

@@ -22,6 +22,8 @@ using ServiceExtensions;
 
 using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Configuration;
+using Stott.Security.Optimizely.Common;
+using Stott.Security.Optimizely.Features.Configuration;
 
 public class Startup(IWebHostEnvironment webHostingEnvironment)
 {
@@ -68,17 +70,17 @@ public class Startup(IWebHostEnvironment webHostingEnvironment)
             });
         });
 
-        //services.AddStottSecurity(cspSetupOptions =>
-        //{
-        //    cspSetupOptions.ConnectionStringName = "EPiServerDB";
-        //},
-        //authorizationOptions =>
-        //{
-        //    authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
-        //    {
-        //        policy.RequireRole("WebAdmins");
-        //    });
-        //});
+        services.AddStottSecurity(cspSetupOptions =>
+        {
+            cspSetupOptions.ConnectionStringName = "EPiServerDB";
+        },
+        authorizationOptions =>
+        {
+            authorizationOptions.AddPolicy(CspConstants.AuthorizationPolicy, policy =>
+            {
+                policy.RequireRole("WebAdmins");
+            });
+        });
 
         services.ConfigureApplicationCookie(options =>
         {
@@ -118,7 +120,7 @@ public class Startup(IWebHostEnvironment webHostingEnvironment)
 
         app.UseAuthentication();
         app.UseAuthorization();
-        // app.UseStottSecurity();
+        app.UseStottSecurity();
         app.UseRobotsHandler();
 
         app.UseEndpoints(endpoints =>
