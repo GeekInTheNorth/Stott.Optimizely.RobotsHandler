@@ -52,6 +52,16 @@ public sealed class RobotsApiController(
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(formSubmitModel.AppId))
+            {
+                return new ContentResult
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Content = $"{nameof(formSubmitModel.AppId)} does not have a value.",
+                    ContentType = "text/plain"
+                };
+            }
+
             if (service.DoesConflictExists(formSubmitModel))
             {
                 return new ContentResult

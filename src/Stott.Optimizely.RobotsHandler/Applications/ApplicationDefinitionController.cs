@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,14 +16,7 @@ public sealed class ApplicationDefinitionController(IApplicationDefinitionServic
     public async Task<IActionResult> Applications()
     {
         var apps = await appService.GetAllApplicationsAsync();
-        var allApps = apps.ToList();
 
-        allApps.Insert(0, new ApplicationViewModel
-        {
-            AppName = "All Applications",
-            AvailableHosts = ApplicationMapper.CreateHostSummaries("All Hosts")
-        });
-
-        return CreateSafeJsonResult(allApps);
+        return CreateSafeJsonResult(apps);
     }
 }
