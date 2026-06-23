@@ -8,14 +8,16 @@ const OPAL_BASE = SITES.site1.frontendUrl;
 const DISCOVERY_URL = `${OPAL_BASE}/stott.robotshandler/opal/discovery/`;
 const GET_ROBOTS_URL = `${OPAL_BASE}/stott.robotshandler/opal/tools/get-robot-txt-configurations/`;
 const SAVE_ROBOTS_URL = `${OPAL_BASE}/stott.robotshandler/opal/tools/save-robot-txt-configuration/`;
+const GET_LLMS_URL = `${OPAL_BASE}/stott.robotshandler/opal/tools/get-llms-txt-configurations/`;
+const SAVE_LLMS_URL = `${OPAL_BASE}/stott.robotshandler/opal/tools/save-llms-txt-configuration/`;
 
 export interface OpalResponse {
   status: number;
   body: string;
 }
 
-/** A single robots config as returned by get-robot-txt-configurations (camelCase). */
-export interface OpalRobotConfig {
+/** A single config as returned by the get-*-configurations tools (camelCase). */
+export interface OpalConfig {
   id: string;
   siteName: string;
   specificHost: string;
@@ -33,75 +35,78 @@ export async function getDiscovery(): Promise<OpalResponse> {
   }
 }
 
-/**
- * POST the get-robot-txt-configurations tool. Pass a bearer token to authorise; omit
- * it (or pass a wrong value) to exercise the 401 path. Optionally filter by host.
- */
-export async function getRobotConfigurations(opts: {
-  token?: string;
-  hostName?: string;
-}): Promise<OpalResponse> {
+// POST an Opal tool with optional bearer token and a parameters object.
+async function postOpalTool(
+  url: string,
+  token: string | undefined,
+  parameters: Record<string, string>,
+): Promise<OpalResponse> {
   const context = await request.newContext({ ignoreHTTPSErrors: true });
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     };
-    if (opts.token) {
-      headers.Authorization = `Bearer ${opts.token}`;
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
     }
-
-    const res = await context.post(GET_ROBOTS_URL, {
-      headers,
-      data: { parameters: opts.hostName ? { hostName: opts.hostName } : {} },
-    });
+    const res = await context.post(url, { headers, data: { parameters } });
     return { status: res.status(), body: await res.text() };
   } finally {
     await context.dispose();
   }
 }
 
-/**
- * POST the save-robot-txt-configuration tool. The backend resolves the target from
- * robotsId and/or hostName. Pass a bearer token to authorise (Write scope required);
- * omit or use an insufficient token to exercise the 401 path.
- */
-export async function saveRobotConfiguration(opts: {
+// --- robots.txt tools ---
+
+/** POST get-robot-txt-configurations. Omit/wrong token exercises the 401 path. */
+export function getRobotConfigurations(opts: { token?: string; hostName?: string }): Promise<OpalResponse> {
+  return postOpalTool(GET_ROBOTS_URL, opts.token, opts.hostName ? { hostName: opts.hostName } : {});
+}
+
+/** POST save-robot-txt-configuration (Write scope required). */
+export function saveRobotConfiguration(opts: {
   token?: string;
   hostName?: string;
   robotsId?: string;
   robotsTxtContent?: string;
 }): Promise<OpalResponse> {
-  const context = await request.newContext({ ignoreHTTPSErrors: true });
-  try {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-    };
-    if (opts.token) {
-      headers.Authorization = `Bearer ${opts.token}`;
-    }
+  const parameters: Record<string, string> = {};
+  if (opts.hostName !== undefined) parameters.hostName = opts.hostName;
+  if (opts.robotsId !== undefined) parameters.robotsId = opts.robotsId;
+  if (opts.robotsTxtContent !== undefined) parameters.robotsTxtContent = opts.robotsTxtContent;
+  return postOpalTool(SAVE_ROBOTS_URL, opts.token, parameters);
+}
 
-    const parameters: Record<string, string> = {};
-    if (opts.hostName !== undefined) parameters.hostName = opts.hostName;
-    if (opts.robotsId !== undefined) parameters.robotsId = opts.robotsId;
-    if (opts.robotsTxtContent !== undefined) parameters.robotsTxtContent = opts.robotsTxtContent;
+// --- llms.txt tools ---
 
-    const res = await context.post(SAVE_ROBOTS_URL, { headers, data: { parameters } });
-    return { status: res.status(), body: await res.text() };
-  } finally {
-    await context.dispose();
-  }
+/** POST get-llms-txt-configurations. Omit/wrong token exercises the 401 path. */
+export function getLlmsConfigurations(opts: { token?: string; hostName?: string }): Promise<OpalResponse> {
+  return postOpalTool(GET_LLMS_URL, opts.token, opts.hostName ? { hostName: opts.hostName } : {});
+}
+
+/** POST save-llms-txt-configuration (Write scope required). */
+export function saveLlmsConfiguration(opts: {
+  token?: string;
+  hostName?: string;
+  llmsId?: string;
+  llmsTxtContent?: string;
+}): Promise<OpalResponse> {
+  const parameters: Record<string, string> = {};
+  if (opts.hostName !== undefined) parameters.hostName = opts.hostName;
+  if (opts.llmsId !== undefined) parameters.llmsId = opts.llmsId;
+  if (opts.llmsTxtContent !== undefined) parameters.llmsTxtContent = opts.llmsTxtContent;
+  return postOpalTool(SAVE_LLMS_URL, opts.token, parameters);
 }
 
 /**
- * Parse a single get-robot-txt-configurations response (the shape returned when a
- * hostName filter matches one config). Returns null if the body isn't a config object
- * (e.g. a { success: false } message). Field names are camelCase (CreateSafeJsonResult).
+ * Parse a single get-*-configurations response (the shape returned when a hostName
+ * filter matches one config). Returns null if the body isn't a config object (e.g. a
+ * { success: false } message). Field names are camelCase (CreateSafeJsonResult).
  */
-export function parseRobotConfig(body: string): OpalRobotConfig | null {
+export function parseOpalConfig(body: string): OpalConfig | null {
   try {
-    const obj = JSON.parse(body) as Partial<OpalRobotConfig>;
+    const obj = JSON.parse(body) as Partial<OpalConfig>;
     if (obj && typeof obj === 'object' && typeof obj.content === 'string') {
       return {
         id: obj.id ?? '',

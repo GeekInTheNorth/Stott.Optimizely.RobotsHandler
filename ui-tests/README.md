@@ -112,6 +112,9 @@ The Playwright `webServer` config starts the sample with `dotnet run` and waits 
   valid data (by hostName and by robotsId resolved from GET) — verified via GET; invalid data
   is rejected (HTTP 200 with `success:false`, nothing persisted); a Read-only token is `401` and
   never saves.
+- `tests/opal-llms.spec.ts` + `tests/opal-llms-save.spec.ts` — the same coverage for the llms
+  tools (`get-llms-txt-configurations` / `save-llms-txt-configuration`), scoped to the token's
+  `llms` permission. (llms has no synthetic default config, so the get test seeds one first.)
 - `tests/admin-smoke.spec.ts` — light check that the admin SPA loads and lists both sites.
 
 Both files are `[AllowAnonymous]` and routing is host-based, so reads don't need the session.
