@@ -94,7 +94,7 @@ public sealed class RobotsContentService(
 
     public void Save(SaveRobotsModel model)
     {
-        if (Guid.Empty.Equals(model.AppId))
+        if (string.IsNullOrWhiteSpace(model.AppId))
         {
             throw new ArgumentException($"{nameof(model)}.{nameof(model.AppId)} must not be null or empty.", nameof(model));
         }
