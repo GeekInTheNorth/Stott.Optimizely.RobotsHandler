@@ -2,6 +2,8 @@
 
 using System;
 
+using EPiServer.Cms.Shell;
+using EPiServer.Cms.Shell.UI;
 using EPiServer.Cms.UI.AspNetIdentity;
 using EPiServer.Scheduler;
 using EPiServer.Web.Routing;
@@ -14,6 +16,7 @@ using Microsoft.Net.Http.Headers;
 
 using OptimizelyTwelveTest.Features.Common;
 using OptimizelyTwelveTest.Features.Search;
+using OptimizelyTwelveTest.Features.Settings;
 
 using ServiceExtensions;
 
@@ -44,7 +47,8 @@ public class Startup
 
         services.AddRazorPages();
         services.AddCmsAspNetIdentity<ApplicationUser>();
-        
+        services.AddAdminUserRegistration(options => { options.Behavior = RegisterAdminUserBehaviors.Enabled; });
+
         // Various serialization formats.
         //// services.AddMvc().AddNewtonsoftJson();
         services.AddMvc().AddJsonOptions(config =>
@@ -61,6 +65,8 @@ public class Startup
                 })
                 .AddCustomDependencies()
                 .AddSwaggerGen();
+
+        services.AddScoped<ISiteSettingsResolver, SiteSettingsResolver>();
 
         //// services.AddRobotsHandler();
         services.AddRobotsHandler(authorizationOptions =>
@@ -96,6 +102,12 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
         }
+        else
+        {
+            app.UseExceptionHandler("/server-error.html");
+        }
+
+        app.UseStatusCodePagesWithReExecute("/error", "?statusCode={0}");
 
         app.UseResponseCaching();
         app.Use(async (context, next) =>
