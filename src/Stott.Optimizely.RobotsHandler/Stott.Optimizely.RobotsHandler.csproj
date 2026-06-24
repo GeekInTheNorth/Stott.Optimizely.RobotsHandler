@@ -14,10 +14,10 @@
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <NeutralLanguage>en-GB</NeutralLanguage>
         <PackageTags>Optimizely CMS Robots Robots_txt</PackageTags>
-        <AssemblyVersion>6.0.1</AssemblyVersion>
-        <FileVersion>6.0.1</FileVersion>
-        <Version>6.0.1</Version>
-        <PackageReleaseNotes>Fix errors for Optimizely Notification Service.</PackageReleaseNotes>
+        <AssemblyVersion>6.0.2</AssemblyVersion>
+        <FileVersion>6.0.2</FileVersion>
+        <Version>6.0.2</Version>
+        <PackageReleaseNotes>Update Content Type headers to include UTF-8 charset.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
