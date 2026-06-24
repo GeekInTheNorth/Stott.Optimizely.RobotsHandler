@@ -10,6 +10,7 @@
     <PackageReference Include="EPiServer.Cms.UI.VisitorGroups" Version="13.1.0" />
     <PackageReference Include="MediatR" Version="14.1.0" />
 	<PackageReference Include="Optimizely.Graph.Cms" Version="13.1.0" />
+	<PackageReference Include="Stott.Security.Optimizely" Version="7.0.1" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
   <ItemGroup>

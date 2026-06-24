@@ -52,7 +52,7 @@ function ConfigurationList(props)
     }
 
     return(
-        <Container className='mt-3'>
+        <Container className='mt-3' fluid='xxl'>
             <Row className='mb-2'>
                 <div className='col-xl-9 col-lg-9 col-sm-12 col-xs-12 p-0'>
                     <Alert variant='primary' className='p-3'>A default configuration will always be shown for each site to reflect the fallback behaviour of the AddOn.</Alert>
