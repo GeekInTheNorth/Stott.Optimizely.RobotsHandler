@@ -66,7 +66,7 @@ function NavigationContainer(props) {
             <div className="container-fluid p-2 bg-dark text-light">
                 <p className="my-0 h5">Stott Robots Handler | {containerTitle}</p>
             </div>
-            <div className="container-fluid security-app-container">
+            <div className="container-fluid robots-app-container">
                 { showRobotsList ? <ConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></ConfigurationList> : null }
                 { showEnvironmentRobots ? <EnvironmentRobotsSettings showToastNotificationEvent={props.showToastNotificationEvent}></EnvironmentRobotsSettings> : null }
                 { showLlmsList ? <LlmsConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></LlmsConfigurationList> : null }

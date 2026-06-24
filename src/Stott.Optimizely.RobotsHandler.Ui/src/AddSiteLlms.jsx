@@ -169,7 +169,7 @@ Optional details go here
                     <Modal.Title>Create LLMS Configuration</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <div className='mb-3'>
+                    <div className='mb-3'>
                         <label>Application</label>
                         <select className='form-control form-select' name='SpecificHost' onChange={handleAppSelection}>{renderAvailableApps()}</select>
                     </div>

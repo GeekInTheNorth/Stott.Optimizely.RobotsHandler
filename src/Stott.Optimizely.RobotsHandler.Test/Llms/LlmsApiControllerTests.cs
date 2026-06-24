@@ -79,7 +79,7 @@ public sealed class LlmsApiControllerTests
     public void Save_ReturnsConflictResultWhenConflictExists()
     {
         // Arrange
-        var formSubmitModel = new SaveLlmsModel();
+        var formSubmitModel = new SaveLlmsModel { AppId = "MyApp" };
 
         _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Returns(true);
 
@@ -95,7 +95,7 @@ public sealed class LlmsApiControllerTests
     public void Save_DoesNotSaveModelWhenConflictExists()
     {
         // Arrange
-        var formSubmitModel = new SaveLlmsModel();
+        var formSubmitModel = new SaveLlmsModel { AppId = "MyApp" };
 
         _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Returns(true);
 
@@ -110,7 +110,7 @@ public sealed class LlmsApiControllerTests
     public void Save_SavesModelWhenNoConflictExists()
     {
         // Arrange
-        var formSubmitModel = new SaveLlmsModel();
+        var formSubmitModel = new SaveLlmsModel { AppId = "MyApp" };
 
         _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Returns(false);
 
@@ -125,7 +125,7 @@ public sealed class LlmsApiControllerTests
     public void Save_WhenDoesConflictExistsThrowsAnException_ThenAnInternalServerErrorIsReturned()
     {
         // Arrange
-        var formSubmitModel = new SaveLlmsModel();
+        var formSubmitModel = new SaveLlmsModel { AppId = "MyApp" };
 
         _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Throws<Exception>();
 
@@ -141,7 +141,7 @@ public sealed class LlmsApiControllerTests
     public void Save_WhenSaveOnTheServiceThrowsAnException_ThenAnInternalServerErrorIsReturned()
     {
         // Arrange
-        var formSubmitModel = new SaveLlmsModel();
+        var formSubmitModel = new SaveLlmsModel { AppId = "MyApp" };
 
         _mockService.Setup(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>())).Returns(false);
         _mockService.Setup(x => x.Save(It.IsAny<SaveLlmsModel>())).Throws<Exception>();
@@ -152,6 +152,36 @@ public sealed class LlmsApiControllerTests
         // Assert
         Assert.That(result, Is.AssignableFrom<ContentResult>());
         Assert.That(((ContentResult)result).StatusCode, Is.EqualTo(500));
+    }
+
+    [Test]
+    [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.EmptyStrings))]
+    public void Save_WhenAppIdIsMissing_ReturnsABadRequest(string appId)
+    {
+        // Arrange
+        var formSubmitModel = new SaveLlmsModel { AppId = appId };
+
+        // Act
+        var result = _controller.Save(formSubmitModel);
+
+        // Assert
+        Assert.That(result, Is.AssignableFrom<ContentResult>());
+        Assert.That(((ContentResult)result).StatusCode, Is.EqualTo(400));
+    }
+
+    [Test]
+    [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.EmptyStrings))]
+    public void Save_WhenAppIdIsMissing_DoesNotCheckForConflictsOrSave(string appId)
+    {
+        // Arrange
+        var formSubmitModel = new SaveLlmsModel { AppId = appId };
+
+        // Act
+        _controller.Save(formSubmitModel);
+
+        // Assert
+        _mockService.Verify(x => x.DoesConflictExists(It.IsAny<SaveLlmsModel>()), Times.Never);
+        _mockService.Verify(x => x.Save(It.IsAny<SaveLlmsModel>()), Times.Never);
     }
 
     [Test]

@@ -66,3 +66,14 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+#stott-robots-ui {
+  margin-top: 40px;
+  width: 100%;
+}
+
+div.robots-app-container {
+  overflow-y: auto;
+  height: calc(100vh - 82px);
+  padding-top: 10px;
+}
