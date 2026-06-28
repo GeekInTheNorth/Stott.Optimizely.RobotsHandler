@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 using EPiServer.Framework.Cache;
 
@@ -42,6 +41,28 @@ public sealed class RobotsCacheHandler(
         }
 
         return cache.TryGet<T>(cacheKey, ReadStrategy.Wait, out var cachedObject) ? cachedObject : default;
+    }
+
+    public T? Get<T>(string cacheKey, Func<T?> factory)
+        where T : class
+    {
+        if (string.IsNullOrWhiteSpace(cacheKey))
+        {
+            return null;
+        }
+
+        if (cache.TryGet<T>(cacheKey, ReadStrategy.Wait, out var cachedObject))
+        {
+            return cachedObject;
+        }
+
+        var objectToCache = factory();
+        if (objectToCache != null)
+        {
+            Add(cacheKey, objectToCache);
+        }
+
+        return objectToCache;
     }
 
     public void RemoveAll()
