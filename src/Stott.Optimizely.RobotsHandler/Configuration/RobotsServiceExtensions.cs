@@ -12,6 +12,7 @@ using Stott.Optimizely.RobotsHandler.Common;
 using Stott.Optimizely.RobotsHandler.Environments;
 using Stott.Optimizely.RobotsHandler.Llms;
 using Stott.Optimizely.RobotsHandler.Opal;
+using Stott.Optimizely.RobotsHandler.QueryRules;
 using Stott.Optimizely.RobotsHandler.Robots;
 using Stott.Security.Optimizely.Features.StaticFile;
 
@@ -39,6 +40,9 @@ public static class ServiceExtensions
         serviceCollection.AddScoped(provider => new Lazy<IEnvironmentRobotsRepository>(() => provider.GetRequiredService<IEnvironmentRobotsRepository>()));
         serviceCollection.AddScoped<IStaticFileResolver, StaticFileResolver>();
         serviceCollection.AddScoped<IApplicationDefinitionService, ApplicationDefinitionService>();
+        serviceCollection.AddScoped<IQueryRulesRepository, QueryRulesRepository>();
+        serviceCollection.AddScoped<IQueryRulesService, QueryRulesService>();
+        serviceCollection.AddScoped(provider => new Lazy<IQueryRulesRepository>(() => provider.GetRequiredService<IQueryRulesRepository>()));
 
         // Authorization
         if (authorizationOptions != null)

@@ -46,7 +46,6 @@ public sealed class QueryRulesRepository : IQueryRulesRepository
         recordToSave.RobotsValue = model.RobotsValue;
         recordToSave.MatchRule = model.MatchRule;
         recordToSave.IsEnabled = model.IsEnabled;
-        recordToSave.IsEnabledForATags = model.IsEnabledForATags;
 
         store.Save(recordToSave);
     }

@@ -14,7 +14,5 @@ public sealed class SaveQueryRuleMode : IQueryStringRule
         
     public string? RobotsValue { get; set; }
         
-    public bool IsEnabledForATags { get; set; }
-
     public Guid GetId() => Id;
 }

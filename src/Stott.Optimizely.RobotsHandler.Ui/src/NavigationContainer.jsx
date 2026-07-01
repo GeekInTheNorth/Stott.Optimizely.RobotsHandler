@@ -3,6 +3,7 @@ import ConfigurationList from './ConfigurationList';
 import EnvironmentRobotsSettings from './EnvironmentRobotsSettings';
 import LlmsConfigurationList from './LlmsConfigurationList';
 import TokenManagement from './TokenManagement';
+import QueryRulesList from './QueryRulesList';
 
 function NavigationContainer(props) {
 
@@ -10,6 +11,7 @@ function NavigationContainer(props) {
     const [showLlmsList, setShowLlmsList] = useState(false);
     const [showEnvironmentRobots, setShowEnvironmentRobots] = useState(false);
     const [showOpalTools, setShowOpalTools] = useState(false);
+    const [showQueryRules, setShowQueryRules] = useState(false);
     const [containerTitle, setContainerTitle] = useState('Robots.txt Files');
 
     const handleSelect = (key) => {
@@ -18,6 +20,7 @@ function NavigationContainer(props) {
         setShowLlmsList(false);
         setShowEnvironmentRobots(false);
         setShowOpalTools(false);
+        setShowQueryRules(false);
 
         switch(key){
             case 'robots-files':
@@ -31,6 +34,10 @@ function NavigationContainer(props) {
             case 'environment-robots':
                 setContainerTitle('Environment Robots');
                 setShowEnvironmentRobots(true);
+                break;
+            case 'query-rules':
+                setContainerTitle('Query Rules');
+                setShowQueryRules(true);
                 break;
             case 'api-tokens':
                 setContainerTitle('API Tokens');
@@ -70,6 +77,7 @@ function NavigationContainer(props) {
                 { showRobotsList ? <ConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></ConfigurationList> : null }
                 { showEnvironmentRobots ? <EnvironmentRobotsSettings showToastNotificationEvent={props.showToastNotificationEvent}></EnvironmentRobotsSettings> : null }
                 { showLlmsList ? <LlmsConfigurationList showToastNotificationEvent={props.showToastNotificationEvent}></LlmsConfigurationList> : null }
+                { showQueryRules ? <QueryRulesList showToastNotificationEvent={props.showToastNotificationEvent}></QueryRulesList> : null }
                 { showOpalTools ? <TokenManagement showToastNotificationEvent={props.showToastNotificationEvent}></TokenManagement> : null }
             </div>
         </>

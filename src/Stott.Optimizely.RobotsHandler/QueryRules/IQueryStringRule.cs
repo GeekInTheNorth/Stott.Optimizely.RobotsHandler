@@ -13,6 +13,4 @@ public interface IQueryStringRule
     bool IsEnabled { get; set; }
 
     string? RobotsValue { get; set; }
-
-    bool IsEnabledForATags { get; set; }
 }

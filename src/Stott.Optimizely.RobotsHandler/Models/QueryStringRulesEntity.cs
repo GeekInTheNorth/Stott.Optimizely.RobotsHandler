@@ -20,8 +20,6 @@ public class QueryStringRulesEntity : IDynamicData, IQueryStringRule
 
     public string? RobotsValue { get; set; }
 
-    public bool IsEnabledForATags { get; set; }
-
     public Guid GetId()
     {
         return Id?.ExternalId ?? Guid.Empty;
