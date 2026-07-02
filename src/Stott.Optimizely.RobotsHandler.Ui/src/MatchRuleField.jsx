@@ -80,9 +80,7 @@ function MatchRuleField(props) {
     };
 
     return (
-        <>
-        <label>Match Rule</label>
-        <div className='border rounded p-3 mb-3'>
+        <div className='mb-3'>
             <label>Match Rule Type</label>
             <select className='form-control form-select mb-2' name='MatchType' onChange={handleMatchTypeChange} value={matchType}>
                 <option value={MATCH_TYPE_ANY}>Any</option>
@@ -108,7 +106,6 @@ function MatchRuleField(props) {
                 <input className='form-control' name='MatchValue' type='text' onChange={handleMatchValueChange} value={matchValue}></input>
             }
         </div>
-        </>
     )
 }
 
