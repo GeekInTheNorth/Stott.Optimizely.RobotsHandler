@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import axios from 'axios';
-import { Button, Modal } from 'react-bootstrap'
+import { Button, Form, Modal } from 'react-bootstrap'
+import MatchRuleField from './MatchRuleField'
+import RobotsField from './RobotsField'
 
 function AddQueryRule(props) {
 
@@ -64,17 +66,10 @@ function AddQueryRule(props) {
                         <label>Query Name</label>
                         <input className='form-control' name='QueryName' type='text' onChange={(e) => setQueryName(e.target.value)} value={queryName}></input>
                     </div>
+                    <MatchRuleField value={matchRule} onChange={setMatchRule} />
+                    <RobotsField value={robotsValue} onChange={setRobotsValue} />
                     <div className='mb-3'>
-                        <label>Match Rule</label>
-                        <input className='form-control' name='MatchRule' type='text' onChange={(e) => setMatchRule(e.target.value)} value={matchRule}></input>
-                    </div>
-                    <div className='mb-3'>
-                        <label>Robots Value</label>
-                        <input className='form-control' name='RobotsValue' type='text' onChange={(e) => setRobotsValue(e.target.value)} value={robotsValue}></input>
-                    </div>
-                    <div className='mb-3'>
-                        <label>Is Enabled</label>
-                        <input className='form-control' name='IsEnabled' type='checkbox' onChange={(e) => setIsEnabled(e.target.checked)} checked={isEnabled}></input>
+                        <Form.Check type='checkbox' name='IsEnabled' label='Is Enabled' checked={isEnabled} onChange={(e) => setIsEnabled(e.target.checked)} />
                     </div>
                 </Modal.Body>
                 <Modal.Footer>

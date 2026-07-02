@@ -35,7 +35,7 @@ public sealed class QueryRulesApiController(
 
         var model = service.Get(queryRuleId);
 
-        return CreateSafeJsonResult(model);
+        return CreateSafeJsonResult(model.ToModel());
     }
 
     [HttpPost]

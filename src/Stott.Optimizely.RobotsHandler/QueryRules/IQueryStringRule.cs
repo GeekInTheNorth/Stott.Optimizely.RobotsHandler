@@ -6,11 +6,11 @@ public interface IQueryStringRule
 {
     Guid GetId();
 
-    string? QueryName { get; set; }
+    string? QueryName { get; }
 
-    string? MatchRule { get; set; }
+    string? MatchRule { get; }
 
-    bool IsEnabled { get; set; }
+    bool IsEnabled { get; }
 
-    string? RobotsValue { get; set; }
+    string? RobotsValue { get; }
 }

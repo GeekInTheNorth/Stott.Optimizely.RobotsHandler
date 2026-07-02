@@ -2,7 +2,7 @@
 
 namespace Stott.Optimizely.RobotsHandler.QueryRules;
 
-public sealed class QueryRulesListViewModel(List<IQueryStringRule> data)
+public sealed class QueryRulesListViewModel(IList<IQueryStringRule> data)
 {
-    public IList<IQueryStringRule> List { get; set; } = data ?? [];
+    public IList<QueryStringRuleModel> List { get; } = [.. data.ToModels()];
 }

@@ -1,22 +1,18 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Stott.Optimizely.RobotsHandler.QueryRules;
 
-public sealed class SaveQueryRuleMode : IQueryStringRule
+public sealed class QueryStringRuleModel : IQueryStringRule
 {
     public Guid Id { get; set; }
 
-    [Required]
     public string? QueryName { get; set; }
-
-    [Required]
+    
     public string? MatchRule { get; set; }
-        
+    
     public bool IsEnabled { get; set; }
-
-    [Required]
+    
     public string? RobotsValue { get; set; }
-        
+
     public Guid GetId() => Id;
 }
