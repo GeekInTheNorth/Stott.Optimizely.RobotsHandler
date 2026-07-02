@@ -43,6 +43,14 @@ public sealed class RobotsApiControllerTests
 
     [Test]
     [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.EmptyStrings))]
+    public void Details_ThrowsArgumentExceptionWhenPresentedWithAnInvalidId(string id)
+    {
+        // Assert
+        Assert.Throws<ArgumentException>(() => _controller.Details(id, "siteId"));
+    }
+
+    [Test]
+    [TestCaseSource(typeof(CommonTestCases), nameof(CommonTestCases.EmptyStrings))]
     public void Details_ThrowsArgumentExceptionWhenPresentedWithAnInvalidSiteId(string siteId)
     {
         // Assert

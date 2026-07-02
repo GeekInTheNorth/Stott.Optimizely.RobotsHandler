@@ -28,7 +28,7 @@ public sealed class QueryRulesApiController(
     [Route("/stott.robotshandler/api/query-rules/[action]")]
     public IActionResult Details(string? id)
     {
-        if (!Guid.TryParse(id, out var queryRuleId) || !Guid.Empty.Equals(queryRuleId))
+        if (!Guid.TryParse(id, out var queryRuleId) || Guid.Empty.Equals(queryRuleId))
         {
             throw new ArgumentException("Id cannot be parsed as a valid GUID.", nameof(id));
         }
