@@ -10,6 +10,8 @@ This is an admin extension for Optimizely CMS 12 & 13 for managing robots conten
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V0RX2BQ)
 
+[![Stott Robots Handler Articles](https://www.stott.pro/assets/stott-robots-handler-cta.png)](https://www.stott.pro/article/list/stott-robots-handler)
+
 ## Robots.Txt Management
 
 Robots.txt content can be managed on a per site and host definition basis.  A host of "default" applies to all unspecified hosts within a site, while specific host definitions will only apply to the specific host.
