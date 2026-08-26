@@ -6,11 +6,19 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/GeekInTheNorth/Stott.Optimizely.RobotsHandler/dotnet.yml?branch=main)
 ![Nuget](https://img.shields.io/nuget/v/Stott.Optimizely.RobotsHandler)
 
-This is an admin extension for Optimizely CMS 12 & 13 for managing robots content. Stott Robots Handler is a free to use module, however if you want to show your support, buy me a coffee on ko-fi:
+This is an admin extension for Optimizely CMS 12 & 13 for managing robots content. Stott Robots Handler is a free to use module, however if you want to show your support, consider buying me a coffee! ☕️
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/V7V0RX2BQ)
+<a href="https://www.buymeacoffee.com/markstott" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
 [![Stott Robots Handler Articles](https://www.stott.pro/assets/stott-robots-handler-cta.png)](https://www.stott.pro/article/list/stott-robots-handler)
+
+## Upgrading from CMS 12 to CMS 13
+
+In CMS 13, Sites have been replaced by Applications and the data structure is subtly different. In CMS 12, sites were uniquely identified using a GUID. In CMS 13, Applications are uniquely identified using a string identifier. This is a breaking change in CMS 13 and breaks the relationship between existing robots.txt and llms.txt content and the sites they were configured to serve.
+
+Users will have to reconfigure their robots.txt and llms.txt content when moving from CMS 12 to CMS 13. The content for both files is stored in the Dynamic Data Store and is matched to an active site/application before being displayed to the CMS Administrator or being served to end users.
+
+The Environment Robots and the API Tokens are global configurations and are not bound to a specific site or application. When upgrading to version 7 and CMS 13, these features will retain their existing configuration.
 
 ## Robots.Txt Management
 
